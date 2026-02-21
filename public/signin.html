@@ -3,87 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Firebase Login | RJ Sports</title>
+    <title>Secure Account | RJ Sports</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
-        body { background-color: #f1f3f6; display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px; }
+        body { background-color: #f4f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         
-        .login-box { background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
-        .logo { font-size: 28px; font-weight: 800; text-decoration: none; color: #282c3f; display: block; margin-bottom: 30px; }
+        .auth-container { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); width: 100%; max-width: 420px; position: relative; overflow: hidden; }
+        
+        .logo { font-size: 28px; font-weight: 800; text-decoration: none; color: #282c3f; display: block; text-align: center; margin-bottom: 25px; }
         .logo span { color: #ff3f6c; }
+
+        /* Toggle Buttons */
+        .auth-tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid #eee; }
+        .tab-btn { flex: 1; padding: 10px; background: none; border: none; font-size: 16px; font-weight: 700; color: #878787; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { color: #ff3f6c; border-bottom: 2px solid #ff3f6c; margin-bottom: -2px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-input { width: 100%; padding: 14px; border: 1px solid #d4d5d9; border-radius: 6px; font-size: 15px; outline: none; transition: 0.3s; }
+        .form-input:focus { border-color: #ff3f6c; box-shadow: 0 0 0 3px rgba(255,63,108,0.1); }
         
-        /* Custom Google Button */
-        .google-btn {
-            background-color: #4285F4;
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            transition: 0.3s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .google-btn:hover { background-color: #357ae8; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        .google-btn i { font-size: 20px; }
+        .btn-primary { background: #ff3f6c; color: white; border: none; padding: 14px; font-size: 16px; font-weight: 700; border-radius: 6px; cursor: pointer; width: 100%; transition: 0.3s; text-transform: uppercase; }
+        .btn-primary:hover { background: #e02e5b; transform: translateY(-1px); }
+        
+        .divider { display: flex; align-items: center; margin: 25px 0; color: #878787; font-size: 14px; font-weight: 600; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e0e0e0; }
+        .divider::before { margin-right: 10px; }
+        .divider::after { margin-left: 10px; }
+
+        .google-btn { background: #fff; color: #333; border: 1px solid #d4d5d9; padding: 12px; font-size: 15px; font-weight: 600; border-radius: 6px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
+        .google-btn:hover { background: #f9f9f9; border-color: #b0b0b0; }
+        .google-btn img { width: 20px; }
+
+        /* Form Visibility */
+        #signup-form { display: none; }
+        .toast-msg { text-align: center; font-size: 14px; font-weight: 600; margin-bottom: 15px; border-radius: 4px; padding: 10px; display: none; }
+        .toast-error { background: #ffebee; color: #c62828; }
+        .toast-success { background: #e8f5e9; color: #2e7d32; }
     </style>
 </head>
 <body>
 
-<div class="login-box">
+<div class="auth-container">
     <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
-    <h2 style="margin-bottom: 25px; color: #333;">Login to Continue</h2>
     
-    <button id="firebaseGoogleBtn" class="google-btn">
-        <i class="fab fa-google"></i> Sign in with Google
-    </button>
+    <div class="auth-tabs">
+        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+    </div>
 
-    <p style="color: #777; font-size: 14px; margin-top: 25px;">Log in securely to track your orders and checkout faster.</p>
+    <div id="toast" class="toast-msg"></div>
+
+    <form id="login-form">
+        <div class="form-group">
+            <input type="email" id="login-email" class="form-input" placeholder="Email Address" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="login-password" class="form-input" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn-primary">Sign In</button>
+    </form>
+
+    <form id="signup-form">
+        <div class="form-group">
+            <input type="text" id="signup-name" class="form-input" placeholder="Full Name" required>
+        </div>
+        <div class="form-group">
+            <input type="email" id="signup-email" class="form-input" placeholder="Email Address" required>
+        </div>
+        <div class="form-group">
+            <input type="password" id="signup-password" class="form-input" placeholder="Create Password (Min 6 chars)" required minlength="6">
+        </div>
+        <button type="submit" class="btn-primary">Create Account</button>
+    </form>
+
+    <div class="divider">OR CONTINUE WITH</div>
+    
+    <button id="google-btn" class="google-btn">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+        Google
+    </button>
 </div>
 
 <script type="module">
-    // 1. Firebase इंपोर्ट करा
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    // 2. तुमचे स्वतःचे Firebase Config इथे टाका (तुमच्या Firebase Console मधून कॉपी करा)
-    const firebaseConfig =    { apiKey: "AIzaSyBxyUiyy0L_hDuWul8SrntOtYgI48IiUPQ",
+    // 🔴 तुमचा Firebase Config येथे पेस्ट करा 🔴
+    const firebaseConfig = {
+       apiKey: "AIzaSyBxyUiyy0L_hDuWul8SrntOtYgI48IiUPQ",
     authDomain: "rj-sports-24dae.firebaseapp.com",
     projectId: "rj-sports-24dae",
     storageBucket: "rj-sports-24dae.firebasestorage.app",
     messagingSenderId: "952774877656",
     appId: "1:952774877656:web:aee2f70e14daeb07e912ad"
-  };
+    };
 
-    // 3. Firebase आणि Auth चालू करा
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+    const googleProvider = new GoogleAuthProvider();
 
-    // 4. जेव्हा युजर 'Sign in with Google' बटणावर क्लिक करेल
-    document.getElementById('firebaseGoogleBtn').addEventListener('click', () => {
-        signInWithPopup(auth, provider)
+    // UI Toast Function
+    function showMessage(msg, type) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = `toast-msg toast-${type}`;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 4000);
+    }
+
+    // Handle Sign Up (Create Account)
+    document.getElementById('signup-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('signup-name').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Update User's Profile with Name
+                updateProfile(userCredential.user, { displayName: name }).then(() => {
+                    localStorage.setItem('rj_loggedInUser', name);
+                    localStorage.setItem('rj_userEmail', email);
+                    showMessage("Account created successfully! Redirecting...", "success");
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                });
+            })
+            .catch((error) => showMessage(error.message.replace("Firebase:", ""), "error"));
+    });
+
+    // Handle Login
+    document.getElementById('login-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                localStorage.setItem('rj_loggedInUser', user.displayName || user.email);
+                localStorage.setItem('rj_userEmail', user.email);
+                showMessage("Login successful! Redirecting...", "success");
+                setTimeout(() => window.location.href = 'index.html', 1500);
+            })
+            .catch((error) => showMessage("Invalid Email or Password!", "error"));
+    });
+
+    // Handle Google Login
+    document.getElementById('google-btn').addEventListener('click', () => {
+        signInWithPopup(auth, googleProvider)
             .then((result) => {
                 const user = result.user;
-                console.log("Real Sign-in Successful!", user);
-                
-                // युजरचे नाव LocalStorage मध्ये सेव्ह करून होम पेजवर पाठवा
-                localStorage.setItem('rj_loggedInUser', user.displayName || user.email);
-                window.location.href = 'index.html'; // यशस्वी लॉगिननंतर होम पेज उघडेल
-            }).catch((error) => {
-                console.error("Error during Firebase sign in:", error);
-                alert("Sign in failed: " + error.message);
-            });
+                localStorage.setItem('rj_loggedInUser', user.displayName);
+                localStorage.setItem('rj_userEmail', user.email);
+                window.location.href = 'index.html';
+            })
+            .catch((error) => showMessage(error.message, "error"));
     });
+</script>
+
+<script>
+    function switchTab(tab) {
+        document.getElementById('tab-login').classList.remove('active');
+        document.getElementById('tab-signup').classList.remove('active');
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('signup-form').style.display = 'none';
+
+        if(tab === 'login') {
+            document.getElementById('tab-login').classList.add('active');
+            document.getElementById('login-form').style.display = 'block';
+        } else {
+            document.getElementById('tab-signup').classList.add('active');
+            document.getElementById('signup-form').style.display = 'block';
+        }
+    }
 </script>
 </body>
 </html>
