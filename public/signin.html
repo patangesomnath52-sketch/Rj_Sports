@@ -3,169 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Account | RJ Sports</title>
+    <title>Secure Login | RJ Sports</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
         body { background-color: #f4f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         
-        .auth-container { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); width: 100%; max-width: 420px; position: relative; overflow: hidden; }
-        
-        .logo { font-size: 28px; font-weight: 800; text-decoration: none; color: #282c3f; display: block; text-align: center; margin-bottom: 25px; }
+        .auth-container { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
+        .logo { font-size: 28px; font-weight: 800; text-decoration: none; color: #282c3f; display: block; margin-bottom: 30px; }
         .logo span { color: #ff3f6c; }
 
-        /* Toggle Buttons */
-        .auth-tabs { display: flex; margin-bottom: 25px; border-bottom: 2px solid #eee; }
-        .tab-btn { flex: 1; padding: 10px; background: none; border: none; font-size: 16px; font-weight: 700; color: #878787; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { color: #ff3f6c; border-bottom: 2px solid #ff3f6c; margin-bottom: -2px; }
+        .google-btn { background: #fff; color: #333; border: 1px solid #d4d5d9; padding: 14px; font-size: 16px; font-weight: 600; border-radius: 6px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .google-btn:hover { background: #f9f9f9; border-color: #b0b0b0; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .google-btn img { width: 22px; }
 
-        .form-group { margin-bottom: 18px; }
-        .form-input { width: 100%; padding: 14px; border: 1px solid #d4d5d9; border-radius: 6px; font-size: 15px; outline: none; transition: 0.3s; }
-        .form-input:focus { border-color: #ff3f6c; box-shadow: 0 0 0 3px rgba(255,63,108,0.1); }
+        /* Error message styling */
+        #debug-error { color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 4px; font-size: 13px; margin-top: 20px; display: none; font-weight: 600; text-align: left; }
         
-        .btn-primary { background: #ff3f6c; color: white; border: none; padding: 14px; font-size: 16px; font-weight: 700; border-radius: 6px; cursor: pointer; width: 100%; transition: 0.3s; text-transform: uppercase; }
-        .btn-primary:hover { background: #e02e5b; transform: translateY(-1px); }
-        
-        .divider { display: flex; align-items: center; margin: 25px 0; color: #878787; font-size: 14px; font-weight: 600; }
-        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e0e0e0; }
-        .divider::before { margin-right: 10px; }
-        .divider::after { margin-left: 10px; }
-
-        .google-btn { background: #fff; color: #333; border: 1px solid #d4d5d9; padding: 12px; font-size: 15px; font-weight: 600; border-radius: 6px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; }
-        .google-btn:hover { background: #f9f9f9; border-color: #b0b0b0; }
-        .google-btn img { width: 20px; }
-
-        /* Form Visibility */
-        #signup-form { display: none; }
-        .toast-msg { text-align: center; font-size: 14px; font-weight: 600; margin-bottom: 15px; border-radius: 4px; padding: 10px; display: none; }
-        .toast-error { background: #ffebee; color: #c62828; }
-        .toast-success { background: #e8f5e9; color: #2e7d32; }
+        @media (max-width: 768px) { .auth-container { padding: 30px 20px; } }
     </style>
 </head>
 <body>
 
 <div class="auth-container">
     <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
-    
-    <div class="auth-tabs">
-        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign In</button>
-        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
-    </div>
-
-    <div id="toast" class="toast-msg"></div>
-
-    <form id="login-form">
-        <div class="form-group">
-            <input type="email" id="login-email" class="form-input" placeholder="Email Address" required>
-        </div>
-        <div class="form-group">
-            <input type="password" id="login-password" class="form-input" placeholder="Password" required>
-        </div>
-        <button type="submit" class="btn-primary">Sign In</button>
-    </form>
-
-    <form id="signup-form">
-        <div class="form-group">
-            <input type="text" id="signup-name" class="form-input" placeholder="Full Name" required>
-        </div>
-        <div class="form-group">
-            <input type="email" id="signup-email" class="form-input" placeholder="Email Address" required>
-        </div>
-        <div class="form-group">
-            <input type="password" id="signup-password" class="form-input" placeholder="Create Password (Min 6 chars)" required minlength="6">
-        </div>
-        <button type="submit" class="btn-primary">Create Account</button>
-    </form>
-
-    <div class="divider">OR CONTINUE WITH</div>
+    <h2 style="margin-bottom: 10px; color: #333;">Welcome Back</h2>
+    <p style="color: #666; font-size: 14px; margin-bottom: 25px;">Sign in to access your orders and fast checkout.</p>
     
     <button id="google-btn" class="google-btn">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
-        Google
+        <img src="logo.google.png" alt="Google">
+        Continue with Google
     </button>
+
+    <div id="debug-error"></div>
 </div>
 
- <script type="module">
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    // येथे signInWithPopup ऐवजी signInWithRedirect वापरले आहे
-    import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    // 🔴 तुमचा Firebase Config येथे पेस्ट करा 🔴
+    // 🔴 YOU MUST REPLACE THESE VALUES WITH YOUR REAL FIREBASE KEYS 🔴
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_AUTH_DOMAIN",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_STORAGE_BUCKET",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyBxyUiyy0L_hDuWul8SrntOtYgI48IiUPQ",
+    authDomain: "rj-sports-24dae.firebaseapp.com",
+    projectId: "rj-sports-24dae",
+    storageBucket: "rj-sports-24dae.firebasestorage.app",
+    messagingSenderId: "952774877656",
+    appId: "1:952774877656:web:aee2f70e14daeb07e912ad"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const googleProvider = new GoogleAuthProvider();
-
-    function showMessage(msg, type) {
-        const toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.className = `toast-msg toast-${type}`;
-        toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 4000);
+    // Initialize Firebase
+    let app, auth, provider;
+    try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        provider = new GoogleAuthProvider();
+    } catch (e) {
+        showError("Firebase Setup Error: Check your firebaseConfig keys.");
     }
 
-    // 1. Google Redirect Login (Myntra Style - No Popup)
-    document.getElementById('google-btn').addEventListener('click', () => {
-        // हे ग्राहकाला अतिशय स्मूथली गुगलच्या पेजवर घेऊन जाईल
-        signInWithRedirect(auth, googleProvider);
-    });
+    function showError(msg) {
+        const errDiv = document.getElementById('debug-error');
+        errDiv.innerText = msg;
+        errDiv.style.display = 'block';
+    }
 
-    // 2. गुगलवरून परत आल्यावर काय करायचे? (हे बॅकग्राउंडला आपोआप काम करेल)
-    getRedirectResult(auth).then((result) => {
-        if (result !== null) {
-            const user = result.user;
-            localStorage.setItem('rj_loggedInUser', user.displayName || 'User');
-            localStorage.setItem('rj_userEmail', user.email);
-            window.location.href = 'index.html'; // लॉगिन झाल्यावर होम पेजवर पाठवा
+    document.getElementById('google-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('google-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "Connecting to Google...";
+        btn.disabled = true;
+        document.getElementById('debug-error').style.display = 'none';
+
+        try {
+            // Standard Popup Auth (Used by many top sites for cross-origin stability)
+            const result = await signInWithPopup(auth, provider);
+            
+            // Save user data & redirect seamlessly
+            localStorage.setItem('rj_loggedInUser', result.user.displayName);
+            localStorage.setItem('rj_userEmail', result.user.email);
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error("Auth Error:", error);
+            showError(`Error Code: ${error.code} \nMessage: ${error.message}`);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
-    }).catch((error) => {
-        showMessage("Google Login Cancelled or Failed.", "error");
-    });
-
-    // Handle Sign Up (Email/Password)
-    document.getElementById('signup-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = document.getElementById('signup-name').value;
-        const email = document.getElementById('signup-email').value;
-        const password = document.getElementById('signup-password').value;
-
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                updateProfile(userCredential.user, { displayName: name }).then(() => {
-                    localStorage.setItem('rj_loggedInUser', name);
-                    localStorage.setItem('rj_userEmail', email);
-                    showMessage("Account created successfully! Redirecting...", "success");
-                    setTimeout(() => window.location.href = 'index.html', 1500);
-                });
-            })
-            .catch((error) => showMessage(error.message.replace("Firebase:", ""), "error"));
-    });
-
-    // Handle Login (Email/Password)
-    document.getElementById('login-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                localStorage.setItem('rj_loggedInUser', user.displayName || user.email);
-                localStorage.setItem('rj_userEmail', user.email);
-                showMessage("Login successful! Redirecting...", "success");
-                setTimeout(() => window.location.href = 'index.html', 1500);
-            })
-            .catch((error) => showMessage("Invalid Email or Password!", "error"));
     });
 </script>
 </body>
