@@ -31,6 +31,15 @@
         .summary-total { border-top: 1px dashed #e0e0e0; padding-top: 15px; font-size: 18px; font-weight: 700; color: #212121; }
         #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 4px; padding: 15px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); }
         #toast.show { visibility: visible; }
+        /* Mobile Responsiveness for Checkout */
+        @media (max-width: 768px) {
+            .checkout-wrapper { flex-direction: column; padding: 10px; margin: 10px auto; }
+            .left-panel, .right-panel { flex: none; width: 100%; }
+            .right-panel { position: relative; top: 0; margin-top: 10px; }
+            .step-header { padding: 12px 15px; }
+            .step-content { padding: 15px; }
+            .btn-primary { padding: 12px 20px; }
+        }
     </style>
 </head>
 <body>
@@ -133,7 +142,7 @@
             const orderData = { orderId, customer: name, phone: userPhone, address, pincode: pin, items: cartItems, total: finalTotal };
 
             try {
-                const res = await fetch('http://localhost:3000/api/place-order', {
+                const res = await fetch('/api/place-order',  {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
