@@ -40,14 +40,18 @@ const Order = mongoose.model('Order', orderSchema);
 
 // WhatsApp Setup
 const client = new Client({
+    authStrategy: new LocalAuth(),
     puppeteer: {
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    },
-    authStrategy: new LocalAuth() // (हे तुमच्या कोडमध्ये आधीपासून असेलच)
+        headless: true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage', // Render च्या कमी RAM साठी हे सर्वात महत्त्वाचे आहे
+            '--disable-accelerated-2d-canvas',
+            '--disable-gpu'
+        ]
+    }
 });
-client.on('qr', (qr) => qrcode.generate(qr, { small: true }));
-client.on('ready', () => console.log('✅ WhatsApp Bot Ready!'));
-client.initialize();
 
 // --- API ROUTES ---
 
