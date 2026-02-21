@@ -44,6 +44,35 @@
     background-attachment: fixed;
     background-repeat: no-repeat;
 }
+/* Mobile Navbar Fix for Inner Pages */
+        @media (max-width: 768px) {
+            .navbar { 
+                flex-direction: column; /* सर्व एकाखाली एक आणण्यासाठी */
+                padding: 15px; 
+                gap: 15px; 
+                position: relative;
+            }
+            .logo { 
+                font-size: 26px; 
+                text-align: center;
+                margin-bottom: 5px;
+            }
+            .nav-links { 
+                display: flex; 
+                flex-wrap: wrap; 
+                justify-content: center; 
+                gap: 15px; 
+                width: 100%; 
+            }
+            .nav-links a { 
+                font-size: 13px; /* मोबाईलवर फॉन्ट थोडा लहान दिसेल */
+            }
+            .nav-icons { 
+                position: absolute; 
+                top: 20px; 
+                right: 20px; /* कार्ट आयकॉन उजव्या कोपऱ्यात राहील */
+            }
+        }
     </style>
 </head>
 <body>
