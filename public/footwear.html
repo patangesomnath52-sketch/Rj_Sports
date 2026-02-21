@@ -75,30 +75,46 @@
         .cart-footer { padding: 20px; border-top: 1px solid #eee; background: #fff; }
         .total { font-size: 18px; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; color: #282c3f;}
         .checkout-btn { width: 100%; padding: 14px; background: #ff3f6c; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer; border-radius: 4px;}
-/* 100% PERFECT MOBILE NAVBAR */
+/* --- 100% PROFESSIONAL NAVBAR (PC + MOBILE) --- */
+        
+        /* १. कॉम्प्युटरसाठी (PC View) */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* हे लोगो डावीकडे आणि कार्ट उजवीकडे चिकटवून ठेवते */
+            padding: 15px 5%;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .logo { order: 1; font-size: 26px; font-weight: 800; text-decoration: none; color: #282c3f; }
+        .logo span { color: #ff3f6c; }
+        .nav-links { order: 2; display: flex; gap: 25px; }
+        .nav-links a { text-decoration: none; color: #282c3f; font-weight: 600; font-size: 15px; }
+        .nav-icons { order: 3; display: flex; align-items: center; }
+
+        /* २. फक्त मोबाईलसाठी (Mobile View) - The Magic Fix */
         @media (max-width: 768px) {
-            .navbar { 
-                display: flex; 
-                flex-wrap: wrap; 
-                justify-content: space-between; 
-                align-items: center; 
-                padding: 12px 15px; 
+            .navbar {
+                flex-wrap: wrap; /* लहान स्क्रीनवर जागा बनवण्यासाठी */
+                padding: 15px;
             }
-            .logo { font-size: 24px; order: 1; margin: 0; }
-            .nav-icons { order: 2; display: flex; gap: 15px; margin: 0; }
-            .nav-search { order: 3; width: 100%; margin: 15px 0 5px 0; }
-            
-            /* लिंक्स एका छान लाईनमध्ये दिसण्यासाठी */
+            .logo { 
+                order: 1; 
+                margin-right: auto !important; /* 🔴 कोणत्याही परिस्थितीत लोगो डावीकडेच राहील */
+            }
+            .nav-icons { 
+                order: 2; 
+                margin-left: auto !important; /* 🔴 कार्ट (Cart) १००% उजव्या कोपऱ्यात राहील */
+            }
             .nav-links { 
-                order: 4; 
+                order: 3; 
                 width: 100%; 
-                display: flex; 
-                justify-content: space-between; 
-                margin-top: 10px; 
-                padding-top: 12px; 
+                justify-content: center; /* लिंक्स छान मध्यभागी दिसतील */
+                margin-top: 15px; 
+                padding-top: 15px; 
                 border-top: 1px solid #eee; 
             }
-            .nav-links a { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; }
+            .nav-links a { font-size: 13px; font-weight: 800; }
         }
     </style>
 </head>
