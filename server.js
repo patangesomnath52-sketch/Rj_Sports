@@ -67,7 +67,15 @@ app.post('/api/place-order', async (req, res) => {
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false }); }
 });
-
+// ऑर्डर्स मिळवण्याचा API
+app.get('/api/orders', async (req, res) => {
+    try {
+        const orders = await Order.find().sort({ date: -1 });
+        res.json({ success: true, orders: orders });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+});
 // २. सेल्स रिपोर्ट (Owner Dashboard)
 app.get('/api/admin/sales-summary', async (req, res) => {
     try {
