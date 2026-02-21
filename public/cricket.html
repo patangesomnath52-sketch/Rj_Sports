@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RJ Sports - Cricket Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob:; frame-src *;">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
+        body { background-color: #ffffff; color: #282c3f; }
+        
+        /* Navbar */
+        .navbar { display: flex; justify-content: space-between; padding: 15px 40px; box-shadow: 0 4px 12px rgba(0,0,0,.05); position: sticky; top: 0; background: white; z-index: 100; align-items: center; }
+        .logo { font-size: 24px; font-weight: 800; text-decoration: none; color: inherit; }
+        .logo-rj { color: #ff3f6c; }
+        .nav-links { list-style: none; display: flex; gap: 20px; }
+        .nav-links a { text-decoration: none; color: #282c3f; font-weight: 600; font-size: 14px; }
+        .cart-icon { font-size: 20px; cursor: pointer; position: relative; }
+        .cart-badge { background: #ff3f6c; color: white; font-size: 11px; padding: 2px 6px; border-radius: 50%; position: absolute; top: -8px; right: -8px; }
+
+        /* Products Grid */
+        .section-title { text-align: center; margin: 40px 0 20px; }
+        .section-title h2 { font-size: 28px; font-weight: 800; color: #282c3f; }
+        .underline { width: 60px; height: 3px; background: #ff3f6c; margin: 5px auto; }
+
+        .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .product-card { border: 1px solid #f5f5f5; padding: 15px; border-radius: 4px; transition: 0.3s; text-align: center; }
+        .product-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .product-card img { width: 100%; height: 250px; object-fit: cover; border-radius: 4px; margin-bottom: 15px; }
+        .product-card h3 { font-size: 18px; margin-bottom: 10px; color: #282c3f; }
+        .price-tag { font-size: 20px; font-weight: 700; color: #212121; margin-bottom: 15px; }
+        
+        .add-btn { width: 100%; padding: 12px; background: white; color: #ff3f6c; border: 1px solid #ff3f6c; font-weight: 700; cursor: pointer; border-radius: 4px; transition: 0.3s; }
+        .add-btn:hover { background: #ff3f6c; color: white; }
+        body {
+    background:  (rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)),
+                url('cricketbg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="logo"><span class="logo-rj">RJ</span> SPORTS</a>
+        <ul class="nav-links">
+            <li><a href="cricket.html" style="color: #ff3f6c;">CRICKET HUB</a></li>
+            <li><a href="footwear.html">FOOTWEAR</a></li>
+            <li><a href="orders.html">MY ORDERS</a></li>
+        </ul>
+        <div class="cart-icon" onclick="window.location.href='cart.html'">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-badge" id="cart-count">0</span>
+        </div>
+    </nav>
+
+    <div class="section-title">
+        <h2>CRICKET HUB</h2>
+        <div class="underline"></div>
+        
+    </div>
+
+    <section class="categories">
+        <div class="product-card" data-id="c1" data-name="English Willow Bat" data-price="12500">
+            <h3>ENGLISH WILLOW BAT</h3>
+            <img src="english willow bat.jpg" alt="Bat">
+            <div class="price-tag">₹12,500</div>
+            <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+        </div>
+
+        <div class="product-card" data-id="c2" data-name="Pro Batting Gloves" data-price="1450">
+            <h3>PRO BATTING GLOVES</h3>
+            <img src="batting gloves.jpg" alt="Gloves">
+            <div class="price-tag">₹1,450</div>
+            <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+        </div>
+
+        <div class="product-card" data-id="c3" data-name="Batting Leg Guards" data-price="2200">
+            <h3>LEG GUARDS</h3>
+            <img src="leg guards.jpg" alt="Leg Guards">
+            <div class="price-tag">₹2,200</div>
+            <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+        </div>
+
+        <div class="product-card" data-id="c4" data-name="Premium Leather Ball" data-price="450">
+            <h3>LEATHER BALL</h3>
+            <img src="leather ball.jpg" alt="Ball">
+            <div class="price-tag">₹450</div>
+            <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', updateCartBadge);
+
+        function addToCart(btn) {
+            const card = btn.closest('.product-card');
+            
+            // डेटा गोळा करा
+            const product = {
+                id: card.dataset.id,
+                name: card.dataset.name,
+                price: parseInt(card.dataset.price),
+                image: card.querySelector('img').src,
+                quantity: 1,
+                size: "Standard" 
+            };
+
+            // लोकल स्टोअरेजमध्ये 'rj_cart' की वापरून सेव्ह करा
+            let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+            const existingIndex = cart.findIndex(item => item.id === product.id);
+
+            if (existingIndex > -1) {
+                cart[existingIndex].quantity += 1;
+            } else {
+                cart.push(product);
+            }
+
+            localStorage.setItem('rj_cart', JSON.stringify(cart));
+
+            // कोणतेही पॉप-अप न दाखवता थेट कार्ट पेजवर जा
+            window.location.href = 'cart.html';
+        }
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cart-count').innerText = count;
+        }
+    </script>
+</body>
+</html>

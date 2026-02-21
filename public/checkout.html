@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | RJ Sports</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
+        body { background-color: #f1f3f6; color: #212121; }
+        .header { background: #fff; padding: 15px 40px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 24px; font-weight: 800; text-decoration: none; color: #212121; }
+        .logo span { color: #ff3f6c; }
+        .checkout-wrapper { max-width: 1100px; margin: 30px auto; display: flex; gap: 20px; padding: 0 20px; align-items: flex-start; }
+        .left-panel { flex: 2; display: flex; flex-direction: column; gap: 15px; }
+        .right-panel { flex: 1; background: #fff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: sticky; top: 80px; }
+        .step-box { background: #fff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 15px; }
+        .step-header { padding: 15px 24px; display: flex; align-items: center; gap: 15px; background: #fff; border-bottom: 1px solid #f0f0f0; }
+        .step-header.active { background: #2874f0; color: white; }
+        .step-header.completed { background: #f9f9f9; color: #878787; }
+        .step-number { width: 24px; height: 24px; background: #f0f0f0; color: #2874f0; display: flex; align-items: center; justify-content: center; border-radius: 2px; font-size: 12px; font-weight: bold; }
+        .step-title { font-size: 16px; font-weight: 600; text-transform: uppercase; }
+        .step-content { padding: 24px; display: none; }
+        .step-content.active { display: block; }
+        .form-group { margin-bottom: 20px; }
+        .form-input { width: 100%; padding: 12px 15px; border: 1px solid #d4d5d9; border-radius: 4px; font-size: 14px; outline: none; }
+        .btn-primary { background: #fb641b; color: white; border: none; padding: 14px 30px; font-size: 14px; font-weight: 700; border-radius: 2px; cursor: pointer; text-transform: uppercase; width: 100%; }
+        .summary-header { padding: 15px 24px; border-bottom: 1px solid #f0f0f0; font-size: 16px; font-weight: 600; color: #878787; }
+        .summary-body { padding: 24px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 15px; }
+        .summary-total { border-top: 1px dashed #e0e0e0; padding-top: 15px; font-size: 18px; font-weight: 700; color: #212121; }
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 4px; padding: 15px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); }
+        #toast.show { visibility: visible; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
+        <div style="color:#878787; font-weight:600;">🔒 SECURE CHECKOUT</div>
+    </header>
+
+    <div class="checkout-wrapper" id="checkout-main">
+        <div class="left-panel">
+            <div class="step-box">
+                <div class="step-header active" id="step1-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">LOGIN</div>
+                </div>
+                <div class="step-content active" id="step1-content">
+                    <div class="form-group">
+                        <input type="tel" id="mobile-input" class="form-input" placeholder="Enter 10-digit Mobile Number" maxlength="10">
+                    </div>
+                    <button class="btn-primary" onclick="proceedToAddress()">CONTINUE</button>
+                </div>
+            </div>
+
+            <div class="step-box">
+                <div class="step-header" id="step2-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">DELIVERY ADDRESS</div>
+                </div>
+                <div class="step-content" id="step2-content">
+                    <div class="form-group"><input type="text" id="name-input" class="form-input" placeholder="Full Name"></div>
+                    <div class="form-group"><input type="text" id="pin-input" class="form-input" placeholder="Pincode" maxlength="6"></div>
+                    <div class="form-group"><textarea id="address-input" class="form-input" placeholder="Full Address" rows="3"></textarea></div>
+                    <button class="btn-primary" onclick="saveAndConfirm()">CONFIRM ORDER & SEND WHATSAPP</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="summary-header">PRICE DETAILS</div>
+            <div class="summary-body">
+                <div id="summary-items-list"></div>
+                <div class="summary-row summary-total">
+                    <span>Total Amount</span>
+                    <span id="sum-total">₹0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Message</div>
+
+    <script>
+        let userPhone = "";
+        let finalTotal = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+            if (cart.length === 0) { 
+                showToast("Cart is empty! Redirecting...");
+                setTimeout(() => window.location.href = 'index.html', 2000);
+                return; 
+            }
+            let html = '';
+            cart.forEach(item => {
+                finalTotal += item.price * item.quantity;
+                html += `<div class="summary-row"><span>${item.name} (x${item.quantity})</span><span>₹${item.price * item.quantity}</span></div>`;
+            });
+            document.getElementById('summary-items-list').innerHTML = html;
+            document.getElementById('sum-total').innerText = '₹' + finalTotal;
+        });
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg;
+            toast.className = "show";
+            setTimeout(() => { toast.className = ""; }, 3000);
+        }
+
+        function proceedToAddress() {
+            const phone = document.getElementById('mobile-input').value;
+            if (phone.length !== 10) return showToast("Enter 10-digit number");
+            userPhone = phone;
+            document.getElementById('step1-content').classList.remove('active');
+            document.getElementById('step1-header').classList.replace('active', 'completed');
+            document.getElementById('step2-header').classList.add('active');
+            document.getElementById('step2-content').classList.add('active');
+        }
+
+        async function saveAndConfirm() {
+            const name = document.getElementById('name-input').value.trim();
+            const pin = document.getElementById('pin-input').value.trim();
+            const address = document.getElementById('address-input').value.trim();
+
+            if (!name || !pin || !address) return showToast("Fill all details");
+
+            const orderId = 'OD' + Math.floor(Math.random() * 1000000);
+            const cartItems = JSON.parse(localStorage.getItem('rj_cart'));
+
+            const orderData = { orderId, customer: name, phone: userPhone, address, pincode: pin, items: cartItems, total: finalTotal };
+
+            try {
+                const res = await fetch('http://localhost:3000/api/place-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                const data = await res.json();
+
+               if (data.success) {
+    const itemDetails = cartItems.map(i => `${i.name} (x${i.quantity})`).join(', ');
+
+    // 1. Prepare the message text
+    const message = `*New Order: RJ SPORTS*%0A` +
+                    `*ID:* ${orderId}%0A` +
+                    `*Customer:* ${name}%0A` +
+                    `*Items:* ${itemDetails}%0A` +
+                    `*Address:* ${address}, ${pin}%0A` +
+                    `*Total:* ₹${finalTotal}`;
+
+    // 2. Correct the URL (No plus sign, no curly braces around the number)
+    const whatsappUrl = `https://wa.me/919359239161?text=${message}`;
+    
+    // 3. Clear cart and redirect
+    localStorage.removeItem('rj_cart');
+    window.location.href = whatsappUrl; 
+}
+            } catch (e) {
+                showToast("Server Error! Ensure Node.js is running.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RJ Sports - Premium Footwear</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- GLOBAL STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
+        body { background-color: #ffffff; color: #282c3f; }
+        
+        /* --- NAVBAR --- */
+        .navbar { display: flex; justify-content: space-between; padding: 15px 40px; box-shadow: 0 4px 12px 0 rgba(0,0,0,.05); position: sticky; top: 0; background: white; z-index: 100; }
+        .logo { font-size: 24px; font-weight: 800; letter-spacing: 1px; }
+        .logo-rj { color: #ff3f6c; } 
+        .nav-links { list-style: none; display: flex; gap: 20px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #282c3f; font-weight: 600; font-size: 14px; }
+        
+        .cart-icon { font-size: 20px; cursor: pointer; position: relative; }
+        .cart-badge { background: #ff3f6c; color: white; font-size: 12px; padding: 2px 6px; border-radius: 50%; position: absolute; top: -8px; right: -8px; font-weight: 700; }
+
+        /* --- LAYOUT --- */
+        .main-container { display: flex; max-width: 1400px; margin: 20px auto; padding: 0 20px; }
+        .products-section { flex-grow: 1; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 30px; }
+
+        /* --- PRODUCT CARD --- */
+        .product-card { position: relative; background: #fff; transition: all 0.2s; cursor: pointer; padding-bottom: 10px; border: 1px solid #f5f5f5;}
+        .product-card:hover { box-shadow: 0 2px 16px 4px rgba(40,44,63,.07); }
+
+        .img-container { width: 100%; height: 260px; overflow: hidden; background: #f5f5f5; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .product-card:hover .img-container img { transform: scale(1.05); }
+
+        .product-info { padding: 10px; }
+        .brand { font-size: 16px; font-weight: 700; color: #282c3f; margin-bottom: 2px; }
+        .name { font-size: 14px; color: #535766; font-weight: 400; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .price-box { font-size: 14px; margin-bottom: 10px; }
+        .discount-price { font-weight: 700; color: #282c3f; }
+        .original-price { text-decoration: line-through; color: #7e818c; font-size: 12px; margin-left: 5px; }
+
+        /* --- SIZE SELECTOR --- */
+        .size-container { margin-top: 5px; margin-bottom: 10px; }
+        .size-title { font-size: 12px; font-weight: 700; color: #282c3f; margin-bottom: 5px; display: block;}
+        .size-options { display: flex; gap: 5px; flex-wrap: wrap; }
+        
+        .size-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #e0e0e0; background: white; font-size: 12px; cursor: pointer; transition: all 0.2s; color: #282c3f; }
+        .size-btn:hover { border-color: #ff3f6c; }
+        .size-btn.selected { background: #ff3f6c; color: white; border-color: #ff3f6c; }
+
+        /* --- ADD TO CART BUTTON --- */
+        .add-btn { width: 90%; margin: 0 auto; display: block; padding: 10px; background-color: white; color: #ff3f6c; border: 1px solid #ff3f6c; font-weight: 700; cursor: pointer; border-radius: 4px; transition: 0.3s; }
+        .add-btn:hover { background-color: #ff3f6c; color: white; }
+
+        /* --- SLIDE-OUT CART CSS --- */
+        .cart-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; }
+        .cart-overlay.open { display: block; }
+        
+        .cart-sidebar { position: fixed; top: 0; right: -400px; width: 350px; height: 100%; background: #fff; z-index: 1000; transition: right 0.3s ease; display: flex; flex-direction: column; box-shadow: -2px 0 5px rgba(0,0,0,0.1); }
+        .cart-sidebar.open { right: 0; }
+        
+        .cart-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .close-cart { font-size: 28px; cursor: pointer; color: #282c3f; }
+        
+        .cart-items { flex-grow: 1; overflow-y: auto; padding: 20px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .cart-item h4 { font-size: 14px; color: #282c3f; margin-bottom: 5px;}
+        .cart-item p { font-size: 13px; color: #7e818c; }
+        .cart-item-remove { color: #ff3f6c; cursor: pointer; font-size: 12px; font-weight: bold; border: none; background: none; }
+        
+        .cart-footer { padding: 20px; border-top: 1px solid #eee; background: #fff; }
+        .total { font-size: 18px; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; color: #282c3f;}
+        .checkout-btn { width: 100%; padding: 14px; background: #ff3f6c; color: white; border: none; font-weight: bold; font-size: 16px; cursor: pointer; border-radius: 4px;}
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo"><a href="index.html" style="color:inherit; text-decoration:none;"><span class="logo-rj">RJ</span> SPORTS</a></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="orders.html">My Orders</a></li>
+        </ul>
+        <div class="cart-icon" onclick="window.location.href='cart.html'"> 
+    <i class="fas fa-shopping-cart"></i>
+    <span class="cart-badge" id="cart-count">0</span>
+</div>
+    </nav>
+
+    <div class="main-container">
+        <main class="products-section">
+            <h2 style="margin-bottom: 20px;">Premium Footwear Collection</h2>
+            
+            <div class="products-grid">
+                
+                <div class="product-card" data-id="s1" data-name="Puma Nitro Red Runner" data-price="2499">
+                    <div class="img-container"><img src="puma nitro red runner.jpeg" alt="Shoe"></div>
+                    <div class="product-info">
+                        <h3 class="brand">Puma</h3>
+                        <h4 class="name">Nitro Red Runner</h4>
+                        <div class="price-box"><span class="discount-price">₹2,499</span> <span class="original-price">₹4,999</span></div>
+                        <div class="size-container">
+                            <span class="size-title">Select Size (UK)</span>
+                            <div class="size-options">
+                                <button class="size-btn" onclick="selectSize(this)">6</button>
+                                <button class="size-btn" onclick="selectSize(this)">7</button>
+                                <button class="size-btn" onclick="selectSize(this)">8</button>
+                                <button class="size-btn" onclick="selectSize(this)">9</button>
+                                <button class="size-btn" onclick="selectSize(this)">10</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+                </div>
+
+                <div class="product-card" data-id="s2" data-name="Puma Sky Blue Sneakers" data-price="1899">
+                    <div class="img-container"><img src="pumma skyblue sneakers.jpeg" alt="Shoe"></div>
+                    <div class="product-info">
+                        <h3 class="brand">Puma</h3>
+                        <h4 class="name">Sky Blue Sneakers</h4>
+                        <div class="price-box"><span class="discount-price">₹1,899</span> <span class="original-price">₹3,499</span></div>
+                        <div class="size-container">
+                            <span class="size-title">Select Size (UK)</span>
+                            <div class="size-options">
+                                <button class="size-btn" onclick="selectSize(this)">6</button>
+                                <button class="size-btn" onclick="selectSize(this)">7</button>
+                                <button class="size-btn" onclick="selectSize(this)">8</button>
+                                <button class="size-btn" onclick="selectSize(this)">9</button>
+                                <button class="size-btn" onclick="selectSize(this)">10</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+                </div>
+
+                <div class="product-card" data-id="s3" data-name="HiGrip Black Runner" data-price="1299">
+                    <div class="img-container"><img src="fashion rung runner.jpeg" alt="Shoe"></div>
+                    <div class="product-info">
+                        <h3 class="brand">HiGrip</h3>
+                        <h4 class="name">Black Runner</h4>
+                        <div class="price-box"><span class="discount-price">₹1,299</span> <span class="original-price">₹2,599</span></div>
+                        <div class="size-container">
+                            <span class="size-title">Select Size (UK)</span>
+                            <div class="size-options">
+                                <button class="size-btn" onclick="selectSize(this)">6</button>
+                                <button class="size-btn" onclick="selectSize(this)">7</button>
+                                <button class="size-btn" onclick="selectSize(this)">8</button>
+                                <button class="size-btn" onclick="selectSize(this)">9</button>
+                                <button class="size-btn" onclick="selectSize(this)">10</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+                </div>
+
+                <div class="product-card" data-id="s4" data-name="Puma Classic B&W" data-price="1999">
+                    <div class="img-container"><img src="puma black runner.jpeg" alt="Shoe"></div>
+                    <div class="product-info">
+                        <h3 class="brand">Puma</h3>
+                        <h4 class="name">Classic B&W</h4>
+                        <div class="price-box"><span class="discount-price">₹1,999</span> <span class="original-price">₹3,999</span></div>
+                        <div class="size-container">
+                            <span class="size-title">Select Size (UK)</span>
+                            <div class="size-options">
+                                <button class="size-btn" onclick="selectSize(this)">6</button>
+                                <button class="size-btn" onclick="selectSize(this)">7</button>
+                                <button class="size-btn" onclick="selectSize(this)">8</button>
+                                <button class="size-btn" onclick="selectSize(this)">9</button>
+                                <button class="size-btn" onclick="selectSize(this)">10</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+                </div>
+
+                <div class="product-card" data-id="s5" data-name="ProNine Sport White" data-price="999">
+                    <div class="img-container"><img src="pro nine sports.jpeg" alt="Shoe"></div>
+                    <div class="product-info">
+                        <h3 class="brand">ProNine</h3>
+                        <h4 class="name">Sport White</h4>
+                        <div class="price-box"><span class="discount-price">₹999</span> <span class="original-price">₹1,499</span></div>
+                        <div class="size-container">
+                            <span class="size-title">Select Size (UK)</span>
+                            <div class="size-options">
+                                <button class="size-btn" onclick="selectSize(this)">6</button>
+                                <button class="size-btn" onclick="selectSize(this)">7</button>
+                                <button class="size-btn" onclick="selectSize(this)">8</button>
+                                <button class="size-btn" onclick="selectSize(this)">9</button>
+                                <button class="size-btn" onclick="selectSize(this)">10</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+                </div>
+
+                 <div class="product-card" data-id="s7" data-name="Nike Smile Edition" data-price="2999">
+                    <div class="img-container"><img src="nike.jpeg" alt="Shoe"></div>
+                    <div class="product-info">
+                        <h3 class="brand">Nike</h3>
+                        <h4 class="name">Smile Edition</h4>
+                        <div class="price-box"><span class="discount-price">₹2,999</span> <span class="original-price">₹5,999</span></div>
+                        <div class="size-container">
+                            <span class="size-title">Select Size (UK)</span>
+                            <div class="size-options">
+                                <button class="size-btn" onclick="selectSize(this)">6</button>
+                                <button class="size-btn" onclick="selectSize(this)">7</button>
+                                <button class="size-btn" onclick="selectSize(this)">8</button>
+                                <button class="size-btn" onclick="selectSize(this)">9</button>
+                                <button class="size-btn" onclick="selectSize(this)">10</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+       
+        <div class="cart-items" id="cart-items-container">
+            </div>
+        <div class="cart-footer">
+            <div class="total"><span>Total:</span> <span>₹<span id="cart-total">0</span></span></div>
+            <button class="checkout-btn" onclick="window.location.href='checkout.html'">CHECKOUT NOW</button>
+        </div>
+    </div>
+
+   <script>
+    // पेज लोड झाल्यावर कार्टमधील वस्तूंची संख्या दाखवा
+    document.addEventListener('DOMContentLoaded', updateCartBadge);
+
+    // Size Selection
+    function selectSize(btn) {
+        const optionsDiv = btn.parentElement;
+        const buttons = optionsDiv.querySelectorAll('.size-btn');
+        buttons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    // Add to Cart
+    function addToCart(btn) {
+        const card = btn.closest('.product-card');
+        const selectedSizeBtn = card.querySelector('.size-btn.selected');
+
+        if (!selectedSizeBtn) {
+            alert("Please select a size first!");
+            return;
+        }
+
+        const size = selectedSizeBtn.innerText;
+        const id = card.getAttribute('data-id');
+        const name = card.getAttribute('data-name');
+        const price = parseFloat(card.getAttribute('data-price'));
+        
+        // फोटोची लिंक मिळवण्यासाठी
+        const imgElement = card.querySelector('img');
+        const imageSrc = imgElement ? imgElement.src : '';
+
+        let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+        
+        // शूज आणि साईझ आधीच कार्टमध्ये आहे का ते तपासा
+        const existingItem = cart.find(item => item.id === id && item.size === size);
+
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            // इथे आपण फोटो सुद्धा सेव्ह करत आहोत जेणेकरून तो cart.html मध्ये दिसेल
+            cart.push({ id: id, name: name, price: price, size: size, image: imageSrc, quantity: 1 });
+        }
+
+        localStorage.setItem('rj_cart', JSON.stringify(cart));
+        
+        updateCartBadge();
+        
+        // यशस्वीरित्या ॲड झाल्यावर थेट कार्ट पेजवर घेऊन जा (Flipkart सारखे)
+        window.location.href = 'cart.html'; 
+    }
+
+    // बॅज (Badge) वरील संख्या अपडेट करण्यासाठी
+    function updateCartBadge() {
+        const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+        let count = 0;
+        cart.forEach(item => count += item.quantity);
+        document.getElementById('cart-count').innerText = count;
+    }
+</script>
+</body>
+</html>

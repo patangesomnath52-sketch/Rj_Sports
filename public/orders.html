@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | RJ Sports</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- UI STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
+        body { background-color: #f1f3f6; color: #212121; }
+        
+        .navbar { background: #fff; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 24px; font-weight: 800; text-decoration: none; color: inherit; }
+        .logo span { color: #ff3f6c; }
+        .nav-actions { display: flex; gap: 20px; align-items: center; }
+        
+        .logout-btn { background: #fff; border: 1px solid #d7d7d7; padding: 6px 15px; border-radius: 4px; cursor: pointer; font-weight: 600; color: #cc0c39; transition: 0.3s; }
+
+        .orders-container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        h1 { margin-bottom: 20px; font-size: 22px; }
+        .order-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; border: 1px solid #e0e0e0; overflow: hidden; }
+        
+        .order-header { background: #f9f9f9; padding: 15px 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; font-size: 13px; color: #565959; flex-wrap: wrap; gap: 10px; }
+        .order-header strong { color: #111; font-size: 14px; }
+        
+        .order-body { padding: 20px; }
+        .item-row { border-bottom: 1px solid #f0f0f0; padding: 10px 0; font-size: 15px; }
+        .status-section { background: #e8f0fe; padding: 12px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #2874f0; }
+        .status-badge { font-weight: 800; color: #1967d2; text-transform: uppercase; font-size: 14px; }
+        
+        .address-box { margin-top: 15px; font-size: 14px; color: #555; background: #fafafa; padding: 10px; border-radius: 4px; border: 1px dashed #ccc; }
+        .empty-orders { text-align: center; padding: 60px; background: #fff; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
+        <div class="nav-actions">
+            <span id="user-greeting" style="font-weight: 600; color: #2874f0;"></span>
+            <button class="logout-btn" id="logout-btn">Sign Out</button>
+        </div>
+    </nav>
+
+    <div class="orders-container">
+        <h1>Your Orders</h1>
+        <div id="orders-list">
+            <p style="text-align:center; padding:40px;">Loading your orders...</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loggedInUser = localStorage.getItem('rj_loggedInUser');
+            const ordersList = document.getElementById('orders-list');
+            const userGreeting = document.getElementById('user-greeting');
+
+            // १. युजर लॉगिन नसेल तर साइन-इन कडे पाठवा
+            if (!loggedInUser) {
+                window.location.replace('signin.html');
+                return;
+            }
+
+            userGreeting.innerText = "Hi, " + loggedInUser;
+
+            // २. साईन-आउट लॉजिक
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.removeItem('rj_loggedInUser');
+                window.location.replace('signin.html');
+            });
+
+            // ३. ऑर्डर्स लोड करण्यासाठी फंक्शन कॉल
+            fetchOrders(loggedInUser);
+
+            async function fetchOrders(phone) {
+                try {
+                    // बॅकएंडवरून त्या फोन नंबरच्या ऑर्डर्स मागवणे
+                    const response = await fetch(`http://localhost:3000/api/my-orders/${phone}`);
+                    
+                    if (!response.ok) throw new Error('Server connectivity issue');
+
+                    const orders = await response.json();
+
+                    if (!orders || orders.length === 0) {
+                        ordersList.innerHTML = `
+                            <div class="empty-orders">
+                                <h2>No orders yet!</h2>
+                                <p style="margin: 10px 0;">You haven't placed any orders yet.</p>
+                                <a href="index.html" style="color:#ff3f6c; text-decoration:none; font-weight:bold;">Start Shopping Now</a>
+                            </div>`;
+                        return;
+                    }
+
+                    let html = '';
+                    // नवीन ऑर्डर्स वर दिसण्यासाठी reverse()
+                    orders.reverse().forEach(order => {
+                        const itemsHtml = order.items ? order.items.map(item => `
+                            <div class="item-row">
+                                <strong>${item.name}</strong> (Qty: ${item.quantity}) ${item.size ? `| Size: ${item.size}` : ''}
+                            </div>
+                        `).join('') : 'No items found';
+
+                        const orderDate = order.date ? new Date(order.date).toLocaleDateString('en-IN', { 
+                            day: 'numeric', month: 'short', year: 'numeric' 
+                        }) : 'Date N/A';
+
+                        // 'undefined' टाळण्यासाठी 'Pending' चा वापर
+                        const currentStatus = order.status || 'Pending';
+
+                        html += `
+                            <div class="order-card">
+                                <div class="order-header">
+                                    <div>ORDER PLACED <strong>${orderDate}</strong></div>
+                                    <div>TOTAL <strong>₹${order.total}</strong></div>
+                                    <div>ORDER ID <strong>#${order.orderId}</strong></div>
+                                </div>
+                                <div class="order-body">
+                                    ${itemsHtml}
+                                    <div class="address-box">
+                                        <strong>Delivery Address:</strong><br>
+                                        ${order.customer}<br>
+                                        ${order.address}, PIN: ${order.pincode}
+                                    </div>
+                                    <div class="status-section">
+                                        <span class="status-badge">🚚 Status: ${currentStatus}</span>
+                                        <p style="font-size: 12px; margin-top:5px; color:#666;">
+                                            Your order is currently ${currentStatus.toLowerCase()}.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    ordersList.innerHTML = html;
+
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                    ordersList.innerHTML = `
+                        <div style="text-align:center; padding:40px; color:red;">
+                            <h3>Connection Error</h3>
+                            <p>तुमचा सर्व्हर (node server.js) चालू असल्याची खात्री करा.</p>
+                        </div>`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

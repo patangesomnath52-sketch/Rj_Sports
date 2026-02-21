@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Style Cart | RJ Sports</title>
+    <link href="https://fonts.googleapis.com/css2?family=Arial:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Amazon Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background-color: #eaeded; color: #0f1111; } /* Amazon's light grey background */
+        a { text-decoration: none; color: #007185; } /* Amazon Blue Link */
+        a:hover { color: #c4001a; text-decoration: underline; }
+
+        /* Simple Navbar */
+        .navbar { background-color: #131921; padding: 15px 20px; display: flex; align-items: center; }
+        .logo { color: white; font-size: 24px; font-weight: bold; text-decoration: none !important; }
+        .logo span { color: #ff9900; } /* Amazon orange accent */
+
+        /* Layout */
+        .cart-wrapper { max-width: 1500px; margin: 20px auto; display: flex; gap: 20px; padding: 0 20px; align-items: flex-start; flex-wrap: wrap; }
+
+        /* Left Side: Shopping Cart Items */
+        .cart-left { flex: 3; min-width: 600px; background: #fff; padding: 20px; }
+        .cart-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; }
+        .cart-header h1 { font-size: 28px; font-weight: 400; }
+        .cart-header span { font-size: 14px; color: #565959; }
+
+        .cart-item { display: flex; gap: 20px; border-bottom: 1px solid #ddd; padding-bottom: 20px; margin-bottom: 20px; }
+        .item-image { width: 180px; height: 180px; object-fit: contain; flex-shrink: 0; }
+        
+        .item-details { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+        .item-title { font-size: 18px; font-weight: 700; color: #007185; line-height: 1.3; }
+        .item-price { font-size: 18px; font-weight: 700; color: #0f1111; display: none; /* Hidden on mobile, shown on right normally */ }
+        .item-stock { color: #007600; font-size: 12px; margin: 2px 0; }
+        .item-shipping { color: #565959; font-size: 12px; }
+        .item-size { font-size: 14px; font-weight: bold; margin-top: 5px; }
+        
+        .item-actions { display: flex; align-items: center; gap: 15px; margin-top: 10px; font-size: 12px; }
+        .qty-box { padding: 5px; border: 1px solid #d5d9d9; border-radius: 8px; background: #f0f2f2; box-shadow: 0 2px 5px rgba(15,17,17,.15); cursor: pointer; }
+        .qty-box select { border: none; background: transparent; cursor: pointer; outline: none; font-size: 14px; }
+        .action-link { color: #007185; cursor: pointer; border-left: 1px solid #ddd; padding-left: 15px; }
+        .action-link:first-child { border-left: none; padding-left: 0; }
+
+        .item-price-right { font-size: 18px; font-weight: 700; width: 100px; text-align: right; }
+
+        /* Right Side: Checkout Box */
+        .cart-right { flex: 1; min-width: 300px; background: #fff; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .free-shipping-msg { font-size: 12px; color: #007600; display: flex; gap: 5px; align-items: center; }
+        .free-shipping-msg i { font-size: 16px; }
+        
+        .subtotal-text { font-size: 18px; }
+        .subtotal-amount { font-weight: 700; }
+        
+        /* Amazon Yellow Button */
+        .checkout-btn { 
+            background-color: #ffd814; 
+            border: 1px solid #fcd200; 
+            border-radius: 8px; 
+            padding: 10px; 
+            width: 100%; 
+            font-size: 14px; 
+            font-weight: 400; 
+            cursor: pointer; 
+            box-shadow: 0 2px 5px 0 rgba(213,217,217,.5); 
+        }
+        .checkout-btn:hover { background-color: #f7ca00; border-color: #f2c200; }
+
+        /* Empty Cart */
+        .empty-cart { padding: 40px 20px; display: flex; align-items: center; gap: 20px; background: #fff; }
+        .empty-cart h2 { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="logo">RJ <span>Sports</span></a>
+    </nav>
+
+    <div class="cart-wrapper" id="cart-wrapper">
+        </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', renderAmazonCart);
+
+        function renderAmazonCart() {
+            let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+            const wrapper = document.getElementById('cart-wrapper');
+
+            if (cart.length === 0) {
+                wrapper.innerHTML = `
+                    <div class="cart-left" style="flex: 100%;">
+                        <div class="empty-cart">
+                            <div>
+                                <h2>Your  Cart is empty.</h2>
+                                <p><a href="footwear.html">Shop today's deals</a></p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let cartItemsHTML = '';
+            let totalPrice = 0;
+            let totalQty = 0;
+
+            cart.forEach((item, index) => {
+                totalPrice += item.price * item.quantity;
+                totalQty += item.quantity;
+                
+                // Ensure image fallback
+                let img = item.image ? item.image : "https://via.placeholder.com/180";
+
+                cartItemsHTML += `
+                    <div class="cart-item">
+                        <img src="${img}" class="item-image" alt="${item.name}">
+                        <div class="item-details">
+                            <a href="#" class="item-title">${item.name}</a>
+                            <div class="item-stock">In Stock</div>
+                            <div class="item-shipping">Eligible for FREE Shipping</div>
+                            <div class="item-size">Size: ${item.size}</div>
+                            
+                            <div class="item-actions">
+                                <div class="qty-box">
+                                    Qty: 
+                                    <select onchange="updateQty(${index}, this.value)">
+                                        <option value="1" ${item.quantity == 1 ? 'selected' : ''}>1</option>
+                                        <option value="2" ${item.quantity == 2 ? 'selected' : ''}>2</option>
+                                        <option value="3" ${item.quantity == 3 ? 'selected' : ''}>3</option>
+                                        <option value="4" ${item.quantity == 4 ? 'selected' : ''}>4</option>
+                                        <option value="5" ${item.quantity == 5 ? 'selected' : ''}>5</option>
+                                    </select>
+                                </div>
+                                <span class="action-link" onclick="deleteItem(${index})">Delete</span>
+                                <span class="action-link">Save for later</span>
+                            </div>
+                        </div>
+                        <div class="item-price-right">
+                            ₹${item.price.toLocaleString('en-IN')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            wrapper.innerHTML = `
+                <div class="cart-left">
+                    <div class="cart-header">
+                        <h1>Shopping Cart</h1>
+                        <span>Price</span>
+                    </div>
+                    ${cartItemsHTML}
+                    <div style="text-align: right; font-size: 18px;">
+                        Subtotal (${totalQty} items): <strong>₹${totalPrice.toLocaleString('en-IN')}</strong>
+                    </div>
+                </div>
+
+                <div class="cart-right">
+                    <div class="free-shipping-msg">
+                        <span style="color: white; background: #007600; padding: 2px 6px; border-radius: 50%; display:inline-block;">✓</span>
+                        Part of your order qualifies for FREE Delivery.
+                    </div>
+                    <div class="subtotal-text">
+                        Subtotal (${totalQty} items): <span class="subtotal-amount">₹${totalPrice.toLocaleString('en-IN')}</span>
+                    </div>
+                    <button class="checkout-btn" onclick="window.location.href='checkout.html'">Proceed to Buy</button>
+                </div>
+            `;
+        }
+
+        // Update Quantity function
+        function updateQty(index, newQty) {
+            let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+            cart[index].quantity = parseInt(newQty);
+            localStorage.setItem('rj_cart', JSON.stringify(cart));
+            renderAmazonCart(); // Re-render the cart
+        }
+
+        // Delete Item function
+        function deleteItem(index) {
+            let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('rj_cart', JSON.stringify(cart));
+            renderAmazonCart(); // Re-render the cart
+        }
+    </script>
+</body>
+</html>

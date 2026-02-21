@@ -1,0 +1,31 @@
+2026/02/21-15:14:37.696 5380 Reusing MANIFEST C:\Users\Asus\Downloads\New folder (6)\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/02/21-15:14:37.697 5380 Recovering log #439
+2026/02/21-15:14:37.720 5380 Reusing old log C:\Users\Asus\Downloads\New folder (6)\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000439.log 
+2026/02/21-15:14:39.575 838 Compacting 1@0 + 1@1 files
+2026/02/21-15:14:39.622 838 Generated table #442@0: 25721 keys, 583534 bytes
+2026/02/21-15:14:39.622 838 Compacted 1@0 + 1@1 files => 583534 bytes
+2026/02/21-15:14:39.623 838 compacted to: files[ 0 1 4 0 0 0 0 ]
+2026/02/21-15:14:39.624 838 Delete type=2 #438
+2026/02/21-15:14:39.624 838 Delete type=2 #440
+2026/02/21-15:14:40.173 838 Compacting 1@1 + 4@2 files
+2026/02/21-15:14:40.275 838 Generated table #443@1: 53920 keys, 2220250 bytes
+2026/02/21-15:14:40.403 838 Generated table #444@1: 48507 keys, 2207634 bytes
+2026/02/21-15:14:40.468 838 Generated table #445@1: 20755 keys, 2177481 bytes
+2026/02/21-15:14:40.512 838 Generated table #446@1: 31223 keys, 1649062 bytes
+2026/02/21-15:14:40.512 838 Compacted 1@1 + 4@2 files => 8254427 bytes
+2026/02/21-15:14:40.514 838 compacted to: files[ 0 0 4 0 0 0 0 ]
+2026/02/21-15:14:40.514 838 Delete type=2 #433
+2026/02/21-15:14:40.515 838 Delete type=2 #434
+2026/02/21-15:14:40.515 838 Delete type=2 #435
+2026/02/21-15:14:40.515 838 Delete type=2 #436
+2026/02/21-15:14:40.515 838 Delete type=2 #442
+2026/02/21-15:14:46.603 838 Level-0 table #448: started
+2026/02/21-15:14:46.627 838 Level-0 table #448: 1310442 bytes OK
+2026/02/21-15:14:46.628 838 Delete type=0 #439
+2026/02/21-15:14:46.643 46b0 Compacting 1@1 + 4@2 files
+2026/02/21-15:14:46.707 46b0 Generated table #449@1: 56063 keys, 2220883 bytes
+2026/02/21-15:14:46.794 46b0 Generated table #450@1: 50319 keys, 2218346 bytes
+2026/02/21-15:14:46.848 46b0 Generated table #451@1: 16509 keys, 2171338 bytes
+2026/02/21-15:14:46.890 46b0 Generated table #452@1: 38233 keys, 1972203 bytes
+2026/02/21-15:14:46.890 46b0 Compacted 1@1 + 4@2 files => 8582770 bytes
+2026/02/21-15:14:46.891 46b0 compacted to: files[ 0 0 4 0 0 0 0 ]

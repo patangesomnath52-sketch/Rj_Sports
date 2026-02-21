@@ -1,0 +1,63 @@
+\<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | RJ Sports</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f1f3f6; }
+        .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; width: 350px; }
+        .logo { font-size: 28px; font-weight: bold; margin-bottom: 20px; text-decoration: none; color: #111; }
+        .logo span { color: #ff3f6c; }
+        h1 { font-size: 22px; margin-bottom: 20px; color: #212121; }
+        .google-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: white; border: 1px solid #ddd; padding: 12px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: 600; transition: 0.3s; }
+        .google-btn:hover { background: #f9f9f9; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .google-icon { width: 20px; }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="logo">RJ <span>Sports</span></a>
+
+    <div class="login-box">
+        <h1>Welcome Back</h1>
+        <p style="color: #666; font-size: 14px; margin-bottom: 25px;">Sign in to your account to continue</p>
+        
+        <button class="google-btn" onclick="signInWithGoogle()">
+            <img src="https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png" class="google-icon">
+            Continue with Google
+        </button>
+    </div>
+
+    <script>
+       const firebaseConfig = {
+  apiKey: "AIzaSyBxyUiyy0L_hDuWul8SrntOtYgI48IiUPQ",
+  authDomain: "rj-sports-24dae.firebaseapp.com",
+  projectId: "rj-sports-24dae",
+  storageBucket: "rj-sports-24dae.firebasestorage.app",
+  messagingSenderId: "952774877656",
+  appId: "1:952774877656:web:aee2f70e14daeb07e912ad"
+};
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        function signInWithGoogle() {
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    // युजरचे नाव किंवा ईमेल लोकल स्टोअरेजमध्ये सेव्ह करा
+                    localStorage.setItem('rj_loggedInUser', user.displayName || user.email);
+                    window.location.href = 'index.html';
+                }).catch((error) => {
+                    console.error("Login Error:", error);
+                    alert("Sign-in failed. Please try again.");
+                });
+        }
+    </script>
+</body>
+</html>
