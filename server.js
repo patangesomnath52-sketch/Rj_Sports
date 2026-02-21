@@ -40,8 +40,10 @@ const Order = mongoose.model('Order', orderSchema);
 
 // WhatsApp Setup
 const client = new Client({
-    authStrategy: new LocalAuth(),
-    puppeteer: { args: ['--no-sandbox', '--disable-setuid-sandbox'] }
+    puppeteer: {
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    },
+    authStrategy: new LocalAuth() // (हे तुमच्या कोडमध्ये आधीपासून असेलच)
 });
 client.on('qr', (qr) => qrcode.generate(qr, { small: true }));
 client.on('ready', () => console.log('✅ WhatsApp Bot Ready!'));
