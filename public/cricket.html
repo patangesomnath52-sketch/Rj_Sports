@@ -44,63 +44,59 @@
     background-attachment: fixed;
     background-repeat: no-repeat;
 }
-/* --- 100% PROFESSIONAL NAVBAR (PC + MOBILE) --- */
-        
-        /* १. कॉम्प्युटरसाठी (PC View) */
-        .navbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between; /* हे लोगो डावीकडे आणि कार्ट उजवीकडे चिकटवून ठेवते */
-            padding: 15px 5%;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .logo { order: 1; font-size: 26px; font-weight: 800; text-decoration: none; color: #282c3f; }
-        .logo span { color: #ff3f6c; }
-        .nav-links { order: 2; display: flex; gap: 25px; }
-        .nav-links a { text-decoration: none; color: #282c3f; font-weight: 600; font-size: 15px; }
-        .nav-icons { order: 3; display: flex; align-items: center; }
+/* १. PC View: Perfect Alignment */
+    .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* लोगो डावीकडे आणि कार्ट एकदम उजवीकडे ढकलते */
+        padding: 15px 5%;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        flex-wrap: wrap;
+    }
+    .logo { font-size: 26px; font-weight: 800; text-decoration: none; color: #282c3f; }
+    .logo span { color: #ff3f6c; }
+    
+    .nav-links { display: flex; gap: 25px; align-items: center; }
+    .nav-links a { text-decoration: none; color: #282c3f; font-weight: 600; font-size: 15px; text-transform: uppercase; }
+    
+    .nav-icons { display: flex; align-items: center; }
+    .cart-icon { position: relative; font-size: 24px; color: #282c3f; text-decoration: none; }
+    #cart-count { position: absolute; top: -8px; right: -12px; background: #ff3f6c; color: white; font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 50%; }
 
-        /* २. फक्त मोबाईलसाठी (Mobile View) - The Magic Fix */
-        @media (max-width: 768px) {
-            .navbar {
-                flex-wrap: wrap; /* लहान स्क्रीनवर जागा बनवण्यासाठी */
-                padding: 15px;
-            }
-            .logo { 
-                order: 1; 
-                margin-right: auto !important; /* 🔴 कोणत्याही परिस्थितीत लोगो डावीकडेच राहील */
-            }
-            .nav-icons { 
-                order: 2; 
-                margin-left: auto !important; /* 🔴 कार्ट (Cart) १००% उजव्या कोपऱ्यात राहील */
-            }
-            .nav-links { 
-                order: 3; 
-                width: 100%; 
-                justify-content: center; /* लिंक्स छान मध्यभागी दिसतील */
-                margin-top: 15px; 
-                padding-top: 15px; 
-                border-top: 1px solid #eee; 
-            }
-            .nav-links a { font-size: 13px; font-weight: 800; }
+    /* २. Mobile View: Clean and Unbreakable */
+    @media (max-width: 768px) {
+        .navbar { padding: 15px; }
+        .nav-links {
+            order: 3; /* लिंक्सला खालच्या ओळीत ढकलते */
+            width: 100%;
+            justify-content: center; /* मध्यभागी आणते */
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
         }
+        .nav-links a { font-size: 13px; }
+    }
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="index.html" class="logo"><span class="logo-rj">RJ</span> SPORTS</a>
-        <ul class="nav-links">
-            <li><a href="cricket.html" style="color: #ff3f6c;">CRICKET HUB</a></li>
-            <li><a href="footwear.html">FOOTWEAR</a></li>
-            <li><a href="orders.html">MY ORDERS</a></li>
-        </ul>
-        <div class="cart-icon" onclick="window.location.href='cart.html'">
-            <i class="fas fa-shopping-cart"></i>
-            <span class="cart-badge" id="cart-count">0</span>
-        </div>
-    </nav>
+<nav class="navbar">
+    <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
+    
+    <div class="nav-links">
+        <a href="cricket.html">CRICKET HUB</a>
+        <a href="footwear.html">FOOTWEAR</a>
+        <a href="orders.html" id="login-link">MY ORDERS</a>
+    </div>
+
+    <div class="nav-icons">
+        <a href="cart.html" class="cart-icon">
+            🛒 <span id="cart-count">0</span>
+        </a>
+    </div>
+</nav>
 
     <div class="section-title">
         <h2>CRICKET HUB</h2>
