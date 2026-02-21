@@ -204,6 +204,19 @@
 
     document.addEventListener('DOMContentLoaded', updateCartCount);
 </script>
-
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const user = localStorage.getItem('rj_loggedInUser');
+        // जर तुमच्या मेनूमध्ये 'Sign In' ची लिंक असेल (ज्याला id="login-link" द्या), तर ती अशी बदलेल:
+        const loginLink = document.querySelector('a[href="signin.html"]'); 
+        
+        if(user && loginLink) {
+            loginLink.innerHTML = `👤 Hi, ${user.split(' ')[0]}`; // फक्त पहिले नाव दिसेल
+            loginLink.href = "orders.html"; // क्लिक केल्यावर ऑर्डर्स उघडतील
+            loginLink.style.color = "#ff3f6c";
+            loginLink.style.fontWeight = "bold";
+        }
+    });
+</script>
 </body>
 </html>
