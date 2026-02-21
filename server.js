@@ -46,8 +46,11 @@ const client = new Client({
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage', // Render च्या कमी RAM साठी हे सर्वात महत्त्वाचे आहे
+            '--disable-dev-shm-usage',
             '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process', // हे Render च्या RAM साठी सर्वात महत्त्वाचे आहे
             '--disable-gpu'
         ]
     }
