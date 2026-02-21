@@ -87,25 +87,25 @@
     </button>
 </div>
 
-<script type="module">
+ <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    // येथे signInWithPopup ऐवजी signInWithRedirect वापरले आहे
+    import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
     // 🔴 तुमचा Firebase Config येथे पेस्ट करा 🔴
     const firebaseConfig = {
-       apiKey: "AIzaSyBxyUiyy0L_hDuWul8SrntOtYgI48IiUPQ",
-    authDomain: "rj-sports-24dae.firebaseapp.com",
-    projectId: "rj-sports-24dae",
-    storageBucket: "rj-sports-24dae.firebasestorage.app",
-    messagingSenderId: "952774877656",
-    appId: "1:952774877656:web:aee2f70e14daeb07e912ad"
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const googleProvider = new GoogleAuthProvider();
 
-    // UI Toast Function
     function showMessage(msg, type) {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
@@ -114,7 +114,25 @@
         setTimeout(() => toast.style.display = 'none', 4000);
     }
 
-    // Handle Sign Up (Create Account)
+    // 1. Google Redirect Login (Myntra Style - No Popup)
+    document.getElementById('google-btn').addEventListener('click', () => {
+        // हे ग्राहकाला अतिशय स्मूथली गुगलच्या पेजवर घेऊन जाईल
+        signInWithRedirect(auth, googleProvider);
+    });
+
+    // 2. गुगलवरून परत आल्यावर काय करायचे? (हे बॅकग्राउंडला आपोआप काम करेल)
+    getRedirectResult(auth).then((result) => {
+        if (result !== null) {
+            const user = result.user;
+            localStorage.setItem('rj_loggedInUser', user.displayName || 'User');
+            localStorage.setItem('rj_userEmail', user.email);
+            window.location.href = 'index.html'; // लॉगिन झाल्यावर होम पेजवर पाठवा
+        }
+    }).catch((error) => {
+        showMessage("Google Login Cancelled or Failed.", "error");
+    });
+
+    // Handle Sign Up (Email/Password)
     document.getElementById('signup-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const name = document.getElementById('signup-name').value;
@@ -123,7 +141,6 @@
 
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Update User's Profile with Name
                 updateProfile(userCredential.user, { displayName: name }).then(() => {
                     localStorage.setItem('rj_loggedInUser', name);
                     localStorage.setItem('rj_userEmail', email);
@@ -134,7 +151,7 @@
             .catch((error) => showMessage(error.message.replace("Firebase:", ""), "error"));
     });
 
-    // Handle Login
+    // Handle Login (Email/Password)
     document.getElementById('login-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
@@ -150,35 +167,6 @@
             })
             .catch((error) => showMessage("Invalid Email or Password!", "error"));
     });
-
-    // Handle Google Login
-    document.getElementById('google-btn').addEventListener('click', () => {
-        signInWithPopup(auth, googleProvider)
-            .then((result) => {
-                const user = result.user;
-                localStorage.setItem('rj_loggedInUser', user.displayName);
-                localStorage.setItem('rj_userEmail', user.email);
-                window.location.href = 'index.html';
-            })
-            .catch((error) => showMessage(error.message, "error"));
-    });
-</script>
-
-<script>
-    function switchTab(tab) {
-        document.getElementById('tab-login').classList.remove('active');
-        document.getElementById('tab-signup').classList.remove('active');
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('signup-form').style.display = 'none';
-
-        if(tab === 'login') {
-            document.getElementById('tab-login').classList.add('active');
-            document.getElementById('login-form').style.display = 'block';
-        } else {
-            document.getElementById('tab-signup').classList.add('active');
-            document.getElementById('signup-form').style.display = 'block';
-        }
-    }
 </script>
 </body>
 </html>
