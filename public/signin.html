@@ -12,6 +12,24 @@
         }
     </script>
     <style>
+        /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
+        :root {
+            --bg-color: #f4f6f8;
+            --text-color: #1f2937;
+            --header-bg: #fff;
+            --card-bg: #fff; /* प्रॉडक्ट्स आणि कार्टच्या पांढऱ्या बॉक्ससाठी */
+            --border-color: #e5e7eb;
+            --accent: #ff3f6c;
+        }
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e5e7eb;
+            --header-bg: #1f2937;
+            --card-bg: #1e293b; /* डार्क मोड मधील कार्ड्सचा रंग */
+            --border-color: #374151;
+        }
+        
+        body { background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
         body { background-color: #f4f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         

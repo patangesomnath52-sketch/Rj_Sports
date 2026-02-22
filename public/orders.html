@@ -6,6 +6,24 @@
     <title>My Orders | RJ Sports</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
+        :root {
+            --bg-color: #f4f6f8;
+            --text-color: #1f2937;
+            --header-bg: #fff;
+            --card-bg: #fff; /* प्रॉडक्ट्स आणि कार्टच्या पांढऱ्या बॉक्ससाठी */
+            --border-color: #e5e7eb;
+            --accent: #ff3f6c;
+        }
+        body.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e5e7eb;
+            --header-bg: #1f2937;
+            --card-bg: #1e293b; /* डार्क मोड मधील कार्ड्सचा रंग */
+            --border-color: #374151;
+        }
+        
+        body { background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
         body { background-color: #f4f6f8; padding: 20px; }
         .header { background: #fff; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 20px; }
@@ -98,6 +116,30 @@
         }
     });
 </script>
+<script>
+    // --- UNIVERSAL DARK MODE LOGIC ---
+    document.addEventListener("DOMContentLoaded", () => {
+        const themeBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        
+        // पेज लोड होताना ब्राउझरच्या मेमरीतून चेक करा की थीम डार्क आहे का
+        if(localStorage.getItem('rj_theme') === 'dark') {
+            body.classList.add('dark-mode');
+            if(themeBtn) themeBtn.innerText = '☀️'; // बटण सूर्यासारखं करा
+        }
 
+        // जर या पेजवर themeBtn असेल, तर त्याच्या क्लिकची सोय करा
+        if(themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                const isDark = body.classList.contains('dark-mode');
+                
+                themeBtn.innerText = isDark ? '☀️' : '🌙';
+                // थीम ब्राउझरमध्ये कायमची सेव्ह करा
+                localStorage.setItem('rj_theme', isDark ? 'dark' : 'light');
+            });
+        }
+    });
+</script>
 </body>
 </html>
