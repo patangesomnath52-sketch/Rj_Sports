@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amazon Style Cart | RJ Sports</title>
     <link href="https://fonts.googleapis.com/css2?family=Arial:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        // अतिशय महत्त्वाचे: पेज लोड होण्याआधीच मेमरीतून थीम तपासा आणि लागू करा!
+        if(localStorage.getItem('rj_theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
     <style>
         /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
         :root {

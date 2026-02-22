@@ -5,39 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders | RJ Sports</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        // अतिशय महत्त्वाचे: पेज लोड होण्याआधीच मेमरीतून थीम तपासा आणि लागू करा!
+        if(localStorage.getItem('rj_theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
+    
     <style>
         /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
         :root {
             --bg-color: #f4f6f8;
             --text-color: #1f2937;
             --header-bg: #fff;
-            --card-bg: #fff; /* प्रॉडक्ट्स आणि कार्टच्या पांढऱ्या बॉक्ससाठी */
+            --card-bg: #fff; 
             --border-color: #e5e7eb;
             --accent: #ff3f6c;
         }
-        body.dark-mode {
+        :root.dark-mode {
             --bg-color: #121212;
             --text-color: #e5e7eb;
             --header-bg: #1f2937;
-            --card-bg: #1e293b; /* डार्क मोड मधील कार्ड्सचा रंग */
+            --card-bg: #1e293b; 
             --border-color: #374151;
         }
         
         body { background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
-        body { background-color: #f4f6f8; padding: 20px; }
-        .header { background: #fff; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 20px; }
-        .header h1 { color: #282c3f; font-weight: 800; font-size: 24px; }
+        
+        body { padding: 20px; }
+        .header { background: var(--header-bg); padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 20px; }
+        .header h1 { color: var(--text-color); font-weight: 800; font-size: 24px; }
         
         .orders-container { max-width: 800px; margin: 0 auto; }
-        .order-card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid #ff3f6c; }
-        .order-header { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
-        .order-id { font-weight: 700; color: #333; }
+        .order-card { background: var(--card-bg); border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid var(--accent); }
+        .order-header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px; }
+        .order-id { font-weight: 700; color: var(--text-color); }
         .order-date { color: #878787; font-size: 14px; }
-        .order-items { margin-bottom: 10px; color: #535766; font-size: 15px; }
-        .order-total { font-weight: 800; color: #282c3f; font-size: 18px; text-align: right; }
+        .order-items { margin-bottom: 10px; color: #878787; font-size: 15px; }
+        .order-total { font-weight: 800; color: var(--text-color); font-size: 18px; text-align: right; }
         
-        #loader { text-align: center; padding: 40px; font-size: 18px; font-weight: bold; color: #ff3f6c; }
+        #loader { text-align: center; padding: 40px; font-size: 18px; font-weight: bold; color: var(--accent); }
         #error-msg { background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; text-align: center; font-weight: bold; display: none; }
     </style>
 </head>
@@ -46,7 +55,7 @@
 <div class="orders-container">
     <div class="header">
         <h1>📦 My Orders</h1>
-        <p id="user-greeting" style="color: #666; margin-top: 5px;"></p>
+        <p id="user-greeting" style="color: #878787; margin-top: 5px;"></p>
     </div>
 
     <div id="error-msg"></div>
@@ -60,7 +69,7 @@
         const userEmail = localStorage.getItem('rj_userEmail');
         
         if(!userName) {
-            window.location.href = 'signin.html'; // प्रोफेशनलिझम: लॉगीन नसल्यास थेट बाहेर काढा
+            window.location.href = 'signin.html'; 
             return;
         }
 
@@ -70,7 +79,6 @@
         const ordersList = document.getElementById('orders-list');
 
         try {
-            // हाच तो लाईव्ह API कॉल जो एरर देत होता (आता तो एकदम परफेक्ट आहे)
             const response = await fetch('/api/orders'); 
             
             if(!response.ok) throw new Error("Server not responding (Bad Gateway)");
@@ -79,7 +87,6 @@
             loader.style.display = 'none';
 
             if(data.success && data.orders.length > 0) {
-                // फक्त याच ग्राहकाच्या ऑर्डर्स फिल्टर करा (प्रोफेशनल लॉजिक)
                 const myOrders = data.orders.filter(o => o.customer === userName || o.phone === userEmail);
                 
                 if(myOrders.length === 0) {
@@ -89,9 +96,9 @@
 
                 myOrders.forEach(order => {
                     const date = new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-                    // जर order.items नसतील, तर एरर येऊ नये म्हणून सुरक्षा
                     const itemsText = order.items ? order.items.map(i => `${i.name} (Qty: ${i.quantity})`).join(', ') : 'Sports Items';
 
+                    // 🔴 FIX: इथे मी तुमचा Status चा कोड योग्य पद्धतीने HTML String मध्ये टाकला आहे
                     ordersList.innerHTML += `
                         <div class="order-card">
                             <div class="order-header">
@@ -100,12 +107,13 @@
                             </div>
                             <div class="order-items">🛒 <b>Items:</b> ${itemsText}</div>
                             <div class="order-total">Total: ₹${order.total}</div>
+                            
+                            <div style="margin-top: 15px; font-weight: bold; color: #f59e0b; font-size: 14px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
+                                🚚 Status: Processing (Will be dispatched soon)
+                            </div>
                         </div>
                     `;
                 });
-                <div style="margin-top: 10px; font-weight: bold; color: #f59e0b; font-size: 14px;">
-    🚚 Status: Processing (Will be dispatched soon)
-</div>
             } else {
                 ordersList.innerHTML = `<div style="text-align:center; padding: 40px; color:#878787;">No orders found.</div>`;
             }
@@ -116,26 +124,24 @@
         }
     });
 </script>
+
 <script>
     // --- UNIVERSAL DARK MODE LOGIC ---
     document.addEventListener("DOMContentLoaded", () => {
         const themeBtn = document.getElementById('theme-toggle');
         const body = document.body;
         
-        // पेज लोड होताना ब्राउझरच्या मेमरीतून चेक करा की थीम डार्क आहे का
         if(localStorage.getItem('rj_theme') === 'dark') {
             body.classList.add('dark-mode');
-            if(themeBtn) themeBtn.innerText = '☀️'; // बटण सूर्यासारखं करा
+            if(themeBtn) themeBtn.innerText = '☀️'; 
         }
 
-        // जर या पेजवर themeBtn असेल, तर त्याच्या क्लिकची सोय करा
         if(themeBtn) {
             themeBtn.addEventListener('click', () => {
                 body.classList.toggle('dark-mode');
                 const isDark = body.classList.contains('dark-mode');
                 
                 themeBtn.innerText = isDark ? '☀️' : '🌙';
-                // थीम ब्राउझरमध्ये कायमची सेव्ह करा
                 localStorage.setItem('rj_theme', isDark ? 'dark' : 'light');
             });
         }

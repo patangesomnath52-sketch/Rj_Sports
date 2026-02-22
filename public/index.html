@@ -6,7 +6,12 @@
     <title>RJ Sports | Premium Sports Gear</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
+    <script>
+        // अतिशय महत्त्वाचे: पेज लोड होण्याआधीच मेमरीतून थीम तपासा आणि लागू करा!
+        if(localStorage.getItem('rj_theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
     <style>
       /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
         :root {
@@ -87,12 +92,11 @@
         <button class="rj-menu-toggle" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
         
         <a href="index.html" class="rj-logo">RJ <span>SPORTS</span></a>
-        
         <nav class="rj-links" id="nav-links">
             <a href="cricket.html">CRICKET HUB</a>
             <a href="footwear.html">FOOTWEAR</a>
-            <a href="signin.html" id="login-link">SIGN IN</a>
-        </nav>
+            <a href="orders.html" id="login-link">MY ORDERS</a>
+            <a href="settings.html"><i class="fas fa-cog"></i> SETTINGS</a> </nav>
 
         <div class="rj-icons-group">
             <button id="theme-toggle" class="rj-theme-btn">🌙</button>

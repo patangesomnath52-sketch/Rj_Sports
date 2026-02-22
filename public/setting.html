@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | RJ Sports</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        if(localStorage.getItem('rj_theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
+
+    <style>
+        /* Global CSS Variables */
+        :root {
+            --bg-color: #f4f6f8;
+            --text-color: #1f2937;
+            --header-bg: #fff;
+            --card-bg: #fff;
+            --border-color: #e5e7eb;
+            --accent: #ff3f6c;
+        }
+        :root.dark-mode {
+            --bg-color: #121212;
+            --text-color: #e5e7eb;
+            --header-bg: #1f2937;
+            --card-bg: #1e293b;
+            --border-color: #374151;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; }
+
+        /* Header (साधा आणि प्रोफेशनल) */
+        .header { background: var(--header-bg); padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
+        .back-btn { font-size: 20px; color: var(--text-color); text-decoration: none; margin-right: 15px; }
+        .header h1 { font-size: 20px; font-weight: 800; }
+
+        /* Settings UI */
+        .settings-container { max-width: 600px; margin: 30px auto; padding: 0 20px; }
+        .section-title { font-size: 14px; font-weight: 800; color: #878787; text-transform: uppercase; margin-bottom: 10px; margin-top: 25px; letter-spacing: 1px; }
+        
+        .settings-card { background: var(--card-bg); border-radius: 12px; padding: 0 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border-color); }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--border-color); }
+        .setting-item:last-child { border-bottom: none; }
+        
+        .setting-info { display: flex; align-items: center; gap: 15px; }
+        .setting-info i { font-size: 20px; color: #6b7280; width: 24px; text-align: center; }
+        .setting-text h3 { font-size: 16px; font-weight: 700; color: var(--text-color); margin-bottom: 3px; }
+        .setting-text p { font-size: 13px; color: #878787; }
+
+        /* Modern Toggle Switch (iOS Style) */
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Logout Button */
+        .btn-logout { width: 100%; background: #fee2e2; color: #ef4444; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 30px; transition: 0.3s; }
+        .btn-logout:hover { background: #fca5a5; color: #b91c1c; }
+        .dark-mode .btn-logout { background: #450a0a; color: #fca5a5; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <h1>Settings</h1>
+    </div>
+
+    <div class="settings-container">
+        
+        <div class="section-title">App Appearance</div>
+        <div class="settings-card">
+            <div class="setting-item">
+                <div class="setting-info">
+                    <i class="fas fa-moon"></i>
+                    <div class="setting-text">
+                        <h3>Dark Mode</h3>
+                        <p>Comfortable viewing at night</p>
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="section-title">Account Details</div>
+        <div class="settings-card">
+            <div class="setting-item" id="account-info">
+                <div class="setting-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div class="setting-text">
+                        <h3 id="set-username">Not Signed In</h3>
+                        <p id="set-email">Sign in to sync your orders</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-logout" id="logout-btn" style="display: none;">
+            <i class="fas fa-sign-out-alt"></i> Sign Out
+        </button>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Dark Mode Logic
+            const toggle = document.getElementById('darkModeToggle');
+            const html = document.documentElement;
+            
+            // Check current status
+            if(localStorage.getItem('rj_theme') === 'dark') {
+                toggle.checked = true;
+            }
+
+            // Listen for Toggle switch changes
+            toggle.addEventListener('change', (e) => {
+                if(e.target.checked) {
+                    html.classList.add('dark-mode');
+                    localStorage.setItem('rj_theme', 'dark');
+                } else {
+                    html.classList.remove('dark-mode');
+                    localStorage.setItem('rj_theme', 'light');
+                }
+            });
+
+            // 2. Load User Info
+            const user = localStorage.getItem('rj_loggedInUser');
+            const email = localStorage.getItem('rj_userEmail');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            if(user) {
+                document.getElementById('set-username').innerText = user;
+                if(email) document.getElementById('set-email').innerText = email;
+                logoutBtn.style.display = 'block';
+            }
+
+            // 3. Logout Functionality
+            logoutBtn.addEventListener('click', () => {
+                if(confirm("Are you sure you want to sign out?")) {
+                    localStorage.removeItem('rj_loggedInUser');
+                    localStorage.removeItem('rj_userEmail');
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
