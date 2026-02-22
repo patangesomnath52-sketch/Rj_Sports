@@ -152,21 +152,38 @@
                if (data.success) {
     const itemDetails = cartItems.map(i => `${i.name} (x${i.quantity})`).join(', ');
 
-    // 1. Prepare the message text
-    const message = `*New Order: RJ SPORTS*%0A` +
-                    `*ID:* ${orderId}%0A` +
-                    `*Customer:* ${name}%0A` +
-                    `*Items:* ${itemDetails}%0A` +
-                    `*Address:* ${address}, ${pin}%0A` +
-                    `*Total:* ₹${finalTotal}`;
+  // 1. ग्राहकाचा डेटा फॉर्ममधून घेणे (तुमचे आयडी चेक करून घ्या)
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value; // 🔴 फोन नंबर घेणे अत्यंत आवश्यक!
+        const address = document.getElementById('address').value;
+        const pincode = document.getElementById('pincode').value;
+        
+        // 2. कार्टमधील आयटेम्सची लिस्ट बनवणे (उदा. 1x Puma Shoes)
+        let itemsStr = "";
+        cart.forEach(item => {
+            itemsStr += `▪️ ${item.quantity}x ${item.name}%0A`; // %0A म्हणजे नवीन लाईन
+        });
 
-    // 2. Correct the URL (No plus sign, no curly braces around the number)
-    const whatsappUrl = `https://wa.me/919359239161?text=${message}`;
-    
-    // 3. Clear cart and redirect
-    localStorage.removeItem('rj_cart');
-    window.location.href = whatsappUrl; 
-}
+        // 3. 100% Professional WhatsApp Message Format
+        const msg = `🏏 *RJ SPORTS - NEW ORDER!* 🏏%0A` +
+                    `-----------------------------------%0A` +
+                    `*🆔 Order ID:* #${orderId}%0A` +
+                    `*👤 Customer:* ${name}%0A` +
+                    `*📞 Phone:* ${phone}%0A` +
+                    `*📍 Address:* ${address}, ${pincode}%0A` +
+                    `-----------------------------------%0A` +
+                    `*🛒 Items Ordered:*%0A${itemsStr}` +
+                    `-----------------------------------%0A` +
+                    `*💰 Total Amount:* ₹${total}%0A` +
+                    `-----------------------------------%0A` +
+                    `_Please process my order as soon as possible!_`;
+
+        // 4. तुमच्या स्वतःच्या नंबरवर पाठवा (91 लावून तुमचा खरा नंबर टाका)
+        const myWhatsAppNumber = "919359239161"; // तुमचा नंबर इथे टाका
+        const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${msg}`;
+    }
+        // 5. ग्राहकाला WhatsApp वर पाठवा
+        window.location.href = whatsappUrl;
             } catch (e) {
                 showToast("Server Error! Ensure Node.js is running.");
             }
