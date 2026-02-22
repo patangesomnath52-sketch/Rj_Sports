@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Orders | RJ Sports</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
         // अतिशय महत्त्वाचे: पेज लोड होण्याआधीच मेमरीतून थीम तपासा आणि लागू करा!
@@ -35,8 +36,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
         
         body { padding: 20px; }
-        .header { background: var(--header-bg); padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 20px; }
+        .header { background: var(--header-bg); padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 20px; position: relative;}
         .header h1 { color: var(--text-color); font-weight: 800; font-size: 24px; }
+        
+        /* Back Button */
+        .back-btn { position: absolute; left: 20px; top: 25px; font-size: 20px; color: var(--text-color); text-decoration: none; }
         
         .orders-container { max-width: 800px; margin: 0 auto; }
         .order-card { background: var(--card-bg); border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 5px solid var(--accent); }
@@ -54,6 +58,7 @@
 
 <div class="orders-container">
     <div class="header">
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
         <h1>📦 My Orders</h1>
         <p id="user-greeting" style="color: #878787; margin-top: 5px;"></p>
     </div>
@@ -98,7 +103,15 @@
                     const date = new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
                     const itemsText = order.items ? order.items.map(i => `${i.name} (Qty: ${i.quantity})`).join(', ') : 'Sports Items';
 
-                    // 🔴 FIX: इथे मी तुमचा Status चा कोड योग्य पद्धतीने HTML String मध्ये टाकला आहे
+                    // 🔴 PRO FEATURE: Live Dynamic Status Logic 🔴
+                    let dbStatus = order.status || 'Processing';
+                    let statusColor = "#f59e0b"; // केशरी (Processing)
+                    let statusIcon = "⏳";
+                    
+                    if(dbStatus === 'Shipped') { statusColor = "#3b82f6"; statusIcon = "🚚"; }
+                    else if(dbStatus === 'Delivered') { statusColor = "#10b981"; statusIcon = "✅"; }
+                    else if(dbStatus === 'Cancelled') { statusColor = "#ef4444"; statusIcon = "❌"; }
+
                     ordersList.innerHTML += `
                         <div class="order-card">
                             <div class="order-header">
@@ -108,8 +121,8 @@
                             <div class="order-items">🛒 <b>Items:</b> ${itemsText}</div>
                             <div class="order-total">Total: ₹${order.total}</div>
                             
-                            <div style="margin-top: 15px; font-weight: bold; color: #f59e0b; font-size: 14px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
-                                🚚 Status: Processing (Will be dispatched soon)
+                            <div style="margin-top: 15px; font-weight: 800; color: ${statusColor}; font-size: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
+                                ${statusIcon} Status: ${dbStatus}
                             </div>
                         </div>
                     `;
