@@ -22,7 +22,7 @@
             --card-bg: #fff; 
             --border-color: #e5e7eb;
             --accent: #ff3f6c;
-            --bg-overlay: rgba(255, 255, 255, 0.9); /* Light mode background overlay */
+            --bg-overlay: rgba(255, 255, 255, 0.9); 
         }
         :root.dark-mode {
             --bg-color: #121212;
@@ -30,7 +30,7 @@
             --header-bg: #1f2937;
             --card-bg: #1e293b; 
             --border-color: #374151;
-            --bg-overlay: rgba(18, 18, 18, 0.9); /* Dark mode background overlay */
+            --bg-overlay: rgba(18, 18, 18, 0.9); 
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
@@ -38,7 +38,6 @@
         body { 
             color: var(--text-color); 
             transition: background 0.3s, color 0.3s; 
-            /* 🔴 FIX: Background image with correct gradient syntax */
             background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('cricketbg.jpg');
             background-size: cover;
             background-position: center;
@@ -136,3 +135,106 @@
         <h3>PRO BATTING GLOVES</h3>
         <div class="price-tag">₹1,450</div>
         <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+    </div>
+
+    <div class="product-card" data-id="c3" data-name="Batting Leg Guards" data-price="2200">
+        <img src="leg guards.jpg" alt="Leg Guards" onerror="this.src='https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=600'">
+        <h3>LEG GUARDS</h3>
+        <div class="price-tag">₹2,200</div>
+        <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+    </div>
+
+    <div class="product-card" data-id="c4" data-name="Premium Leather Ball" data-price="450">
+        <img src="leather ball.jpg" alt="Ball" onerror="this.src='https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=600'">
+        <h3>LEATHER BALL</h3>
+        <div class="price-tag">₹450</div>
+        <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+    </div>
+</section>
+
+<script>
+    // 1. Cart Management 
+    document.addEventListener('DOMContentLoaded', updateCartBadge);
+
+    function addToCart(btn) {
+        const card = btn.closest('.product-card');
+        const product = {
+            id: card.dataset.id,
+            name: card.dataset.name,
+            price: parseInt(card.dataset.price),
+            image: card.querySelector('img').src,
+            quantity: 1,
+            size: "Standard" 
+        };
+
+        let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+        const existingIndex = cart.findIndex(item => item.id === product.id);
+
+        if (existingIndex > -1) {
+            cart[existingIndex].quantity += 1;
+        } else {
+            cart.push(product);
+        }
+
+        localStorage.setItem('rj_cart', JSON.stringify(cart));
+        window.location.href = 'cart.html'; 
+    }
+
+    function updateCartBadge() {
+        const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+        const count = cart.reduce((total, item) => total + item.quantity, 0);
+        document.getElementById('cart-count').innerText = count;
+    }
+
+    // 2. Hamburger Menu & Authentication Logic 
+    document.addEventListener("DOMContentLoaded", () => {
+        // Menu Toggle Logic (हे मेनू उघडण्याचे काम करते)
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const navLinks = document.getElementById('nav-links');
+        
+        if(menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                const icon = menuBtn.querySelector('i');
+                if(navLinks.classList.contains('active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        }
+
+        // Login Check
+        const user = localStorage.getItem('rj_loggedInUser');
+        const loginLink = document.querySelector('a[id="login-link"]'); 
+        
+        if(user && loginLink) {
+            loginLink.innerHTML = `👤 Hi, ${user.split(' ')[0]}`;
+            loginLink.href = "orders.html";
+        }
+    });
+
+    // 3. Universal Dark Mode Logic 
+    document.addEventListener("DOMContentLoaded", () => {
+        const themeBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        
+        if(localStorage.getItem('rj_theme') === 'dark') {
+            body.classList.add('dark-mode');
+            if(themeBtn) themeBtn.innerText = '☀️';
+        }
+
+        if(themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                const isDark = body.classList.contains('dark-mode');
+                themeBtn.innerText = isDark ? '☀️' : '🌙';
+                localStorage.setItem('rj_theme', isDark ? 'dark' : 'light');
+            });
+        }
+    });
+</script>
+</body>
+</html>
