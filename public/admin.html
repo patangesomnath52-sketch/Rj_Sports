@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | RJ Sports</title>
+    <title>Pro Admin Dashboard | RJ Sports</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     
@@ -11,45 +11,53 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
         body { background-color: #f3f4f6; color: #1f2937; display: flex; min-height: 100vh; }
         
-        /* Sidebar */
         .sidebar { width: 260px; background: #111827; color: white; padding: 20px; display: flex; flex-direction: column; }
         .sidebar-logo { font-size: 24px; font-weight: 900; color: white; text-decoration: none; margin-bottom: 40px; text-align: center; display: block; }
         .sidebar-logo span { color: #ff3f6c; }
         .nav-item { padding: 15px; color: #9ca3af; text-decoration: none; font-weight: 600; border-radius: 8px; margin-bottom: 10px; transition: 0.3s; display: flex; align-items: center; gap: 15px; }
         .nav-item.active, .nav-item:hover { background: #1f2937; color: white; }
         
-        /* Main Content */
         .main-content { flex: 1; padding: 30px; overflow-y: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .header h1 { font-size: 28px; font-weight: 800; }
         
-        /* Stats Cards */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: space-between; border-left: 5px solid #ff3f6c; }
         .stat-info h3 { color: #6b7280; font-size: 14px; text-transform: uppercase; margin-bottom: 5px; }
         .stat-info p { font-size: 28px; font-weight: 800; color: #111827; }
         .stat-icon { width: 50px; height: 50px; background: #fce7f3; color: #ff3f6c; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-        /* Orders Table */
         .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); overflow-x: auto; padding: 20px; }
         .table-container h2 { margin-bottom: 20px; font-size: 18px; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid #f3f4f6; }
         th { color: #6b7280; font-weight: 700; font-size: 13px; text-transform: uppercase; background: #f9fafb; }
-        td { font-size: 15px; font-weight: 600; }
+        td { font-size: 14px; font-weight: 600; }
         
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-        .badge-pending { background: #fef3c7; color: #d97706; }
-        
-        /* Access Denied Screen */
+        /* 🔴 PRO FEATURE: Interactive Status Select */
+        .status-select { padding: 8px 12px; border-radius: 6px; font-weight: 700; font-size: 13px; border: 1px solid #d1d5db; cursor: pointer; outline: none; appearance: none; background-color: white; }
+        .status-processing { color: #d97706; background-color: #fef3c7; border-color: #fde68a; }
+        .status-shipped { color: #2563eb; background-color: #dbeafe; border-color: #bfdbfe; }
+        .status-delivered { color: #059669; background-color: #d1fae5; border-color: #a7f3d0; }
+        .status-cancelled { color: #dc2626; background-color: #fee2e2; border-color: #fecaca; }
+
+        /* Actions Button */
+        .btn-delete { background: #fee2e2; color: #dc2626; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; transition: 0.3s; }
+        .btn-delete:hover { background: #fecaca; }
+
+        /* Toast Notification */
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 15px; font-weight: 600; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
         #access-denied { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111827; color: white; z-index: 10000; align-items: center; justify-content: center; flex-direction: column; text-align: center; }
         #access-denied h1 { color: #ef4444; font-size: 40px; margin-bottom: 10px; }
         
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: auto; padding: 15px; flex-direction: row; justify-content: space-between; align-items: center; }
-            .sidebar-logo { margin: 0; font-size: 20px; }
-            .nav-item { display: none; } /* Hide menu texts on mobile */
+            .nav-item { display: none; } 
             .main-content { padding: 15px; }
         }
     </style>
@@ -63,6 +71,8 @@
         <button onclick="window.location.href='index.html'" style="margin-top: 20px; padding: 10px 20px; background: #ff3f6c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Go to Home</button>
     </div>
 
+    <div id="toast">Message</div>
+
     <div class="sidebar" id="admin-ui" style="display: none;">
         <a href="index.html" class="sidebar-logo">RJ <span>ADMIN</span></a>
         <a href="#" class="nav-item active"><i class="fas fa-box"></i> Live Orders</a>
@@ -70,38 +80,30 @@
     </div>
 
     <div class="main-content" id="admin-main" style="display: none;">
-        <div class="header">
-            <h1>Dashboard Overview</h1>
-        </div>
+        <div class="header"><h1>Dashboard Overview</h1></div>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-info">
-                    <h3>Total Orders</h3>
-                    <p id="total-orders-count">0</p>
-                </div>
+                <div class="stat-info"><h3>Total Orders</h3><p id="total-orders-count">0</p></div>
                 <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
             </div>
             <div class="stat-card">
-                <div class="stat-info">
-                    <h3>Total Revenue</h3>
-                    <p>₹<span id="total-revenue">0</span></p>
-                </div>
+                <div class="stat-info"><h3>Total Revenue</h3><p>₹<span id="total-revenue">0</span></p></div>
                 <div class="stat-icon" style="background: #dcfce3; color: #22c55e;"><i class="fas fa-rupee-sign"></i></div>
             </div>
         </div>
 
         <div class="table-container">
-            <h2>Recent Customer Orders</h2>
+            <h2>Manage Customer Orders</h2>
             <table>
                 <thead>
                     <tr>
                         <th>Order ID</th>
-                        <th>Date</th>
                         <th>Customer Details</th>
                         <th>Items Ordered</th>
-                        <th>Total Amount</th>
-                        <th>Status</th>
+                        <th>Total</th>
+                        <th>Status (Edit)</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="admin-orders-list">
@@ -112,25 +114,27 @@
     </div>
 
     <script>
-        // --- 1. ADMIN SECURITY CHECK ---
-        // 🔴 हा तुमचा सिक्रेट पासवर्ड आहे: rjadmin123
         const ADMIN_PASSWORD = "rjadmin123";
         
         window.onload = () => {
-            const userInput = prompt("🔒 Please enter Admin Password to access this panel:");
-            
+            const userInput = prompt("🔒 Enter Admin Password:");
             if (userInput === ADMIN_PASSWORD) {
-                // पासवर्ड बरोबर असल्यास डॅशबोर्ड दाखवा
                 document.getElementById('admin-ui').style.display = 'flex';
                 document.getElementById('admin-main').style.display = 'block';
                 fetchAdminOrders();
             } else {
-                // पासवर्ड चुकीचा असल्यास लाल स्क्रीन दाखवा
                 document.getElementById('access-denied').style.display = 'flex';
             }
         };
 
-        // --- 2. FETCH ORDERS FROM DATABASE ---
+        function showToast(message, bgColor = "#333") {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.style.backgroundColor = bgColor;
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
         async function fetchAdminOrders() {
             const tableBody = document.getElementById('admin-orders-list');
             try {
@@ -139,39 +143,99 @@
 
                 if (data.success && data.orders.length > 0) {
                     let totalSales = 0;
-                    tableBody.innerHTML = ''; // Clear loading text
+                    tableBody.innerHTML = ''; 
 
                     data.orders.forEach(order => {
-                        totalSales += order.total; // कॅल्क्युलेटर: एकूण पैसे मोजणे
-                        const date = new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+                        // फक्त 'Delivered' आणि 'Shipped' वाल्यांचेच पैसे मोजायचे असतील तर इथे लॉजिक लावता येते, सध्या आपण सर्व मोजत आहोत.
+                        if(order.status !== 'Cancelled') { totalSales += order.total; }
+                        
                         const itemsText = order.items ? order.items.map(i => `${i.name} (x${i.quantity})`).join('<br>') : 'N/A';
+                        
+                        // Current status class
+                        const statusClass = `status-${(order.status || 'Processing').toLowerCase()}`;
 
                         tableBody.innerHTML += `
                             <tr>
-                                <td><span style="color:#ff3f6c;">#${order.orderId || 'RJ-NEW'}</span></td>
-                                <td><span style="color:#6b7280; font-size:13px;">${date}</span></td>
+                                <td><span style="color:#ff3f6c; font-weight: 800;">#${order.orderId || 'RJ-NEW'}</span></td>
                                 <td>
                                     <b>${order.customer}</b><br>
-                                    <span style="color:#6b7280; font-size:13px;">📞 ${order.phone || 'N/A'}</span><br>
-                                    <span style="color:#6b7280; font-size:13px;">📍 ${order.address || 'N/A'}, ${order.pincode || ''}</span>
+                                    <span style="color:#6b7280; font-size:12px;">📞 ${order.phone || 'N/A'}</span><br>
+                                    <span style="color:#6b7280; font-size:12px;">📍 ${order.address || 'N/A'}</span>
                                 </td>
                                 <td style="color:#4b5563; font-size:13px;">${itemsText}</td>
                                 <td>₹${order.total}</td>
-                                <td><span class="badge badge-pending">Processing</span></td>
+                                
+                                <td>
+                                    <select class="status-select ${statusClass}" onchange="updateStatus('${order._id}', this)">
+                                        <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>⏳ Processing</option>
+                                        <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>🚚 Shipped</option>
+                                        <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>✅ Delivered</option>
+                                        <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>❌ Cancelled</option>
+                                    </select>
+                                </td>
+                                
+                                <td>
+                                    <button class="btn-delete" onclick="deleteOrder('${order._id}')" title="Delete Order">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     });
 
-                    // वरचे आकडे (Stats) अपडेट करणे
                     document.getElementById('total-orders-count').innerText = data.orders.length;
                     document.getElementById('total-revenue').innerText = totalSales.toLocaleString('en-IN');
 
                 } else {
-                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No orders found in the database.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No orders found.</td></tr>';
+                    document.getElementById('total-orders-count').innerText = "0";
+                    document.getElementById('total-revenue').innerText = "0";
                 }
             } catch (error) {
-                console.error("Error:", error);
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Connection Error. Check server.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Connection Error.</td></tr>';
+            }
+        }
+
+        // 🔴 API CALL: Update Status
+        async function updateStatus(orderId, selectElement) {
+            const newStatus = selectElement.value;
+            
+            // Change color dynamically
+            selectElement.className = `status-select status-${newStatus.toLowerCase()}`;
+
+            try {
+                const response = await fetch(`/api/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await response.json();
+                
+                if(data.success) {
+                    showToast(`Status updated to ${newStatus}!`, "#10b981");
+                    fetchAdminOrders(); // Refresh revenue calculation
+                } else {
+                    showToast("Failed to update status", "#ef4444");
+                }
+            } catch(e) {
+                showToast("Server Error!", "#ef4444");
+            }
+        }
+
+        // 🔴 API CALL: Delete Order
+        async function deleteOrder(orderId) {
+            if(confirm("⚠️ Are you sure you want to permanently delete this order?")) {
+                try {
+                    const response = await fetch(`/api/orders/${orderId}`, { method: 'DELETE' });
+                    const data = await response.json();
+                    
+                    if(data.success) {
+                        showToast("Order deleted successfully!", "#ef4444");
+                        fetchAdminOrders(); // Refresh table
+                    }
+                } catch(e) {
+                    showToast("Failed to delete order", "#ef4444");
+                }
             }
         }
     </script>
