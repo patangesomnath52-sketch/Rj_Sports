@@ -7,96 +7,92 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script>
-    // पेज लोड होण्यापूर्वी चेक करा की युजरची थीम काय आहे
-    if (localStorage.getItem('rj_theme') === 'dark') {
-        document.documentElement.classList.add('dark-mode'); // किंवा document.body.classList.add('dark-mode')
-    }
-</script>
+        if (localStorage.getItem('rj_theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
     <style>
-        /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
-:root {
-    --bg-color: #f4f6f8;
-    --text-color: #1f2937;
-    --header-bg: #fff;
-    --card-bg: #fff;
-    --border-color: #e5e7eb;
-    --accent: #ff3f6c;
-}
+        :root {
+            --bg: #f4f6f8;
+            --text: #1f2937;
+            --header-bg: #fff;
+            --card-bg: #fff;
+            --border: #e5e7eb;
+            --accent: #E10600; /* RJ Sports Red */
+            --secondary: #121212;
+        }
 
-/* जेव्हा 'dark-mode' क्लास लागू होईल तेव्हा कलर्स बदलतील */
-html.dark-mode, body.dark-mode {
-    --bg-color: #121212;
-    --text-color: #e5e7eb;
-    --header-bg: #1f2937;
-    --card-bg: #1e293b;
-    --border-color: #374151;
-}
+        html.dark-mode {
+            --bg: #121212;
+            --text: #e5e7eb;
+            --header-bg: #1f2937;
+            --card-bg: #1e293b;
+            --border: #374151;
+        }
 
-body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: background 0.3s, color 0.3s;
-}
-
-/* हेडर आणि कार्ड्सना थीम कलर्स लागू करण्यासाठी (आवश्यक असल्यास) */
-.header { background: var(--header-bg); border-bottom: 1px solid var(--border-color); }
-.card, .product-card, .summary-card, .cart-item { background: var(--card-bg); border: 1px solid var(--border-color); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
-        body { background: #fff; color: #1f2937; }
-        
+        body { background-color: var(--bg); color: var(--text); line-height: 1.5; }
+
         /* HEADER */
-        .header { background: #fff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .logo { font-size: 24px; font-weight: 900; text-decoration: none; color: #1f2937; text-transform: uppercase; }
-        .logo span { color: #ff3f6c; }
-        .cart-icon { position: relative; text-decoration: none; font-size: 20px; color: #1f2937; }
-        .cart-count { position: absolute; top: -8px; right: -12px; background: #ff3f6c; color: white; font-size: 11px; font-weight: bold; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
-        
-        /* BACK BUTTON */
-        .back-nav { max-width: 1200px; margin: 20px auto 0; padding: 0 20px; }
-        .back-nav a { text-decoration: none; color: #535665; font-weight: 600; font-size: 14px; transition: 0.2s; }
-        .back-nav a:hover { color: #ff3f6c; }
+        .header { background: var(--header-bg); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logo { font-size: 24px; font-weight: 900; text-decoration: none; color: var(--text); text-transform: uppercase; }
+        .logo span { color: var(--accent); }
+        .cart-icon { position: relative; text-decoration: none; font-size: 22px; color: var(--text); }
+        .cart-count { position: absolute; top: -8px; right: -12px; background: var(--accent); color: white; font-size: 11px; font-weight: bold; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 
         /* PRODUCT LAYOUT */
-        .product-layout { max-width: 1200px; margin: 20px auto 50px; display: flex; gap: 50px; padding: 0 20px; }
-        .image-sec { width: 55%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
-        .image-sec img { width: 100%; height: auto; object-fit: cover; border-radius: 8px; transition: 0.3s; cursor: zoom-in; }
+        .product-layout { max-width: 1200px; margin: 30px auto; display: flex; gap: 40px; padding: 0 20px; }
+        
+        /* IMAGE SECTION */
+        .image-sec { width: 60%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .image-sec img { width: 100%; border-radius: 4px; background: #fff; border: 1px solid var(--border); transition: 0.3s; cursor: zoom-in; }
         .image-sec img:hover { transform: scale(1.02); }
-        
-        .detail-sec { width: 45%; padding-top: 10px; }
-        .brand { font-size: 24px; font-weight: 800; margin-bottom: 5px; text-transform: uppercase; color: #1f2937; }
-        .name { font-size: 20px; color: #535665; margin-bottom: 20px; font-weight: 600; }
-        .price { font-size: 28px; font-weight: 800; margin-bottom: 20px; color: #1f2937; }
-        
-        .sizes-title { font-size: 16px; font-weight: 800; margin-bottom: 15px; display: flex; justify-content: space-between; color: #1f2937; }
-        .size-grid { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
-        .size-btn { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #bfc0c6; background: #fff; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; color: #1f2937; }
-        .size-btn:hover:not(:disabled) { border-color: #ff3f6c; color: #ff3f6c; }
-        .size-btn.selected { border-color: #ff3f6c; background: #ff3f6c; color: #fff; }
-        .size-btn:disabled { background: #f4f4f5; color: #d2d2d6; text-decoration: line-through; cursor: not-allowed; border-color:#eaeaec; }
-        
-        .btn-add { width: 100%; padding: 18px; background: #ff3f6c; color: white; font-size: 16px; font-weight: 800; border: none; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 12px rgba(255, 63, 108, 0.3); }
-        .btn-add:hover:not(:disabled) { background: #e02f5c; transform: translateY(-2px); }
-        .btn-add:disabled { background: #a7a9af; cursor: not-allowed; box-shadow: none; transform: none; }
-        
-        .delivery-info { margin-top: 35px; padding: 20px; border: 1px solid #eaeaec; border-radius: 8px; font-size: 15px; color: #535665; line-height: 1.8; font-weight: 600; background: #f9fafb; }
-        .delivery-info i { color: #ff3f6c; margin-right: 8px; width: 20px; text-align: center; }
-        
-        .loading-text { margin: 50px auto; font-size: 20px; font-weight: 800; color: #6b7280; text-align: center; width: 100%; }
 
-        @media(max-width: 768px){ 
-            .product-layout { flex-direction: column; gap: 25px; margin-top: 20px; } 
-            .image-sec, .detail-sec { width: 100%; } 
-            .image-sec { grid-template-columns: 1fr; }
+        /* DETAIL SECTION */
+        .detail-sec { width: 40%; position: sticky; top: 100px; height: fit-content; }
+        .brand-tag { font-weight: 800; color: var(--accent); letter-spacing: 1px; font-size: 14px; margin-bottom: 8px; }
+        .product-name { font-size: 28px; font-weight: 800; margin-bottom: 10px; line-height: 1.2; }
+        .rating-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; color: #ffa41c; font-size: 14px; }
+        .review-count { color: #878787; font-weight: 600; }
+
+        .price-section { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .current-price { font-size: 32px; font-weight: 900; color: var(--text); }
+        .mrp { text-decoration: line-through; color: #878787; font-size: 18px; font-weight: 600; }
+        .discount-tag { background: #388e3c; color: #fff; padding: 2px 8px; font-size: 12px; font-weight: 800; border-radius: 4px; }
+
+        /* SIZES */
+        .size-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 800; }
+        .size-guide { color: var(--accent); font-size: 13px; text-decoration: none; }
+        .size-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+        .size-btn { width: 55px; height: 55px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text); font-weight: 700; cursor: pointer; border-radius: 4px; transition: 0.2s; }
+        .size-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+        .size-btn.selected { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 4px 10px rgba(225, 6, 0, 0.3); }
+        .size-btn:disabled { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+
+        /* BUTTONS */
+        .cta-group { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
+        .btn-add { width: 100%; padding: 20px; background: var(--accent); color: white; border: none; font-weight: 800; font-size: 16px; border-radius: 4px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-add:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-2px); }
+        .btn-buy { width: 100%; padding: 18px; background: transparent; color: var(--text); border: 2px solid var(--text); font-weight: 800; border-radius: 4px; cursor: pointer; }
+
+        /* HIGHLIGHTS */
+        .highlights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-top: 20px; }
+        .h-item { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .h-item i { color: var(--accent); width: 20px; }
+
+        /* MOBILE STICKY BAR */
+        .mobile-cta-bar { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--header-bg); padding: 12px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); z-index: 2000; gap: 10px; }
+
+        @media (max-width: 768px) {
+            .product-layout { flex-direction: column; padding-bottom: 80px; }
+            .image-sec { width: 100%; grid-template-columns: 1fr; }
+            .detail-sec { width: 100%; position: static; }
+            .mobile-cta-bar { display: flex; }
+            .detail-sec .cta-group { display: none; } /* Hide main buttons on mobile */
+            .product-name { font-size: 22px; }
         }
-        .image-sec {
-    display: flex;
-    flex-direction: column; /* फोटो एका खाली एक दिसतील */
-    gap: 15px;
-}
-.image-sec img {
-    width: 100%;
-    border: 1px solid #f0f0f0;
-}
+
+        .loading-text { margin: 50px auto; font-size: 20px; text-align: center; width: 100%; font-weight: 800; color: var(--accent); }
     </style>
 </head>
 <body>
@@ -104,109 +100,95 @@ body {
 <header class="header">
     <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
     <a href="cart.html" class="cart-icon">
-        <i class="fas fa-shopping-cart"></i>
+        <i class="fas fa-shopping-bag"></i>
         <span class="cart-count" id="cart-count">0</span>
     </a>
 </header>
 
-<div class="back-nav">
-    <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i> Back to Products</a>
-</div>
-
 <div class="product-layout" id="product-content">
-    <div class="loading-text"><i class="fas fa-spinner fa-spin"></i> Loading Product Details...</div>
+    <div class="loading-text"><i class="fas fa-spinner fa-spin"></i> PREPARING YOUR GEAR...</div>
 </div>
 
-
+<div class="mobile-cta-bar" id="mobile-bar">
+    <button class="btn-buy" style="flex: 1; padding: 15px;">WISH LIST</button>
+    <button class="btn-add" style="flex: 2; padding: 15px;" onclick="addToCart()">ADD TO BAG</button>
+</div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
-
     let currentProduct = null;
 
-    // १. कार्ट काउंट अपडेट करणे
     function updateCartCount() {
         const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
-        const countSpan = document.getElementById('cart-count');
-        if(countSpan) countSpan.innerText = cart.length;
+        document.getElementById('cart-count').innerText = cart.length;
     }
 
-    // २. प्रॉडक्ट लोड करणे
     async function loadDetail() {
-    if(!productId) {
-        document.getElementById('product-content').innerHTML = "<div class='loading-text'>Product ID Not Found!</div>";
-        return;
-    }
+        if(!productId) return;
+        try {
+            const res = await fetch(`/api/products/${productId}`);
+            const data = await res.json();
+            if(!data.success) return;
 
-    try {
-        const res = await fetch(`/api/products/${productId}`);
-        const data = await res.json();
-        
-        if(!data.success || !data.product) {
-            document.getElementById('product-content').innerHTML = "<div class='loading-text'>Product Not Found or Sold Out</div>";
-            return;
+            currentProduct = data.product;
+            const p = currentProduct;
+            
+            const imagesHtml = p.images.map(img => `<img src="${img.startsWith('http') ? img : '/'+img}" alt="${p.name}">`).join('');
+            const sizes = [7, 8, 9, 10, 11];
+            const disabledArray = p.disabledSizes || [];
+            const sizesHtml = sizes.map(sz => {
+                const isDisabled = disabledArray.includes(sz.toString());
+                return `<button class="size-btn" ${isDisabled ? 'disabled' : ''} onclick="selectSize(this)">${sz}</button>`;
+            }).join('');
+
+            document.getElementById('product-content').innerHTML = `
+                <div class="image-sec">${imagesHtml}</div>
+                <div class="detail-sec">
+                    <p class="brand-tag">${p.brand || 'RJ PREMIUM'}</p>
+                    <h1 class="product-name">${p.name}</h1>
+                    <div class="rating-row">⭐⭐⭐⭐★ <span class="review-count">(1,284 Reviews)</span></div>
+                    
+                    <div class="price-section">
+                        <span class="current-price">₹${p.price}</span>
+                        <span class="mrp">₹${Math.round(p.price * 1.4)}</span>
+                        <span class="discount-tag">40% OFF</span>
+                    </div>
+
+                    <div class="size-header">
+                        <span>SELECT UK SIZE</span>
+                        <a href="#" class="size-guide">SIZE GUIDE</a>
+                    </div>
+                    <div class="size-grid">${sizesHtml}</div>
+
+                    <div class="cta-group">
+                        <button class="btn-add" onclick="addToCart()" ${p.isOutOfStock ? 'disabled' : ''}>
+                            <i class="fas fa-shopping-bag"></i> ${p.isOutOfStock ? 'OUT OF STOCK' : 'ADD TO BAG'}
+                        </button>
+                        <button class="btn-buy">BUY IT NOW</button>
+                    </div>
+
+                    <div class="highlights-grid">
+                        <div class="h-item"><i class="fas fa-feather"></i> Ultra Light</div>
+                        <div class="h-item"><i class="fas fa-shield-alt"></i> Anti-Slip Sole</div>
+                        <div class="h-item"><i class="fas fa-wind"></i> Breathable Mesh</div>
+                        <div class="h-item"><i class="fas fa-sync"></i> 7 Days Return</div>
+                    </div>
+                </div>
+            `;
+        } catch (err) {
+            document.getElementById('product-content').innerHTML = "<div class='loading-text'>OFFLINE... CHECK CONNECTION</div>";
         }
-
-        currentProduct = data.product;
-        const p = currentProduct;
-        
-        // फोटोची लिंक क्लाउडवर आहे की स्थानिक (local) आहे ते तपासा
-        const imagesHtml = p.images.map(img => {
-            const imgSrc = img.startsWith('http') ? img : `/${img}`;
-            return `<img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/600x600?text=Image+Not+Found'">`;
-        }).join('');
-        
-        const sizes = [6, 7, 8, 9, 10];
-        const disabledArray = p.disabledSizes || [];
-        const sizesHtml = sizes.map(sz => {
-            const isDisabled = disabledArray.includes(sz.toString());
-            return `<button class="size-btn" ${isDisabled ? 'disabled' : ''} onclick="selectSize(this)">${sz}</button>`;
-        }).join('');
-
-        document.getElementById('product-content').innerHTML = `
-            <div class="image-sec">
-                ${imagesHtml}
-            </div>
-            <div class="detail-sec">
-                <div class="brand">${p.brand || 'PREMIUM'}</div>
-                <div class="name">${p.name}</div>
-                <hr style="border:0; border-top:1px solid #eaeaec; margin-bottom:20px;">
-                <div class="price">₹ ${p.price}</div>
-                
-                <div class="sizes-title">
-                    <span>SELECT SIZE (UK)</span>
-                </div>
-                <div class="size-grid">${sizesHtml}</div>
-                
-                <button class="btn-add" onclick="addToCart()" ${p.isOutOfStock ? 'disabled' : ''}>
-                    <i class="fas fa-shopping-bag"></i> ${p.isOutOfStock ? 'OUT OF STOCK' : 'ADD TO BAG'}
-                </button>
-                
-                <div class="delivery-info">
-                    <strong>DELIVERY OPTIONS</strong><br>
-                    <i class="fas fa-truck"></i> Fast Delivery Available<br>
-                    <i class="fas fa-money-bill-wave"></i> Pay on delivery might be available<br>
-                    <i class="fas fa-exchange-alt"></i> Easy 14 days returns and exchanges
-                </div>
-            </div>
-        `;
-    } catch (err) {
-        console.error("Fetch error:", err);
-        document.getElementById('product-content').innerHTML = "<div class='loading-text'>Error Loading Data. Server Might be Down.</div>";
     }
-}
 
-    // ३. साईझ सिलेक्ट करणे
     function selectSize(btn) {
         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
     }
 
-    // ४. कार्टमध्ये ऍड करणे
     function addToCart() {
         const selectedBtn = document.querySelector('.size-btn.selected');
-        if(!selectedBtn) return alert("Please select a size first!");
+        if(!selectedBtn) return alert("Select your size first!");
         
         let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
         cart.push({
@@ -214,17 +196,14 @@ body {
             name: currentProduct.name,
             price: currentProduct.price,
             size: selectedBtn.innerText,
-            image: currentProduct.images[0], // पहिला फोटो कार्टमध्ये दिसेल
+            image: currentProduct.images[0],
             quantity: 1
         });
         localStorage.setItem('rj_cart', JSON.stringify(cart));
-        
-        // कार्ट अपडेट करा आणि युजरला कार्ट पेजवर पाठवा
         updateCartCount();
         window.location.href = 'cart.html';
     }
 
-    // पेज लोड झाल्यावर
     window.onload = () => {
         updateCartCount();
         loadDetail();

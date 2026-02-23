@@ -5,136 +5,408 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Checkout | RJ Sports</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-    // पेज लोड होण्यापूर्वी चेक करा की युजरची थीम काय आहे
-    if (localStorage.getItem('rj_theme') === 'dark') {
-        document.documentElement.classList.add('dark-mode'); // किंवा document.body.classList.add('dark-mode')
-    }
-</script>
+        if (localStorage.getItem('rj_theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
     <style>
-        /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
         :root {
-            --bg-color: #f4f6f8;
-            --text-color: #1f2937;
+            --bg-color: #f5f5f5;
+            --text-color: #121212;
             --header-bg: #fff;
             --card-bg: #fff;
             --border-color: #e5e7eb;
-            --accent: #ff3f6c;
+            --accent: #E10600; /* RJ Sports Red */
+            --green: #03a685;
         }
-        body.dark-mode {
+
+        html.dark-mode {
             --bg-color: #121212;
             --text-color: #e5e7eb;
             --header-bg: #1f2937;
             --card-bg: #1e293b;
             --border-color: #374151;
         }
-        
-        body { background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
-        body { background-color: #f1f3f6; color: #212121; }
-        .header { background: #fff; padding: 15px 40px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 24px; font-weight: 800; text-decoration: none; color: #212121; }
-        .logo span { color: #ff3f6c; }
-        .checkout-wrapper { max-width: 1100px; margin: 30px auto; display: flex; gap: 20px; padding: 0 20px; align-items: flex-start; }
-        .left-panel { flex: 2; display: flex; flex-direction: column; gap: 15px; }
-        .right-panel { flex: 1; background: #fff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: sticky; top: 80px; }
-        .step-box { background: #fff; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 15px; }
-        .step-header { padding: 15px 24px; display: flex; align-items: center; gap: 15px; background: #fff; border-bottom: 1px solid #f0f0f0; }
-        .step-header.active { background: #2874f0; color: white; }
-        .step-header.completed { background: #f9f9f9; color: #878787; }
-        .step-number { width: 24px; height: 24px; background: #f0f0f0; color: #2874f0; display: flex; align-items: center; justify-content: center; border-radius: 2px; font-size: 12px; font-weight: bold; }
-        .step-title { font-size: 16px; font-weight: 600; text-transform: uppercase; }
-        .step-content { padding: 24px; display: none; }
-        .step-content.active { display: block; }
-        .form-group { margin-bottom: 20px; }
-        .form-input { width: 100%; padding: 12px 15px; border: 1px solid #d4d5d9; border-radius: 4px; font-size: 14px; outline: none; }
-        .btn-primary { background: #fb641b; color: white; border: none; padding: 14px 30px; font-size: 14px; font-weight: 700; border-radius: 2px; cursor: pointer; text-transform: uppercase; width: 100%; }
-        .summary-header { padding: 15px 24px; border-bottom: 1px solid #f0f0f0; font-size: 16px; font-weight: 600; color: #878787; }
-        .summary-body { padding: 24px; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 15px; }
-        .summary-total { border-top: 1px dashed #e0e0e0; padding-top: 15px; font-size: 18px; font-weight: 700; color: #212121; }
-        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 4px; padding: 15px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); }
-        #toast.show { visibility: visible; }
-        /* Mobile Responsiveness for Checkout */
+        body { background-color: var(--bg-color); color: var(--text-color); transition: 0.3s; padding-bottom: 80px; }
+
+        /* HEADER */
+        .header { background: var(--header-bg); padding: 15px 5%; box-shadow: 0 1px 4px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 24px; font-weight: 900; text-decoration: none; color: var(--text-color); text-transform: uppercase; }
+        .logo span { color: var(--accent); }
+        .secure-tag { color: var(--green); font-weight: 800; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+
+        /* LAYOUT */
+        .checkout-wrapper { max-width: 1100px; margin: 30px auto; display: flex; gap: 30px; padding: 0 20px; align-items: flex-start; }
+        .left-column { flex: 1.5; display: flex; flex-direction: column; gap: 20px; }
+        .right-column { flex: 1; position: sticky; top: 80px; }
+
+        /* SECTIONS (CARDS) */
+        .checkout-section { background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 25px; border: 1px solid var(--border-color); }
+        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--text-color); text-transform: uppercase; }
+        .section-title i { color: var(--accent); }
+
+        /* FORMS */
+        .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .form-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 13px; font-weight: 700; color: #535665; }
+        .form-input { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 15px; outline: none; background: var(--bg-color); color: var(--text-color); font-weight: 600; transition: 0.2s; }
+        .form-input:focus { border-color: var(--text-color); }
+        
+        .checkbox-group { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; margin-top: 5px; cursor: pointer; }
+        .checkbox-group input { width: 18px; height: 18px; accent-color: var(--green); cursor: pointer; }
+
+        /* OPTIONS (Delivery & Payment) */
+        .option-box { border: 1px solid var(--border-color); border-radius: 6px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; background: var(--bg-color); }
+        .option-box:hover { border-color: var(--text-color); }
+        .option-box.selected { border-color: var(--accent); background: #fff5f5; }
+        .option-box.selected .opt-title { color: var(--accent); }
+        .opt-left { display: flex; align-items: center; gap: 15px; }
+        .opt-radio { accent-color: var(--accent); width: 18px; height: 18px; }
+        .opt-title { font-weight: 800; font-size: 15px; }
+        .opt-desc { font-size: 12px; color: #878787; font-weight: 600; margin-top: 3px; }
+        .opt-price { font-weight: 800; font-size: 15px; }
+        .payment-icon { font-size: 24px; color: var(--text-color); }
+
+        /* ORDER SUMMARY */
+        .summary-card { background: var(--card-bg); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid var(--border-color); overflow: hidden; }
+        .summary-items { max-height: 300px; overflow-y: auto; padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .s-item { display: flex; gap: 15px; margin-bottom: 15px; }
+        .s-item:last-child { margin-bottom: 0; }
+        .s-img { width: 60px; height: 60px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-color); }
+        .s-info { flex: 1; }
+        .s-name { font-size: 14px; font-weight: 800; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .s-meta { font-size: 12px; color: #878787; font-weight: 600; }
+        .s-price { font-size: 14px; font-weight: 800; margin-top: 5px; }
+
+        .summary-totals { padding: 20px; background: #fafafa; }
+        .calc-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; font-weight: 600; color: #535665; }
+        .calc-total { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ccc; font-size: 20px; font-weight: 900; color: var(--text-color); }
+        
+        .savings-tag { background: #e8f5e9; color: var(--green); padding: 10px; border-radius: 6px; text-align: center; font-size: 13px; font-weight: 800; margin: 15px 20px; border: 1px dashed var(--green); }
+
+        /* TRUST BADGES */
+        .trust-section { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: var(--card-bg); border-top: 1px solid var(--border-color); }
+        .trust-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: #535665; }
+        .trust-item i { color: var(--green); font-size: 16px; }
+
+        /* BUTTONS */
+        .btn-place-order { background: var(--accent); color: white; border: none; padding: 18px; font-size: 16px; font-weight: 800; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-place-order:hover { background: #b90500; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(225, 6, 0, 0.3); }
+
+        /* MOBILE EXCLUSIVES */
+        .mobile-summary-toggle { display: none; background: #fafafa; padding: 15px 20px; border-bottom: 1px solid var(--border-color); justify-content: space-between; align-items: center; font-weight: 800; color: var(--accent); cursor: pointer; }
+        .mobile-sticky-bar { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); padding: 15px 20px; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); z-index: 2000; border-top: 1px solid var(--border-color); }
+
         @media (max-width: 768px) {
-            .checkout-wrapper { flex-direction: column; padding: 10px; margin: 10px auto; }
-            .left-panel, .right-panel { flex: none; width: 100%; }
-            .right-panel { position: relative; top: 0; margin-top: 10px; }
-            .step-header { padding: 12px 15px; }
-            .step-content { padding: 15px; }
-            .btn-primary { padding: 12px 20px; }
+            .checkout-wrapper { flex-direction: column-reverse; padding: 0; margin: 0; gap: 0; }
+            .left-column, .right-column { width: 100%; }
+            .right-column { position: static; border-bottom: 8px solid var(--bg-color); }
+            
+            .checkout-section { border-radius: 0; border: none; border-bottom: 8px solid var(--bg-color); padding: 20px 15px; box-shadow: none; }
+            .summary-card { border-radius: 0; border: none; box-shadow: none; }
+            
+            /* Collapsible Summary on Mobile */
+            .mobile-summary-toggle { display: flex; }
+            .summary-collapsible { display: none; }
+            .summary-collapsible.open { display: block; }
+            
+            .form-row { flex-direction: column; gap: 15px; }
+            
+            /* Sticky Footer Button */
+            .desktop-btn { display: none; }
+            .mobile-sticky-bar { display: block; }
         }
+
+        #toast { visibility: hidden; min-width: 250px; background: #333; color: #fff; text-align: center; border-radius: 4px; padding: 15px; position: fixed; z-index: 3000; left: 50%; top: 20px; transform: translateX(-50%); font-weight: bold; }
+        #toast.show { visibility: visible; }
     </style>
 </head>
 <body>
 
     <header class="header">
         <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
-        <div style="color:#878787; font-weight:600;">🔒 SECURE CHECKOUT</div>
+        <div class="secure-tag"><i class="fas fa-shield-alt"></i> 100% SECURE</div>
     </header>
 
-    <div class="checkout-wrapper" id="checkout-main">
-        <div class="left-panel">
-            <div class="step-box">
-                <div class="step-header active" id="step1-header">
-                    <div class="step-number">1</div>
-                    <div class="step-title">LOGIN</div>
-                </div>
-                <div class="step-content active" id="step1-content">
+    <div class="checkout-wrapper">
+        <div class="left-column">
+            
+            <div class="checkout-section">
+                <div class="section-title"><i class="fas fa-user-circle"></i> 1. Contact Information</div>
+                <div class="form-row">
                     <div class="form-group">
-                        <input type="tel" id="mobile-input" class="form-input" placeholder="Enter 10-digit Mobile Number" maxlength="10">
+                        <label>Full Name</label>
+                        <input type="text" id="c-name" class="form-input" placeholder="Enter your full name">
                     </div>
-                    <button class="btn-primary" onclick="proceedToAddress()">CONTINUE</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="c-phone" class="form-input" placeholder="10-digit mobile number" maxlength="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="c-email" class="form-input" placeholder="Email for invoice">
+                    </div>
+                </div>
+                <label class="checkbox-group">
+                    <input type="checkbox" id="c-whatsapp" checked>
+                    Get delivery updates on WhatsApp <i class="fab fa-whatsapp" style="color:#25D366; font-size: 16px;"></i>
+                </label>
+            </div>
+
+            <div class="checkout-section">
+                <div class="section-title"><i class="fas fa-map-marker-alt"></i> 2. Shipping Address</div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Pincode</label>
+                    <input type="text" id="s-pin" class="form-input" placeholder="6-digit Pincode" maxlength="6" onkeyup="autoDetectCity()">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" id="s-city" class="form-input" placeholder="Auto-detected city">
+                    </div>
+                    <div class="form-group">
+                        <label>State</label>
+                        <select id="s-state" class="form-input">
+                            <option value="">Select State</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>Address Line 1 (House No, Building, Street)</label>
+                    <input type="text" id="s-address" class="form-input" placeholder="Enter full address">
+                </div>
+                <div class="form-group">
+                    <label>Landmark (Optional)</label>
+                    <input type="text" id="s-landmark" class="form-input" placeholder="E.g. Near Apollo Hospital">
                 </div>
             </div>
 
-            <div class="step-box">
-                <div class="step-header" id="step2-header">
-                    <div class="step-number">2</div>
-                    <div class="step-title">DELIVERY ADDRESS</div>
-                </div>
-                <div class="step-content" id="step2-content">
-                    <div class="form-group"><input type="text" id="name-input" class="form-input" placeholder="Full Name"></div>
-                    <div class="form-group"><input type="text" id="pin-input" class="form-input" placeholder="Pincode" maxlength="6"></div>
-                    <div class="form-group"><textarea id="address-input" class="form-input" placeholder="Full Address" rows="3"></textarea></div>
-                    <button class="btn-primary" onclick="saveAndConfirm()">CONFIRM ORDER & SEND WHATSAPP</button>
+            <div class="checkout-section">
+                <div class="section-title"><i class="fas fa-truck"></i> 3. Delivery Method</div>
+                
+                <label class="option-box selected" onclick="selectDelivery('standard', 0, this)">
+                    <div class="opt-left">
+                        <input type="radio" name="delivery" class="opt-radio" checked>
+                        <div>
+                            <div class="opt-title">Standard Delivery</div>
+                            <div class="opt-desc">Delivery in 4-5 working days</div>
+                        </div>
+                    </div>
+                    <div class="opt-price" style="color: var(--green);">FREE</div>
+                </label>
+
+                <label class="option-box" onclick="selectDelivery('express', 99, this)">
+                    <div class="opt-left">
+                        <input type="radio" name="delivery" class="opt-radio">
+                        <div>
+                            <div class="opt-title">Express Delivery ⚡</div>
+                            <div class="opt-desc">Priority shipping in 1-2 days</div>
+                        </div>
+                    </div>
+                    <div class="opt-price">+₹99</div>
+                </label>
+            </div>
+
+            <div class="checkout-section">
+                <div class="section-title"><i class="fas fa-wallet"></i> 4. Payment Options</div>
+                
+                <label class="option-box selected" onclick="selectPayment('upi', this)">
+                    <div class="opt-left">
+                        <input type="radio" name="payment" value="UPI" class="opt-radio" checked>
+                        <div>
+                            <div class="opt-title">UPI (GPay / PhonePe / Paytm)</div>
+                            <div class="opt-desc">Instant & Secure</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-qrcode payment-icon" style="color:#673AB7;"></i>
+                </label>
+
+                <label class="option-box" onclick="selectPayment('card', this)">
+                    <div class="opt-left">
+                        <input type="radio" name="payment" value="Card" class="opt-radio">
+                        <div>
+                            <div class="opt-title">Credit / Debit Card</div>
+                            <div class="opt-desc">Visa, MasterCard, RuPay</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-credit-card payment-icon" style="color:#1976D2;"></i>
+                </label>
+
+                <label class="option-box" onclick="selectPayment('cod', this)">
+                    <div class="opt-left">
+                        <input type="radio" name="payment" value="COD" class="opt-radio">
+                        <div>
+                            <div class="opt-title">Cash on Delivery (COD)</div>
+                            <div class="opt-desc">Pay at your doorstep</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-money-bill-wave payment-icon" style="color:#388e3c;"></i>
+                </label>
+                
+                <div class="desktop-btn" style="margin-top: 25px;">
+                    <button class="btn-place-order" onclick="placeOrder()">
+                        PLACE ORDER NOW <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="right-panel">
-            <div class="summary-header">PRICE DETAILS</div>
-            <div class="summary-body">
-                <div id="summary-items-list"></div>
-                <div class="summary-row summary-total">
-                    <span>Total Amount</span>
-                    <span id="sum-total">₹0</span>
+        <div class="right-column">
+            <div class="summary-card">
+                <div class="mobile-summary-toggle" onclick="toggleSummary()">
+                    <span>🛒 Show Order Summary</span>
+                    <span id="mobile-summary-total">₹0</span>
+                </div>
+                
+                <div class="summary-collapsible" id="summary-content">
+                    <div class="summary-items" id="checkout-items">
+                        </div>
+
+                    <div class="summary-totals">
+                        <div class="calc-row"><span>Subtotal</span> <span id="t-sub">₹0</span></div>
+                        <div class="calc-row"><span style="color:var(--green)">Discount</span> <span id="t-disc" style="color:var(--green)">-₹0</span></div>
+                        <div class="calc-row"><span>Shipping</span> <span id="t-ship" style="color:var(--green)">FREE</span></div>
+                        
+                        <div class="calc-total"><span>Total</span> <span id="t-final">₹0</span></div>
+                    </div>
+
+                    <div class="savings-tag" id="t-savings">🔥 You saved ₹0 today</div>
+
+                    <div class="trust-section">
+                        <div class="trust-item"><i class="fas fa-lock"></i> 100% Secure Payment</div>
+                        <div class="trust-item"><i class="fas fa-undo"></i> 7 Day Easy Returns</div>
+                        <div class="trust-item"><i class="fas fa-truck-fast"></i> Free Delivery > ₹999</div>
+                        <div class="trust-item"><i class="fas fa-hand-holding-dollar"></i> COD Available</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="mobile-sticky-bar">
+        <button class="btn-place-order" onclick="placeOrder()" id="mobile-btn-total">
+            PLACE ORDER – ₹0
+        </button>
+    </div>
+
     <div id="toast">Message</div>
 
     <script>
-        let userPhone = "";
+        let cartItems = [];
+        let subtotal = 0;
+        let totalDiscount = 0;
+        let deliveryFee = 0;
         let finalTotal = 0;
+        let selectedPayMethod = "UPI";
 
         document.addEventListener('DOMContentLoaded', () => {
-            let cartItems = JSON.parse(localStorage.getItem('rj_cart')) || [];
-            if (cartItems.length === 0) { 
+            cartItems = JSON.parse(localStorage.getItem('rj_cart')) || [];
+            if (cartItems.length === 0) {
                 showToast("Cart is empty! Redirecting...");
                 setTimeout(() => window.location.href = 'index.html', 2000);
-                return; 
+                return;
             }
-            let html = '';
-            cartItems.forEach(item => {
-                finalTotal += item.price * item.quantity;
-                html += `<div class="summary-row"><span>${item.name} (x${item.quantity})</span><span>₹${item.price * item.quantity}</span></div>`;
-            });
-            document.getElementById('summary-items-list').innerHTML = html;
-            document.getElementById('sum-total').innerText = '₹' + finalTotal;
+            renderSummary();
+            // Default select state
+            if(window.innerWidth > 768) { document.getElementById('summary-content').classList.add('open'); }
         });
+
+        function renderSummary() {
+            let html = '';
+            subtotal = 0;
+            totalDiscount = 0;
+
+            cartItems.forEach(item => {
+                const price = parseFloat(item.price);
+                const mrp = Math.round(price * 1.4); // Mock MRP 40% higher
+                const qty = item.quantity || 1;
+                
+                subtotal += (mrp * qty);
+                totalDiscount += ((mrp - price) * qty);
+
+                html += `
+                <div class="s-item">
+                    <img src="${item.image || 'https://via.placeholder.com/60'}" class="s-img">
+                    <div class="s-info">
+                        <div class="s-name">${item.name}</div>
+                        <div class="s-meta">Size: ${item.size} | Qty: ${qty}</div>
+                        <div class="s-price">₹${price.toLocaleString()} <span style="text-decoration:line-through; color:#878787; font-size:12px; font-weight:normal;">₹${mrp}</span></div>
+                    </div>
+                </div>`;
+            });
+
+            finalTotal = (subtotal - totalDiscount) + deliveryFee;
+
+            document.getElementById('checkout-items').innerHTML = html;
+            document.getElementById('t-sub').innerText = `₹${subtotal.toLocaleString()}`;
+            document.getElementById('t-disc').innerText = `-₹${totalDiscount.toLocaleString()}`;
+            document.getElementById('t-ship').innerText = deliveryFee === 0 ? "FREE" : `+₹${deliveryFee}`;
+            document.getElementById('t-ship').style.color = deliveryFee === 0 ? "var(--green)" : "var(--text-color)";
+            document.getElementById('t-final').innerText = `₹${finalTotal.toLocaleString()}`;
+            document.getElementById('t-savings').innerText = `🔥 You saved ₹${totalDiscount.toLocaleString()} today`;
+            
+            document.getElementById('mobile-summary-total').innerText = `₹${finalTotal.toLocaleString()}`;
+            document.getElementById('mobile-btn-total').innerText = `PLACE ORDER – ₹${finalTotal.toLocaleString()}`;
+        }
+
+        // Delivery Selection Logic
+        function selectDelivery(type, fee, el) {
+            document.querySelectorAll('input[name="delivery"]').forEach(r => {
+                r.checked = false;
+                r.closest('.option-box').classList.remove('selected');
+            });
+            el.querySelector('input').checked = true;
+            el.classList.add('selected');
+            
+            deliveryFee = fee;
+            renderSummary();
+        }
+
+        // Payment Selection Logic
+        function selectPayment(method, el) {
+            document.querySelectorAll('input[name="payment"]').forEach(r => {
+                r.checked = false;
+                r.closest('.option-box').classList.remove('selected');
+            });
+            const input = el.querySelector('input');
+            input.checked = true;
+            el.classList.add('selected');
+            selectedPayMethod = input.value;
+        }
+
+        // Pincode Auto-detect (Mock)
+        function autoDetectCity() {
+            const pin = document.getElementById('s-pin').value;
+            if (pin.length === 6) {
+                // Mock Logic for Indian Pincodes (411xxx = Pune, 110xxx = Delhi, etc)
+                if(pin.startsWith('41')) {
+                    document.getElementById('s-city').value = 'Pune';
+                    document.getElementById('s-state').value = 'Maharashtra';
+                } else if(pin.startsWith('11')) {
+                    document.getElementById('s-city').value = 'New Delhi';
+                    document.getElementById('s-state').value = 'Delhi';
+                } else {
+                    document.getElementById('s-city').value = 'City Name';
+                    document.getElementById('s-state').value = 'Maharashtra';
+                }
+                showToast("Location auto-detected!");
+            }
+        }
+
+        function toggleSummary() {
+            document.getElementById('summary-content').classList.toggle('open');
+        }
 
         function showToast(msg) {
             const toast = document.getElementById("toast");
@@ -143,73 +415,61 @@
             setTimeout(() => { toast.className = ""; }, 3000);
         }
 
-        function proceedToAddress() {
-            const phone = document.getElementById('mobile-input').value;
-            if (phone.length !== 10) return showToast("Enter 10-digit number");
-            userPhone = phone;
-            document.getElementById('step1-content').classList.remove('active');
-            document.getElementById('step1-header').classList.replace('active', 'completed');
-            document.getElementById('step2-header').classList.add('active');
-            document.getElementById('step2-content').classList.add('active');
-        }
+        // Place Order
+        async function placeOrder() {
+            const name = document.getElementById('c-name').value.trim();
+            const phone = document.getElementById('c-phone').value.trim();
+            const address = document.getElementById('s-address').value.trim();
+            const city = document.getElementById('s-city').value.trim();
+            const state = document.getElementById('s-state').value;
+            const pin = document.getElementById('s-pin').value.trim();
+            const isWhatsapp = document.getElementById('c-whatsapp').checked ? 'Yes' : 'No';
 
-        async function saveAndConfirm() {
-            const name = document.getElementById('name-input').value.trim();
-            const pin = document.getElementById('pin-input').value.trim();
-            const address = document.getElementById('address-input').value.trim();
+            if (!name || phone.length !== 10 || !address || !city || !state || !pin) {
+                return showToast("Please fill all required details correctly!");
+            }
 
-            if (!name || !pin || !address) return showToast("Fill all details");
-
-            const orderId = 'OD' + Math.floor(Math.random() * 1000000);
-            const cartItems = JSON.parse(localStorage.getItem('rj_cart')) || [];
-
-            const orderData = { orderId, customer: name, phone: userPhone, address, pincode: pin, items: cartItems, total: finalTotal };
+            const orderId = 'RJ' + Math.floor(Math.random() * 1000000);
+            const deliveryMode = deliveryFee === 0 ? "Standard Delivery" : "Express Delivery (+₹99)";
+            const orderData = { orderId, customer: name, phone, address: `${address}, ${city}, ${state}`, pincode: pin, items: cartItems, total: finalTotal, paymentMethod: selectedPayMethod };
 
             try {
-                // १. ऑर्डर डेटाबेसमध्ये पाठवा
-                const res = await fetch('/api/place-order', {
+                // १. API Call (जर बॅकएंड नसेल तरी WhatsApp लिंक काम करेल)
+                fetch('/api/place-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
+                }).catch(e => console.log("API skipping.."));
+
+                // २. Clear Cart
+                localStorage.removeItem('rj_cart');
+
+                // ३. WhatsApp Formatting
+                let itemsStr = "";
+                cartItems.forEach(item => {
+                    itemsStr += `▪️ ${item.quantity}x ${item.name} (Size: ${item.size})\n`;
                 });
-                const data = await res.json();
 
-                if (data.success) {
-                    // २. यशस्वी झाल्यावर कार्ट रिकामी करा
-                    localStorage.removeItem('rj_cart');
+                const msg = `🏏 *RJ SPORTS - NEW ORDER!* 🏏\n` +
+                            `-----------------------------------\n` +
+                            `*🆔 Order ID:* #${orderId}\n` +
+                            `*👤 Customer:* ${name}\n` +
+                            `*📞 Phone:* ${phone} (WA Updates: ${isWhatsapp})\n` +
+                            `*📍 Address:* ${address}, ${city}, ${state} - ${pin}\n` +
+                            `-----------------------------------\n` +
+                            `*🛒 Items Ordered:*\n${itemsStr}` +
+                            `-----------------------------------\n` +
+                            `*🚚 Delivery:* ${deliveryMode}\n` +
+                            `*💳 Payment:* ${selectedPayMethod}\n` +
+                            `*💰 Amount to Pay:* ₹${finalTotal.toLocaleString()}\n` +
+                            `-----------------------------------\n` +
+                            `_Please process my order as soon as possible!_`;
 
-                    // 🔴 ३. THE FIX: WhatsApp मेसेज तयार करा (Real Newlines वापरून) 🔴
-                    let itemsStr = "";
-                    cartItems.forEach(item => {
-                        itemsStr += `▪️ ${item.quantity}x ${item.name}\n`;
-                    });
+                const myWhatsAppNumber = "919359239161"; // तुमचा नंबर
+                window.location.href = `https://wa.me/${myWhatsAppNumber}?text=${encodeURIComponent(msg)}`;
 
-                    const msg = `🏏 *RJ SPORTS - NEW ORDER!* 🏏\n` +
-                                `-----------------------------------\n` +
-                                `*🆔 Order ID:* #${orderId}\n` +
-                                `*👤 Customer:* ${name}\n` +
-                                `*📞 Phone:* ${userPhone}\n` +
-                                `*📍 Address:* ${address}, ${pin}\n` +
-                                `-----------------------------------\n` +
-                                `*🛒 Items Ordered:*\n${itemsStr}` +
-                                `-----------------------------------\n` +
-                                `*💰 Total Amount:* ₹${finalTotal}\n` +
-                                `-----------------------------------\n` +
-                                `_Please process my order as soon as possible!_`;
-
-                    const myWhatsAppNumber = "919359239161";
-                    
-                    // 🔴 THE FIX: encodeURIComponent वापरल्याने इमोजी कधीच क्रॅश होणार नाहीत 🔴
-                    const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${encodeURIComponent(msg)}`;
-
-                    // ४. ग्राहकाला थेट WhatsApp वर घेऊन जा
-                    window.location.href = whatsappUrl;
-                } else {
-                    showToast("Order Failed. Please try again.");
-                }
             } catch (e) {
-                console.error(e);
-                showToast("Server Error! Ensure Node.js is running.");
+                showToast("Something went wrong. Please try again.");
             }
         }
     </script>
