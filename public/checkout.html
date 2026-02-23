@@ -11,7 +11,7 @@
             --bg-color: #f4f6f8;
             --text-color: #1f2937;
             --header-bg: #fff;
-            --card-bg: #fff; /* प्रॉडक्ट्स आणि कार्टच्या पांढऱ्या बॉक्ससाठी */
+            --card-bg: #fff;
             --border-color: #e5e7eb;
             --accent: #ff3f6c;
         }
@@ -19,7 +19,7 @@
             --bg-color: #121212;
             --text-color: #e5e7eb;
             --header-bg: #1f2937;
-            --card-bg: #1e293b; /* डार्क मोड मधील कार्ड्सचा रंग */
+            --card-bg: #1e293b;
             --border-color: #374151;
         }
         
@@ -115,14 +115,14 @@
         let finalTotal = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
-            let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
-            if (cart.length === 0) { 
+            let cartItems = JSON.parse(localStorage.getItem('rj_cart')) || [];
+            if (cartItems.length === 0) { 
                 showToast("Cart is empty! Redirecting...");
                 setTimeout(() => window.location.href = 'index.html', 2000);
                 return; 
             }
             let html = '';
-            cart.forEach(item => {
+            cartItems.forEach(item => {
                 finalTotal += item.price * item.quantity;
                 html += `<div class="summary-row"><span>${item.name} (x${item.quantity})</span><span>₹${item.price * item.quantity}</span></div>`;
             });
@@ -147,6 +147,7 @@
             document.getElementById('step2-content').classList.add('active');
         }
 
+        // 🔴 FIX: 100% Corrected Order saving & WhatsApp Logic
         async function saveAndConfirm() {
             const name = document.getElementById('name-input').value.trim();
             const pin = document.getElementById('pin-input').value.trim();
@@ -155,54 +156,52 @@
             if (!name || !pin || !address) return showToast("Fill all details");
 
             const orderId = 'OD' + Math.floor(Math.random() * 1000000);
-            const cartItems = JSON.parse(localStorage.getItem('rj_cart'));
+            const cartItems = JSON.parse(localStorage.getItem('rj_cart')) || [];
 
             const orderData = { orderId, customer: name, phone: userPhone, address, pincode: pin, items: cartItems, total: finalTotal };
 
             try {
-                const res = await fetch('/api/place-order',  {
+                // १. ऑर्डर डेटाबेसमध्ये पाठवा
+                const res = await fetch('/api/place-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
                 const data = await res.json();
 
-               if (data.success) {
-    const itemDetails = cartItems.map(i => `${i.name} (x${i.quantity})`).join(', ');
+                if (data.success) {
+                    // २. यशस्वी झाल्यावर कार्ट रिकामी करा
+                    localStorage.removeItem('rj_cart');
 
-  // 1. ग्राहकाचा डेटा फॉर्ममधून घेणे (तुमचे आयडी चेक करून घ्या)
-        const name = document.getElementById('name').value;
-        const phone = document.getElementById('phone').value; // 🔴 फोन नंबर घेणे अत्यंत आवश्यक!
-        const address = document.getElementById('address').value;
-        const pincode = document.getElementById('pincode').value;
-        
-        // 2. कार्टमधील आयटेम्सची लिस्ट बनवणे (उदा. 1x Puma Shoes)
-        let itemsStr = "";
-        cart.forEach(item => {
-            itemsStr += `▪️ ${item.quantity}x ${item.name}%0A`; // %0A म्हणजे नवीन लाईन
-        });
+                    // ३. WhatsApp मेसेज तयार करा
+                    let itemsStr = "";
+                    cartItems.forEach(item => {
+                        itemsStr += `▪️ ${item.quantity}x ${item.name}%0A`;
+                    });
 
-        // 3. 100% Professional WhatsApp Message Format
-        const msg = `🏏 *RJ SPORTS - NEW ORDER!* 🏏%0A` +
-                    `-----------------------------------%0A` +
-                    `*🆔 Order ID:* #${orderId}%0A` +
-                    `*👤 Customer:* ${name}%0A` +
-                    `*📞 Phone:* ${phone}%0A` +
-                    `*📍 Address:* ${address}, ${pincode}%0A` +
-                    `-----------------------------------%0A` +
-                    `*🛒 Items Ordered:*%0A${itemsStr}` +
-                    `-----------------------------------%0A` +
-                    `*💰 Total Amount:* ₹${total}%0A` +
-                    `-----------------------------------%0A` +
-                    `_Please process my order as soon as possible!_`;
+                    const msg = `🏏 *RJ SPORTS - NEW ORDER!* 🏏%0A` +
+                                `-----------------------------------%0A` +
+                                `*🆔 Order ID:* #${orderId}%0A` +
+                                `*👤 Customer:* ${name}%0A` +
+                                `*📞 Phone:* ${userPhone}%0A` +
+                                `*📍 Address:* ${address}, ${pin}%0A` +
+                                `-----------------------------------%0A` +
+                                `*🛒 Items Ordered:*%0A${itemsStr}` +
+                                `-----------------------------------%0A` +
+                                `*💰 Total Amount:* ₹${finalTotal}%0A` +
+                                `-----------------------------------%0A` +
+                                `_Please process my order as soon as possible!_`;
 
-        // 4. तुमच्या स्वतःच्या नंबरवर पाठवा (91 लावून तुमचा खरा नंबर टाका)
-        const myWhatsAppNumber = "919359239161"; // तुमचा नंबर इथे टाका
-        const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${msg}`;
-    }
-        // 5. ग्राहकाला WhatsApp वर पाठवा
-        window.location.href = whatsappUrl;
+                    const myWhatsAppNumber = "919359239161";
+                    const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${msg}`;
+
+                    // ४. ग्राहकाला थेट WhatsApp वर घेऊन जा
+                    window.location.href = whatsappUrl;
+                } else {
+                    showToast("Order Failed. Please try again.");
+                }
             } catch (e) {
+                console.error(e);
                 showToast("Server Error! Ensure Node.js is running.");
             }
         }
