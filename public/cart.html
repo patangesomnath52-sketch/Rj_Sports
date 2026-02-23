@@ -51,13 +51,11 @@
 
 <header class="header">
     <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
-    <div style="font-weight: 800; font-size: 14px; color: #535665;">STEP 2/3: CHECKOUT</div>
+    <div style="font-weight: 800; font-size: 14px; color: #535665;">STEP 2/3: CART</div>
 </header>
 
 <div class="container" id="cart-container">
     </div>
-
-
 
 <script>
     function loadCart() {
@@ -70,7 +68,7 @@
                     <i class="fas fa-shopping-bag"></i>
                     <h2>तुमची पिशवी रिकामी आहे!</h2>
                     <p>काहीतरी नवीन खरेदी करा आणि इथे परत या.</p>
-                    <a href="footwear.html" class="btn-shop">SHOP NOW</a>
+                    <a href="index.html" class="btn-shop">SHOP NOW</a>
                 </div>
             `;
             return;
@@ -81,7 +79,7 @@
             totalAmount += parseFloat(item.price);
             return `
                 <div class="cart-item">
-                    <img src="${item.image}" class="item-img" onerror="this.src='https://via.placeholder.com/120'">
+                    <img src="${item.image}" class="item-img" onerror="this.src='https://placehold.co/120x140?text=No+Image'">
                     <div class="item-details">
                         <div class="item-name">${item.name}</div>
                         <div class="item-size">Size: <strong>${item.size}</strong> | Qty: 1</div>
@@ -103,8 +101,8 @@
                     <div class="summary-row"><span>Delivery Fee</span><span style="color:#03a685">FREE</span></div>
                     <div class="summary-row total-row"><span>Total Amount</span><span>₹${totalAmount}</span></div>
                     
-                    <button class="btn-order" onclick="placeOrder()">
-                        <i class="fab fa-whatsapp"></i> PLACE ORDER VIA WHATSAPP
+                    <button class="btn-order" onclick="window.location.href='checkout.html'">
+                        PROCEED TO CHECKOUT <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -116,27 +114,6 @@
         cart.splice(index, 1);
         localStorage.setItem('rj_cart', JSON.stringify(cart));
         loadCart();
-    }
-
-    function placeOrder() {
-        const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
-        if(cart.length === 0) return;
-
-        let message = "नमस्ते RJ Sports! मला खालील ऑर्डर द्यायची आहे:\n\n";
-        let total = 0;
-
-        cart.forEach((item, i) => {
-            message += `${i+1}. ${item.name}\n   Size: ${item.size} | Price: ₹${item.price}\n\n`;
-            total += parseFloat(item.price);
-        });
-
-        message += `------------------------\nकुल रक्कम: ₹${total}\n------------------------\nकृपया कन्फर्म करा.`;
-        
-        const encodedMsg = encodeURIComponent(message);
-        // तुमचा नंबर इथे टाका (उदा. 919876543210)
-        const whatsappUrl = `https://wa.me/919325786808?text=${encodedMsg}`;
-        
-        window.open(whatsappUrl, '_blank');
     }
 
     window.onload = loadCart;
