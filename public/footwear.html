@@ -8,14 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script>
-        // अतिशय महत्त्वाचे: पेज लोड होण्याआधीच मेमरीतून थीम तपासा आणि लागू करा!
+        // थीम लोड करणे
         if(localStorage.getItem('rj_theme') === 'dark') {
             document.documentElement.classList.add('dark-mode');
         }
     </script>
     
     <style>
-        /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
         :root {
             --bg-color: #f4f6f8;
             --text-color: #1f2937;
@@ -35,215 +34,170 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; min-height: 100vh; }
         
-        /* --- 100% PROFESSIONAL HEADER --- */
-        .rj-header-wrapper { background: var(--header-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; position: sticky; top: 0; z-index: 9999; transition: 0.3s; }
-        .rj-navbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; max-width: 1200px; margin: 0 auto; position: relative; }
-        
-        .rj-logo { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--text-color); order: 2; transition: 0.3s; }
+        /* HEADER */
+        .rj-header-wrapper { background: var(--header-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; position: sticky; top: 0; z-index: 9999; }
+        .rj-navbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; max-width: 1200px; margin: 0 auto; }
+        .rj-logo { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--text-color); }
         .rj-logo span { color: var(--accent); }
-        
-        .rj-links { display: flex; gap: 25px; align-items: center; order: 3; margin: 0; padding: 0; }
-        .rj-links a { text-decoration: none; color: var(--text-color); font-weight: 800; font-size: 15px; text-transform: uppercase; transition: 0.3s; }
+        .rj-links a { text-decoration: none; color: var(--text-color); font-weight: 800; font-size: 15px; text-transform: uppercase; margin-left: 25px; transition: 0.3s; }
         .rj-links a:hover { color: var(--accent); }
-        
-        .rj-icons-group { order: 4; display: flex; align-items: center; gap: 15px; }
-        .rj-theme-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-color); }
-        .rj-cart-wrapper { display: flex; align-items: center; text-decoration: none; position: relative; }
-        .rj-cart-icon { font-size: 24px; color: var(--text-color); }
-        .rj-badge { position: absolute; top: -8px; right: -12px; background: var(--accent); color: white; font-size: 11px; font-weight: bold; height: 20px; min-width: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--header-bg); }
+        .rj-icons-group { display: flex; align-items: center; gap: 15px; }
+        .rj-badge { position: absolute; top: -8px; right: -12px; background: var(--accent); color: white; font-size: 11px; height: 20px; min-width: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-        .rj-menu-toggle { display: none; background: none; border: none; font-size: 24px; color: var(--text-color); cursor: pointer; order: 1; outline: none; }
+        /* GRID */
+        .main-container { max-width: 1200px; margin: 30px auto; padding: 0 5%; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; }
+
+        /* PRODUCT CARD */
+        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; position: relative; padding-bottom: 20px; transition: 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .img-container { width: 100%; height: 280px; overflow: hidden; background: #fff; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .product-info { padding: 15px; }
+        .brand { font-size: 14px; text-transform: uppercase; color: #878787; font-weight: 700; }
+        .name { font-size: 16px; font-weight: 700; margin: 5px 0 10px; }
+        .price { font-size: 18px; font-weight: 800; color: var(--accent); margin-bottom: 15px; }
+
+        /* SIZES */
+        .size-title { font-size: 12px; font-weight: 700; margin-bottom: 8px; display: block; opacity: 0.7; }
+        .size-btn { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--card-bg); font-weight: 600; cursor: pointer; color: var(--text-color); margin-right: 5px; transition: 0.2s; }
+        .size-btn:not(:disabled):hover { border-color: var(--accent); color: var(--accent); }
+        .size-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
+
+        /* BUTTON */
+        .add-btn { width: 90%; margin: 15px auto 0; display: block; padding: 12px; background: none; color: var(--accent); border: 2px solid var(--accent); font-weight: 800; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .add-btn:not(:disabled):hover { background: var(--accent); color: white; }
+
+        /* LIVE STOCK OVERLAYS */
+        .out-of-stock-card { opacity: 0.6; }
+        .out-of-stock-card img { filter: grayscale(100%); }
+        .stock-badge { position: absolute; top: 15px; right: 15px; background: #ef4444; color: white; padding: 6px 12px; font-weight: 900; border-radius: 4px; font-size: 11px; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .size-btn:disabled { text-decoration: line-through; opacity: 0.3; cursor: not-allowed; background: #eee; }
+        :root.dark-mode .size-btn:disabled { background: #333; }
 
         @media (max-width: 768px) {
             .rj-navbar { padding: 15px 20px; }
-            .rj-menu-toggle { display: block; } 
-            .rj-logo { margin: 0 auto; position: absolute; left: 50%; transform: translateX(-50%); font-size: 22px; } 
-            .rj-links { position: absolute; top: 100%; left: 0; width: 100%; background: var(--header-bg); flex-direction: column; gap: 0; display: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-top: 1px solid var(--border-color); }
-            .rj-links.active { display: flex; } 
-            .rj-links a { padding: 15px 20px; width: 100%; border-bottom: 1px solid var(--border-color); text-align: left; }
+            .rj-links { display: none; } /* मोबाईलवर मेनूसाठी मघाशी दिलेला कोड वापरा */
+            .products-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+            .product-card { padding-bottom: 10px; }
+            .img-container { height: 180px; }
         }
-
-        /* --- LAYOUT & PRODUCTS GRID --- */
-        .main-container { max-width: 1200px; margin: 30px auto; padding: 0 5%; }
-        .section-title { font-size: 24px; font-weight: 800; margin-bottom: 25px; color: var(--text-color); border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 5px; }
-        
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px; padding-bottom: 60px; }
-
-        /* --- PRODUCT CARD --- */
-        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; transition: all 0.3s; padding-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-
-        .img-container { width: 100%; height: 260px; overflow: hidden; background: #fff; }
-        .img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-        .product-card:hover .img-container img { transform: scale(1.05); }
-
-        .product-info { padding: 15px; }
-        .brand { font-size: 16px; font-weight: 800; color: var(--text-color); margin-bottom: 2px; }
-        .name { font-size: 14px; color: #878787; font-weight: 600; margin-bottom: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .price-box { font-size: 15px; margin-bottom: 12px; }
-        .discount-price { font-weight: 800; color: var(--accent); }
-        .original-price { text-decoration: line-through; color: #878787; font-size: 12px; margin-left: 8px; }
-
-        /* --- SIZE SELECTOR (Dark Mode Ready) --- */
-        .size-container { margin-top: 5px; margin-bottom: 15px; }
-        .size-title { font-size: 12px; font-weight: 700; color: var(--text-color); margin-bottom: 8px; display: block; opacity: 0.8; }
-        .size-options { display: flex; gap: 8px; flex-wrap: wrap; }
-        
-        .size-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--card-bg); font-weight: 600; font-size: 12px; cursor: pointer; transition: all 0.2s; color: var(--text-color); }
-        .size-btn:hover { border-color: var(--accent); color: var(--accent); }
-        .size-btn.selected { background: var(--accent); color: white; border-color: var(--accent); }
-
-        /* --- ADD TO CART BUTTON --- */
-        .add-btn { width: 90%; margin: 0 auto; display: block; padding: 12px; background-color: transparent; color: var(--accent); border: 2px solid var(--accent); font-weight: 800; cursor: pointer; border-radius: 6px; transition: 0.3s; }
-        .add-btn:hover { background-color: var(--accent); color: white; }
     </style>
 </head>
 <body>
 
 <header class="rj-header-wrapper">
     <div class="rj-navbar">
-        <button class="rj-menu-toggle" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-        
         <a href="index.html" class="rj-logo">RJ <span>SPORTS</span></a>
-        
-        <nav class="rj-links" id="nav-links">
-            <a href="cricket.html">CRICKET HUB</a>
-            <a href="footwear.html" style="color: var(--accent);">FOOTWEAR</a>
-            <a href="orders.html" id="login-link">MY ORDERS</a>
-            <a href="settings.html"><i class="fas fa-cog"></i> SETTINGS</a>
+        <nav class="rj-links">
+            <a href="cricket.html">CRICKET</a>
+            <a href="footwear.html" style="color:var(--accent)">FOOTWEAR</a>
+            <a href="orders.html">MY ORDERS</a>
         </nav>
-
         <div class="rj-icons-group">
-            <button id="theme-toggle" class="rj-theme-btn">🌙</button>
-            <a href="cart.html" class="rj-cart-wrapper">
-                <span class="rj-cart-icon">🛒</span>
-                <span class="rj-badge" id="cart-count">0</span>
-            </a>
+            <button id="theme-toggle" style="background:none; border:none; font-size:20px; cursor:pointer;">🌙</button>
+            <a href="cart.html" style="position:relative; text-decoration:none; font-size:22px;">🛒<span class="rj-badge" id="cart-count">0</span></a>
         </div>
     </div>
 </header>
 
 <div class="main-container">
-    <h2 class="section-title">Premium Footwear Collection</h2>
+    <h2 style="margin-bottom:25px; font-size:28px; font-weight:800;">Premium Footwear</h2>
     
-    <div class="products-grid">
+    <div class="products-grid" id="footwear-grid">
         
         <div class="product-card" data-id="s1" data-name="Puma Nitro Red Runner" data-price="2499">
-            <div class="img-container"><img src="puma nitro red runner.jpeg" alt="Shoe" onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600'"></div>
+            <div class="img-container"><img src="puma nitro red runner.jpeg"></div>
             <div class="product-info">
-                <h3 class="brand">Puma</h3>
-                <h4 class="name">Nitro Red Runner</h4>
-                <div class="price-box"><span class="discount-price">₹2,499</span> <span class="original-price">₹4,999</span></div>
-                <div class="size-container">
-                    <span class="size-title">Select Size (UK)</span>
-                    <div class="size-options">
-                        <button class="size-btn" onclick="selectSize(this)">6</button>
-                        <button class="size-btn" onclick="selectSize(this)">7</button>
-                        <button class="size-btn" onclick="selectSize(this)">8</button>
-                        <button class="size-btn" onclick="selectSize(this)">9</button>
-                        <button class="size-btn" onclick="selectSize(this)">10</button>
-                    </div>
+                <span class="brand">Puma</span>
+                <h3 class="name">Nitro Red Runner</h3>
+                <p class="price">₹2,499</p>
+                <span class="size-title">Select UK Size</span>
+                <div class="size-options">
+                    <button class="size-btn" data-size="6" onclick="selectSize(this)">6</button>
+                    <button class="size-btn" data-size="7" onclick="selectSize(this)">7</button>
+                    <button class="size-btn" data-size="8" onclick="selectSize(this)">8</button>
+                    <button class="size-btn" data-size="9" onclick="selectSize(this)">9</button>
                 </div>
             </div>
             <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
         </div>
 
         <div class="product-card" data-id="s2" data-name="Puma Sky Blue Sneakers" data-price="1899">
-            <div class="img-container"><img src="pumma skyblue sneakers.jpeg" alt="Shoe" onerror="this.src='https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=600'"></div>
+            <div class="img-container"><img src="pumma skyblue sneakers.jpeg"></div>
             <div class="product-info">
-                <h3 class="brand">Puma</h3>
-                <h4 class="name">Sky Blue Sneakers</h4>
-                <div class="price-box"><span class="discount-price">₹1,899</span> <span class="original-price">₹3,499</span></div>
-                <div class="size-container">
-                    <span class="size-title">Select Size (UK)</span>
-                    <div class="size-options">
-                        <button class="size-btn" onclick="selectSize(this)">6</button>
-                        <button class="size-btn" onclick="selectSize(this)">7</button>
-                        <button class="size-btn" onclick="selectSize(this)">8</button>
-                        <button class="size-btn" onclick="selectSize(this)">9</button>
-                        <button class="size-btn" onclick="selectSize(this)">10</button>
-                    </div>
+                <span class="brand">Puma</span>
+                <h3 class="name">Sky Blue Sneakers</h3>
+                <p class="price">₹1,899</p>
+                <span class="size-title">Select UK Size</span>
+                <div class="size-options">
+                    <button class="size-btn" data-size="7" onclick="selectSize(this)">7</button>
+                    <button class="size-btn" data-size="8" onclick="selectSize(this)">8</button>
+                    <button class="size-btn" data-size="9" onclick="selectSize(this)">9</button>
                 </div>
             </div>
             <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
         </div>
 
         <div class="product-card" data-id="s3" data-name="HiGrip Black Runner" data-price="1299">
-            <div class="img-container"><img src="fashion rung runner.jpeg" alt="Shoe" onerror="this.src='https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=600'"></div>
+            <div class="img-container"><img src="fashion rung runner.jpeg"></div>
             <div class="product-info">
-                <h3 class="brand">HiGrip</h3>
-                <h4 class="name">Black Runner</h4>
-                <div class="price-box"><span class="discount-price">₹1,299</span> <span class="original-price">₹2,599</span></div>
-                <div class="size-container">
-                    <span class="size-title">Select Size (UK)</span>
-                    <div class="size-options">
-                        <button class="size-btn" onclick="selectSize(this)">6</button>
-                        <button class="size-btn" onclick="selectSize(this)">7</button>
-                        <button class="size-btn" onclick="selectSize(this)">8</button>
-                        <button class="size-btn" onclick="selectSize(this)">9</button>
-                        <button class="size-btn" onclick="selectSize(this)">10</button>
-                    </div>
+                <span class="brand">HiGrip</span>
+                <h3 class="name">Black Runner</h3>
+                <p class="price">₹1,299</p>
+                <span class="size-title">Select UK Size</span>
+                <div class="size-options">
+                    <button class="size-btn" data-size="6" onclick="selectSize(this)">6</button>
+                    <button class="size-btn" data-size="7" onclick="selectSize(this)">7</button>
+                    <button class="size-btn" data-size="8" onclick="selectSize(this)">8</button>
                 </div>
             </div>
             <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
         </div>
 
         <div class="product-card" data-id="s4" data-name="Puma Classic B&W" data-price="1999">
-            <div class="img-container"><img src="puma black runner.jpeg" alt="Shoe" onerror="this.src='https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=600'"></div>
+            <div class="img-container"><img src="puma black runner.jpeg"></div>
             <div class="product-info">
-                <h3 class="brand">Puma</h3>
-                <h4 class="name">Classic B&W</h4>
-                <div class="price-box"><span class="discount-price">₹1,999</span> <span class="original-price">₹3,999</span></div>
-                <div class="size-container">
-                    <span class="size-title">Select Size (UK)</span>
-                    <div class="size-options">
-                        <button class="size-btn" onclick="selectSize(this)">6</button>
-                        <button class="size-btn" onclick="selectSize(this)">7</button>
-                        <button class="size-btn" onclick="selectSize(this)">8</button>
-                        <button class="size-btn" onclick="selectSize(this)">9</button>
-                        <button class="size-btn" onclick="selectSize(this)">10</button>
-                    </div>
+                <span class="brand">Puma</span>
+                <h3 class="name">Classic B&W</h3>
+                <p class="price">₹1,999</p>
+                <span class="size-title">Select UK Size</span>
+                <div class="size-options">
+                    <button class="size-btn" data-size="7" onclick="selectSize(this)">7</button>
+                    <button class="size-btn" data-size="8" onclick="selectSize(this)">8</button>
+                    <button class="size-btn" data-size="9" onclick="selectSize(this)">9</button>
                 </div>
             </div>
             <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
         </div>
 
         <div class="product-card" data-id="s5" data-name="ProNine Sport White" data-price="999">
-            <div class="img-container"><img src="pro nine sports.jpeg" alt="Shoe" onerror="this.src='https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=600'"></div>
+            <div class="img-container"><img src="pro nine sports.jpeg"></div>
             <div class="product-info">
-                <h3 class="brand">ProNine</h3>
-                <h4 class="name">Sport White</h4>
-                <div class="price-box"><span class="discount-price">₹999</span> <span class="original-price">₹1,499</span></div>
-                <div class="size-container">
-                    <span class="size-title">Select Size (UK)</span>
-                    <div class="size-options">
-                        <button class="size-btn" onclick="selectSize(this)">6</button>
-                        <button class="size-btn" onclick="selectSize(this)">7</button>
-                        <button class="size-btn" onclick="selectSize(this)">8</button>
-                        <button class="size-btn" onclick="selectSize(this)">9</button>
-                        <button class="size-btn" onclick="selectSize(this)">10</button>
-                    </div>
+                <span class="brand">ProNine</span>
+                <h3 class="name">Sport White</h3>
+                <p class="price">₹999</p>
+                <span class="size-title">Select UK Size</span>
+                <div class="size-options">
+                    <button class="size-btn" data-size="6" onclick="selectSize(this)">6</button>
+                    <button class="size-btn" data-size="7" onclick="selectSize(this)">7</button>
+                    <button class="size-btn" data-size="8" onclick="selectSize(this)">8</button>
                 </div>
             </div>
             <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
         </div>
 
         <div class="product-card" data-id="s7" data-name="Nike Smile Edition" data-price="2999">
-            <div class="img-container"><img src="nike.jpeg" alt="Shoe" onerror="this.src='https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?q=80&w=600'"></div>
+            <div class="img-container"><img src="nike.jpeg"></div>
             <div class="product-info">
-                <h3 class="brand">Nike</h3>
-                <h4 class="name">Smile Edition</h4>
-                <div class="price-box"><span class="discount-price">₹2,999</span> <span class="original-price">₹5,999</span></div>
-                <div class="size-container">
-                    <span class="size-title">Select Size (UK)</span>
-                    <div class="size-options">
-                        <button class="size-btn" onclick="selectSize(this)">6</button>
-                        <button class="size-btn" onclick="selectSize(this)">7</button>
-                        <button class="size-btn" onclick="selectSize(this)">8</button>
-                        <button class="size-btn" onclick="selectSize(this)">9</button>
-                        <button class="size-btn" onclick="selectSize(this)">10</button>
-                    </div>
+                <span class="brand">Nike</span>
+                <h3 class="name">Smile Edition</h3>
+                <p class="price">₹2,999</p>
+                <span class="size-title">Select UK Size</span>
+                <div class="size-options">
+                    <button class="size-btn" data-size="7" onclick="selectSize(this)">7</button>
+                    <button class="size-btn" data-size="8" onclick="selectSize(this)">8</button>
+                    <button class="size-btn" data-size="9" onclick="selectSize(this)">9</button>
                 </div>
             </div>
             <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
@@ -253,63 +207,56 @@
 </div>
 
 <script>
-    // 1. Theme Logic & Login Check
-    document.addEventListener("DOMContentLoaded", () => {
-        // Dark Mode Logic
-        const themeBtn = document.getElementById('theme-toggle');
-        const body = document.body;
-        
-        if(localStorage.getItem('rj_theme') === 'dark') {
-            body.classList.add('dark-mode');
-            if(themeBtn) themeBtn.innerText = '☀️';
-        }
+    // 🔴 १. डेटाबेसवरून लाईव्ह स्टॉक खेचून लागू करणे
+    async function applyLiveStock() {
+        try {
+            const res = await fetch('/api/stock');
+            const data = await res.json();
+            
+            if(data.success) {
+                data.stocks.forEach(stockItem => {
+                    const card = document.querySelector(`.product-card[data-id="${stockItem.productId}"]`);
+                    if(!card) return;
 
-        if(themeBtn) {
-            themeBtn.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-                const isDark = body.classList.contains('dark-mode');
-                themeBtn.innerText = isDark ? '☀️' : '🌙';
-                localStorage.setItem('rj_theme', isDark ? 'dark' : 'light');
-            });
-        }
+                    // जर संपूर्ण प्रॉडक्ट 'Out of Stock' असेल
+                    if(stockItem.isOutOfStock) {
+                        card.classList.add('out-of-stock-card');
+                        const badge = document.createElement('div');
+                        badge.className = 'stock-badge';
+                        badge.innerText = 'SOLD OUT';
+                        card.appendChild(badge);
+                        
+                        const btn = card.querySelector('.add-btn');
+                        btn.innerText = 'OUT OF STOCK';
+                        btn.disabled = true;
+                        btn.style.borderColor = "#9ca3af";
+                        btn.style.color = "#9ca3af";
+                    }
 
-        // Login Check
-        const user = localStorage.getItem('rj_loggedInUser');
-        const loginLink = document.querySelector('a[id="login-link"]'); 
-        if(user && loginLink) {
-            loginLink.innerHTML = `👤 Hi, ${user.split(' ')[0]}`;
-            loginLink.href = "orders.html";
-        }
+                    // जर फक्त विशिष्ट साईझ संपले असतील
+                    if(stockItem.disabledSizes && stockItem.disabledSizes.length > 0) {
+                        stockItem.disabledSizes.forEach(size => {
+                            const sizeBtn = card.querySelector(`.size-btn[data-size="${size}"]`);
+                            if(sizeBtn) {
+                                sizeBtn.disabled = true;
+                                sizeBtn.title = "Size Out of Stock";
+                            }
+                        });
+                    }
+                });
+            }
+        } catch (err) { console.error("Stock fetch error:", err); }
+    }
 
-        // Menu Toggle Logic
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const navLinks = document.getElementById('nav-links');
-        if(menuBtn) {
-            menuBtn.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-                const icon = menuBtn.querySelector('i');
-                if(navLinks.classList.contains('active')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
-        }
-        
-        updateCartBadge();
-    });
-
-    // 2. Footwear Size Selection
+    // २. साईझ निवडणे
     function selectSize(btn) {
-        const optionsDiv = btn.parentElement;
-        const buttons = optionsDiv.querySelectorAll('.size-btn');
-        buttons.forEach(b => b.classList.remove('selected'));
+        if(btn.disabled) return;
+        const btns = btn.parentElement.querySelectorAll('.size-btn');
+        btns.forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
     }
 
-    // 3. Add to Cart Logic
+    // ३. कार्टमध्ये ऍड करणे (तुमचं मूळ लॉजिक)
     function addToCart(btn) {
         const card = btn.closest('.product-card');
         const selectedSizeBtn = card.querySelector('.size-btn.selected');
@@ -323,29 +270,39 @@
         const id = card.getAttribute('data-id');
         const name = card.getAttribute('data-name');
         const price = parseFloat(card.getAttribute('data-price'));
-        const imgElement = card.querySelector('img');
-        const imageSrc = imgElement ? imgElement.src : '';
+        const img = card.querySelector('img').src;
 
         let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
-        const existingItem = cart.find(item => item.id === id && item.size === size);
+        const existing = cart.find(i => i.id === id && i.size === size);
 
-        if (existingItem) {
-            existingItem.quantity += 1;
-        } else {
-            cart.push({ id: id, name: name, price: price, size: size, image: imageSrc, quantity: 1 });
-        }
+        if (existing) { existing.quantity += 1; } 
+        else { cart.push({ id, name, price, size, image: img, quantity: 1 }); }
 
         localStorage.setItem('rj_cart', JSON.stringify(cart));
-        window.location.href = 'cart.html'; 
+        window.location.href = 'cart.html';
     }
 
-    // 4. Cart Badge Update
-    function updateCartBadge() {
+    // ४. थीम टॉगल
+    const themeBtn = document.getElementById('theme-toggle');
+    themeBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        themeBtn.innerText = isDark ? '☀️' : '🌙';
+        localStorage.setItem('rj_theme', isDark ? 'dark' : 'light');
+    });
+
+    // ५. कार्ट बॅज अपडेट
+    function updateBadge() {
         const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
-        let count = 0;
-        cart.forEach(item => count += item.quantity);
+        const count = cart.reduce((total, item) => total + item.quantity, 0);
         document.getElementById('cart-count').innerText = count;
     }
+
+    window.onload = () => {
+        applyLiveStock();
+        updateBadge();
+    };
 </script>
 </body>
 </html>
+
