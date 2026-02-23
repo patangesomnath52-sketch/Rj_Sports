@@ -78,7 +78,7 @@
         .s-item:last-child { margin-bottom: 0; }
         .s-img { width: 60px; height: 60px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-color); }
         .s-info { flex: 1; }
-        .s-name { font-size: 14px; font-weight: 800; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .s-name { font-size: 14px; font-weight: 800; margin-bottom: 4px; display: -webkit-box; -webkit-line-clam: 1; -webkit-box-orient: vertical; overflow: hidden; }
         .s-meta { font-size: 12px; color: #878787; font-weight: 600; }
         .s-price { font-size: 14px; font-weight: 800; margin-top: 5px; }
 
@@ -123,6 +123,37 @@
 
         #toast { visibility: hidden; min-width: 250px; background: #333; color: #fff; text-align: center; border-radius: 4px; padding: 15px; position: fixed; z-index: 3000; left: 50%; top: 20px; transform: translateX(-50%); font-weight: bold; }
         #toast.show { visibility: visible; }
+        /* SUCCESS MODAL STYLES */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 5000;
+    align-items: center;
+    justify-content: center;
+}
+.modal-content {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: slideUp 0.4s ease;
+}
+.modal-icon {
+    font-size: 60px;
+    color: #388e3c;
+    margin-bottom: 20px;
+}
+.modal-content h2 { font-weight: 800; margin-bottom: 10px; }
+.modal-content p { color: #6b7280; margin-bottom: 25px; line-height: 1.5; }
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
     </style>
 </head>
 <body>
@@ -301,7 +332,14 @@
     </div>
 
     <div id="toast">Message</div>
-
+<div class="modal-overlay" id="success-modal">
+    <div class="modal-content">
+        <div class="modal-icon"><i class="fas fa-check-circle"></i></div>
+        <h2>Order Placed!</h2>
+        <p>Your order has been recorded. We are now redirecting you to WhatsApp to confirm your order details.</p>
+        <div class="loading-dots" style="color: var(--accent); font-weight: 800;">Redirecting...</div>
+    </div>
+</div>
     <script>
         let cartItems = [];
         let subtotal = 0;
@@ -472,6 +510,35 @@
                 showToast("Something went wrong. Please try again.");
             }
         }
+        // ... आधीचे कोड्स तसेच ठेवा ...
+try {
+    // १. API Call (Data Save करणे)
+    await fetch('/api/place-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+    });
+
+    // २. कार्ट रिकामी करा
+    localStorage.removeItem('rj_cart');
+
+    // 🔴 ३. "Thank You" पॉपअप दाखवा
+    document.getElementById('success-modal').style.display = 'flex';
+
+    // ४. मेसेज तयार करा
+    const myWhatsAppNumber = "919359239161";
+    const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${encodeURIComponent(msg)}`;
+
+    // 🔴 ५. ३ सेकंद थांबून व्हॉट्सॲपवर पाठवा
+    setTimeout(() => {
+        window.location.href = whatsappUrl;
+    }, 3000);
+
+} catch (e) {
+    showToast("Server Error! But redirecting to WhatsApp...");
+    // सर्वर डाऊन असला तरी व्हॉट्सॲपवर मेसेज जाईलच
+    setTimeout(() => { window.location.href = whatsappUrl; }, 2000);
+}
     </script>
 </body>
 </html>
