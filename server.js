@@ -43,6 +43,8 @@ const Product = mongoose.model('Product', new mongoose.Schema({
     isOutOfStock: { type: Boolean, default: false },
     disabledSizes: { type: Array, default: [] }
 }));
+// इमेज पाथ सेव्ह करताना सुरुवातीचा स्लॅश (/) टाळा
+const imagePaths = req.files.map(file => 'uploads/' + file.filename);
 
 // ५. API Routes
 // अ) नवीन प्रॉडक्ट ऍड करणे (आता फोटो थेट क्लाउडवर जातील)
