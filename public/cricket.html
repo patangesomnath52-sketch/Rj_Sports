@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RJ Sports - Cricket Hub</title>
+    <title>Cricket Hub | RJ Sports</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <script>
-        // अतिशय महत्त्वाचे: पेज लोड होण्याआधीच मेमरीतून थीम तपासा आणि लागू करा!
+        // थीम लोड करणे (Dark/Light)
         if(localStorage.getItem('rj_theme') === 'dark') {
             document.documentElement.classList.add('dark-mode');
         }
     </script>
+    
     <style>
-        /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
         :root {
             --bg-color: #f4f6f8;
             --text-color: #1f2937;
@@ -22,7 +22,6 @@
             --card-bg: #fff; 
             --border-color: #e5e7eb;
             --accent: #ff3f6c;
-            --bg-overlay: rgba(255, 255, 255, 0.9); 
         }
         :root.dark-mode {
             --bg-color: #121212;
@@ -30,211 +29,186 @@
             --header-bg: #1f2937;
             --card-bg: #1e293b; 
             --border-color: #374151;
-            --bg-overlay: rgba(18, 18, 18, 0.9); 
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); transition: 0.3s; min-height: 100vh; }
         
-        body { 
-            color: var(--text-color); 
-            transition: background 0.3s, color 0.3s; 
-            background: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('cricketbg.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            min-height: 100vh;
-        }
-
-        /* --- 100% PROFESSIONAL HEADER --- */
-        .rj-header-wrapper { background: var(--header-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; position: sticky; top: 0; z-index: 9999; transition: 0.3s; }
-        .rj-navbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; max-width: 1200px; margin: 0 auto; position: relative; }
-        
-        .rj-logo { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--text-color); order: 2; transition: 0.3s; }
+        /* HEADER */
+        .rj-header-wrapper { background: var(--header-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; position: sticky; top: 0; z-index: 9999; }
+        .rj-navbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; max-width: 1200px; margin: 0 auto; }
+        .rj-logo { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--text-color); }
         .rj-logo span { color: var(--accent); }
-        
-        .rj-links { display: flex; gap: 25px; align-items: center; order: 3; margin: 0; padding: 0; }
-        .rj-links a { text-decoration: none; color: var(--text-color); font-weight: 800; font-size: 15px; text-transform: uppercase; transition: 0.3s; }
+        .rj-links a { text-decoration: none; color: var(--text-color); font-weight: 800; font-size: 14px; text-transform: uppercase; margin-left: 20px; transition: 0.3s; }
         .rj-links a:hover { color: var(--accent); }
-        
-        .rj-icons-group { order: 4; display: flex; align-items: center; gap: 15px; }
-        .rj-theme-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-color); }
-        .rj-cart-wrapper { display: flex; align-items: center; text-decoration: none; position: relative; }
-        .rj-cart-icon { font-size: 24px; color: var(--text-color); }
-        .rj-badge { position: absolute; top: -8px; right: -12px; background: var(--accent); color: white; font-size: 11px; font-weight: bold; height: 20px; min-width: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--header-bg); }
+        .rj-icons-group { display: flex; align-items: center; gap: 15px; }
+        .rj-badge { position: absolute; top: -8px; right: -12px; background: var(--accent); color: white; font-size: 11px; height: 18px; min-width: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-        .rj-menu-toggle { display: none; background: none; border: none; font-size: 24px; color: var(--text-color); cursor: pointer; order: 1; outline: none; }
+        /* GRID */
+        .main-container { max-width: 1200px; margin: 30px auto; padding: 0 5%; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; }
+
+        /* PRODUCT CARD */
+        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; position: relative; transition: 0.3s; padding-bottom: 15px; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .img-container { width: 100%; height: 250px; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .img-container img { max-width: 90%; max-height: 90%; object-fit: contain; transition: 0.5s; }
+        .product-info { padding: 12px; }
+        .brand { font-size: 13px; font-weight: 700; color: #878787; text-transform: uppercase; }
+        .name { font-size: 15px; font-weight: 600; margin: 4px 0; }
+        .price { font-size: 17px; font-weight: 800; color: var(--accent); }
+
+        /* BUTTON */
+        .add-btn { width: 90%; margin: 10px auto 0; display: block; padding: 10px; background: none; color: var(--accent); border: 2px solid var(--accent); font-weight: 800; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        .add-btn:hover:not(:disabled) { background: var(--accent); color: white; }
+
+        /* STOCK OVERLAYS */
+        .out-of-stock { opacity: 0.6; pointer-events: none; }
+        .out-of-stock img { filter: grayscale(100%); }
+        .stock-badge { position: absolute; top: 10px; right: 10px; background: #ef4444; color: white; padding: 4px 10px; font-weight: 800; border-radius: 4px; font-size: 11px; z-index: 10; }
+        .add-btn:disabled { border-color: #9ca3af; color: #9ca3af; cursor: not-allowed; }
 
         @media (max-width: 768px) {
-            .rj-navbar { padding: 15px 20px; }
-            .rj-menu-toggle { display: block; } 
-            .rj-logo { margin: 0 auto; position: absolute; left: 50%; transform: translateX(-50%); font-size: 22px; } 
-            .rj-links { position: absolute; top: 100%; left: 0; width: 100%; background: var(--header-bg); flex-direction: column; gap: 0; display: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-top: 1px solid var(--border-color); }
-            .rj-links.active { display: flex; } 
-            .rj-links a { padding: 15px 20px; width: 100%; border-bottom: 1px solid var(--border-color); text-align: left; }
+            .products-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+            .rj-links { display: none; }
         }
-
-        /* --- PRODUCTS GRID --- */
-        .section-title { text-align: center; margin: 40px 0 20px; }
-        .section-title h2 { font-size: 28px; font-weight: 800; color: var(--text-color); }
-        .underline { width: 60px; height: 3px; background: var(--accent); margin: 5px auto; }
-
-        .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; padding: 20px 5% 60px; }
-        
-        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; transition: 0.3s; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .product-card img { width: 100%; height: 250px; object-fit: cover; border-radius: 6px; margin-bottom: 15px; }
-        
-        .product-card h3 { font-size: 18px; margin-bottom: 10px; color: var(--text-color); }
-        .price-tag { font-size: 20px; font-weight: 800; color: var(--accent); margin-bottom: 15px; }
-        
-        .add-btn { width: 100%; padding: 12px; background: transparent; color: var(--accent); border: 2px solid var(--accent); font-weight: 700; cursor: pointer; border-radius: 6px; transition: 0.3s; font-size: 15px; }
-        .add-btn:hover { background: var(--accent); color: white; }
     </style>
 </head>
 <body>
 
 <header class="rj-header-wrapper">
     <div class="rj-navbar">
-        <button class="rj-menu-toggle" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-        
         <a href="index.html" class="rj-logo">RJ <span>SPORTS</span></a>
-        
-        <nav class="rj-links" id="nav-links">
-            <a href="cricket.html" style="color: var(--accent);">CRICKET HUB</a>
+        <nav class="rj-links">
+            <a href="cricket.html" style="color:var(--accent)">CRICKET</a>
             <a href="footwear.html">FOOTWEAR</a>
-            <a href="orders.html" id="login-link">MY ORDERS</a>
-            <a href="settings.html"><i class="fas fa-cog"></i> SETTINGS</a>
+            <a href="orders.html">ORDERS</a>
         </nav>
-
         <div class="rj-icons-group">
-            <button id="theme-toggle" class="rj-theme-btn">🌙</button>
-            <a href="cart.html" class="rj-cart-wrapper">
-                <span class="rj-cart-icon">🛒</span>
-                <span class="rj-badge" id="cart-count">0</span>
-            </a>
+            <a href="cart.html" style="position:relative; text-decoration:none; font-size:20px;">🛒<span class="rj-badge" id="cart-count">0</span></a>
         </div>
     </div>
 </header>
 
-<div class="section-title">
-    <h2>CRICKET HUB</h2>
-    <div class="underline"></div>
+<div class="main-container">
+    <h2 style="margin-bottom: 25px; font-weight: 800;">Cricket Professional Gear</h2>
+    
+    <div class="products-grid" id="cricket-grid">
+        
+        <div class="product-card" data-id="c1" data-name="MRF Genius Grand Edition" data-price="4500">
+            <div class="img-container"><img src="english willow bat.jpg" onerror="this.src='https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=400'"></div>
+            <div class="product-info">
+                <span class="brand">MRF</span>
+                <h3 class="name">Genius Grand Edition Bat</h3>
+                <p class="price">₹4,500</p>
+            </div>
+            <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+        </div>
+
+        
+
+        <div class="product-card" data-id="c3" data-name="Premium Leather Ball (White)" data-price="450">
+            <div class="img-container"><img src="leather ball.jpg" onerror="this.src='https://images.unsplash.com/photo-1593341646782-e0b495cff86d?q=80&w=400'"></div>
+            <div class="product-info">
+                <span class="brand">RJ Brand</span>
+                <h3 class="name">Quality Leather Ball</h3>
+                <p class="price">₹450</p>
+            </div>
+            <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+        </div>
+
+        <div class="product-card" data-id="c4" data-name="SS Pro Batting Pads" data-price="1800">
+            <div class="img-container"><img src="SS Pro Batting Pads.jpg" onerror="this.src='https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?q=80&w=400'"></div>
+            <div class="product-info">
+                <span class="brand">SS</span>
+                <h3 class="name">Professional Batting Pads</h3>
+                <p class="price">₹1,800</p>
+            </div>
+            <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+        </div>
+
+        <div class="product-card" data-id="c5" data-name="Shrey Masterclass Helmet" data-price="2800">
+            <div class="img-container"><img src="Shrey Masterclass Helmet.jpg" onerror="this.src='https://images.unsplash.com/photo-1589487391730-58f20eb2c308?q=80&w=400'"></div>
+            <div class="product-info">
+                <span class="brand">Shrey</span>
+                <h3 class="name">Masterclass Air Helmet</h3>
+                <p class="price">₹2,800</p>
+            </div>
+            <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+        </div>
+
+        <div class="product-card" data-id="c6" data-name="Kookaburra Ghost Gloves" data-price="1200">
+            <div class="img-container"><img src="Kookaburra Ghost Gloves.jpg" onerror="this.src='https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?q=80&w=400'"></div>
+            <div class="product-info">
+                <span class="brand">Kookaburra</span>
+                <h3 class="name">Ghost Edition Gloves</h3>
+                <p class="price">₹1,200</p>
+            </div>
+            <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
+        </div>
+
+    </div>
 </div>
 
-<section class="categories">
-    <div class="product-card" data-id="c1" data-name="English Willow Bat" data-price="12500">
-        <img src="english willow bat.jpg" alt="Bat" onerror="this.src='https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=600'">
-        <h3>ENGLISH WILLOW BAT</h3>
-        <div class="price-tag">₹12,500</div>
-        <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
-    </div>
-
-    <div class="product-card" data-id="c2" data-name="Pro Batting Gloves" data-price="1450">
-        <img src="batting gloves.jpg" alt="Gloves" onerror="this.src='https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=600'">
-        <h3>PRO BATTING GLOVES</h3>
-        <div class="price-tag">₹1,450</div>
-        <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
-    </div>
-
-    <div class="product-card" data-id="c3" data-name="Batting Leg Guards" data-price="2200">
-        <img src="leg guards.jpg" alt="Leg Guards" onerror="this.src='https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=600'">
-        <h3>LEG GUARDS</h3>
-        <div class="price-tag">₹2,200</div>
-        <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
-    </div>
-
-    <div class="product-card" data-id="c4" data-name="Premium Leather Ball" data-price="450">
-        <img src="leather ball.jpg" alt="Ball" onerror="this.src='https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=600'">
-        <h3>LEATHER BALL</h3>
-        <div class="price-tag">₹450</div>
-        <button class="add-btn" onclick="addToCart(this)">ADD TO CART</button>
-    </div>
-</section>
-
 <script>
-    // 1. Cart Management 
-    document.addEventListener('DOMContentLoaded', updateCartBadge);
+    // 🔴 १. डेटाबेसवरून लाईव्ह स्टॉक खेचून लागू करणे
+    async function applyLiveStock() {
+        try {
+            const res = await fetch('/api/stock');
+            const data = await res.json();
+            
+            if(data.success) {
+                data.stocks.forEach(stockItem => {
+                    const card = document.querySelector(`.product-card[data-id="${stockItem.productId}"]`);
+                    if(card && stockItem.isOutOfStock) {
+                        card.classList.add('out-of-stock');
+                        const badge = document.createElement('div');
+                        badge.className = 'stock-badge';
+                        badge.innerText = 'SOLD OUT';
+                        card.appendChild(badge);
+                        
+                        const btn = card.querySelector('.add-btn');
+                        btn.innerText = 'OUT OF STOCK';
+                        btn.disabled = true;
+                    }
+                });
+            }
+        } catch (err) { console.error("Stock fetch error:", err); }
+    }
 
+    // २. कार्टमध्ये ऍड करणे
     function addToCart(btn) {
         const card = btn.closest('.product-card');
-        const product = {
-            id: card.dataset.id,
-            name: card.dataset.name,
-            price: parseInt(card.dataset.price),
-            image: card.querySelector('img').src,
-            quantity: 1,
-            size: "Standard" 
-        };
+        const id = card.getAttribute('data-id');
+        const name = card.getAttribute('data-name');
+        const price = parseFloat(card.getAttribute('data-price'));
+        const img = card.querySelector('img').src;
 
         let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
-        const existingIndex = cart.findIndex(item => item.id === product.id);
+        const existing = cart.find(i => i.id === id);
 
-        if (existingIndex > -1) {
-            cart[existingIndex].quantity += 1;
+        if (existing) {
+            existing.quantity += 1;
         } else {
-            cart.push(product);
+            cart.push({ id, name, price, image: img, quantity: 1 });
         }
 
         localStorage.setItem('rj_cart', JSON.stringify(cart));
-        window.location.href = 'cart.html'; 
+        updateBadge();
+        alert(name + " यशस्वीरित्या कार्टमध्ये ऍड झाले!");
     }
 
-    function updateCartBadge() {
+    // ३. कार्ट बॅज अपडेट
+    function updateBadge() {
         const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
         const count = cart.reduce((total, item) => total + item.quantity, 0);
         document.getElementById('cart-count').innerText = count;
     }
 
-    // 2. Hamburger Menu & Authentication Logic 
-    document.addEventListener("DOMContentLoaded", () => {
-        // Menu Toggle Logic (हे मेनू उघडण्याचे काम करते)
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const navLinks = document.getElementById('nav-links');
-        
-        if(menuBtn) {
-            menuBtn.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-                const icon = menuBtn.querySelector('i');
-                if(navLinks.classList.contains('active')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
-        }
-
-        // Login Check
-        const user = localStorage.getItem('rj_loggedInUser');
-        const loginLink = document.querySelector('a[id="login-link"]'); 
-        
-        if(user && loginLink) {
-            loginLink.innerHTML = `👤 Hi, ${user.split(' ')[0]}`;
-            loginLink.href = "orders.html";
-        }
-    });
-
-    // 3. Universal Dark Mode Logic 
-    document.addEventListener("DOMContentLoaded", () => {
-        const themeBtn = document.getElementById('theme-toggle');
-        const body = document.body;
-        
-        if(localStorage.getItem('rj_theme') === 'dark') {
-            body.classList.add('dark-mode');
-            if(themeBtn) themeBtn.innerText = '☀️';
-        }
-
-        if(themeBtn) {
-            themeBtn.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-                const isDark = body.classList.contains('dark-mode');
-                themeBtn.innerText = isDark ? '☀️' : '🌙';
-                localStorage.setItem('rj_theme', isDark ? 'dark' : 'light');
-            });
-        }
-    });
+    window.onload = () => {
+        applyLiveStock();
+        updateBadge();
+    };
 </script>
 </body>
 </html>
