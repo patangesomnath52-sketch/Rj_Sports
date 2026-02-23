@@ -10,6 +10,33 @@
         if(localStorage.getItem('rj_theme') === 'dark') { document.documentElement.classList.add('dark-mode'); }
     </script>
     <style>
+    /* ... तुमचे जुने स्टाईल्स राहू द्या, पण हे नवीन ऍड करा ... */
+
+    /* मोबाईल मेनू toggle साठी */
+    .rj-menu-toggle { display: none; background: none; border: none; font-size: 24px; color: var(--text); cursor: pointer; outline: none; }
+
+    .rj-links { display: flex; gap: 20px; align-items: center; }
+    .rj-links a { text-decoration: none; color: var(--text); font-weight: 800; font-size: 14px; text-transform: uppercase; transition: 0.3s; }
+    .rj-links a:hover { color: var(--accent); }
+
+    @media (max-width: 768px) {
+        .header { padding: 15px 20px; }
+        .rj-menu-toggle { display: block; order: 1; } /* हॅमबर्गर बटन डावीकडे */
+        .logo { position: absolute; left: 50%; transform: translateX(-50%); order: 2; } /* लोगो मध्यभागी */
+        
+        .rj-links { 
+            position: absolute; top: 100%; left: 0; width: 100%; 
+            background: var(--header); flex-direction: column; 
+            gap: 0; display: none; /* सुरुवातीला लपवलेला */
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1); 
+            border-top: 1px solid var(--border); 
+            z-index: 999;
+        }
+        .rj-links.active { display: flex; } /* 'active' क्लास आल्यावर मेनू दिसेल */
+        .rj-links a { padding: 15px 20px; width: 100%; border-bottom: 1px solid var(--border); text-align: left; }
+    }
+</style>
+    <style>
         :root { --bg: #f4f6f8; --text: #1f2937; --header: #fff; --accent: #ff3f6c; --border: #e5e7eb; }
         .dark-mode { --bg: #121212; --text: #e5e7eb; --header: #1f2937; --border: #374151; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
@@ -52,18 +79,21 @@
 </head>
 <body>
 
-<header class="rj-header-wrapper">
-    <div class="rj-navbar">
-        <a href="index.html" class="rj-logo">RJ <span>SPORTS</span></a>
-        <nav class="rj-links">
-            <a href="cricket.html" style="color:var(--accent)">CRICKET</a>
-            <a href="footwear.html">FOOTWEAR</a>
-        </nav>
-        <div>
-            <a href="cart.html" style="position:relative; text-decoration:none; font-size: 22px;">🛒
-                <span id="cart-count" style="position:absolute; top:-8px; right:-12px; background:var(--accent); color:white; font-size:11px; height:18px; min-width:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">0</span>
-            </a>
-        </div>
+<header class="header">
+    <button class="rj-menu-toggle" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+    
+    <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
+    
+    <nav class="rj-links" id="nav-links">
+        <a href="cricket.html">CRICKET HUB</a>
+        <a href="footwear.html" style="color: var(--accent);">FOOTWEAR</a>
+        <a href="index.html">HOME</a>
+    </nav>
+
+    <div style="position:relative; order: 3;">
+        <a href="cart.html" style="text-decoration:none; font-size:20px;">🛒 
+            <span id="cart-count" style="background:var(--accent); color:white; border-radius:50%; padding:2px 6px; font-size:10px; position:absolute; top:-10px; right:-10px;">0</span>
+        </a>
     </div>
 </header>
 
