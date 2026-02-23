@@ -16,10 +16,12 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
         .img-preview { display: flex; gap: 5px; }
-        .img-preview img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+        .img-preview img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #eee; }
         .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
         .instock { background: #dcfce7; color: #15803d; }
         .soldout { background: #fee2e2; color: #b91c1c; }
+        
+        .file-input-wrapper { grid-column: span 2; background: #fafafa; padding: 10px; border: 2px dashed #ddd; border-radius: 6px; text-align: center; }
     </style>
 </head>
 <body>
@@ -31,8 +33,14 @@
             <input type="text" name="productId" placeholder="Product ID (e.g., s11)" required>
             <input type="text" name="name" placeholder="Product Name" required>
             <input type="number" name="price" placeholder="Price" required>
-            <select name="category"><option value="Footwear">Footwear</option><option value="Cricket">Cricket</option></select>
-            <input type="file" name="productImages" multiple accept="image/*" required style="grid-column: span 2;">
+            <select name="category">
+                <option value="Footwear">Footwear</option>
+                <option value="Cricket">Cricket</option>
+            </select>
+            <div class="file-input-wrapper">
+                <label>Select up to 3 Images: </label>
+                <input type="file" name="productImages" multiple accept="image/*" required>
+            </div>
             <button type="submit" class="btn-add">UPLOAD TO SITE</button>
         </div>
     </form>
@@ -41,48 +49,94 @@
 <div class="card">
     <h2>📦 Live Inventory & Stock Adjustment</h2>
     <table>
-        <thead><tr><th>Product</th><th>Status</th><th>Sizes</th><th>Action</th></tr></thead>
+        <thead>
+            <tr><th>Product</th><th>Status</th><th>Sizes</th><th>Action</th></tr>
+        </thead>
         <tbody id="inventory-list"></tbody>
     </table>
 </div>
 
+
+
 <script>
     // १. इन्व्हेंटरी लोड करणे
     async function loadInventory() {
-        const res = await fetch('/api/products');
-        const data = await res.json();
-        const list = document.getElementById('inventory-list');
-        list.innerHTML = data.products.map(p => `
-            <tr>
-                <td>
-                    <div class="img-preview">${p.images.map(img => `<img src="${img}">`).join('')}</div>
-                    <strong>${p.name}</strong><br><small>${p.productId}</small>
-                </td>
-                <td><span class="status-pill ${!p.isOutOfStock ? 'instock' : 'soldout'}">${!p.isOutOfStock ? 'IN STOCK' : 'SOLD OUT'}</span></td>
-                <td><input type="text" value="${p.disabledSizes.join(', ')}" onchange="updateSizes('${p.productId}', this.value)" style="width:60px; padding:5px;"></td>
-                <td><button onclick="toggleStock('${p.productId}', ${p.isOutOfStock})" style="padding:5px 10px; cursor:pointer;">Change</button></td>
-            </tr>
-        `).join('');
+        try {
+            const res = await fetch('/api/products');
+            const data = await res.json();
+            const list = document.getElementById('inventory-list');
+            
+            if (data.success) {
+                list.innerHTML = data.products.map(p => `
+                    <tr>
+                        <td>
+                            <div class="img-preview">
+                                ${p.images && p.images.length > 0 
+                                    ? p.images.map(img => `<img src="/${img}" onerror="this.src='https://via.placeholder.com/40?text=Error'">`).join('') 
+                                    : '<img src="https://via.placeholder.com/40?text=No+Img">'}
+                            </div>
+                            <strong>${p.name}</strong><br><small>${p.productId}</small>
+                        </td>
+                        <td><span class="status-pill ${!p.isOutOfStock ? 'instock' : 'soldout'}">${!p.isOutOfStock ? 'IN STOCK' : 'SOLD OUT'}</span></td>
+                        <td><input type="text" value="${p.disabledSizes ? p.disabledSizes.join(', ') : ''}" onchange="updateSizes('${p.productId}', this.value)" style="width:60px; padding:5px;" placeholder="e.g. 7, 9"></td>
+                        <td><button onclick="toggleStock('${p.productId}', ${p.isOutOfStock})" style="padding:5px 10px; cursor:pointer;">Change</button></td>
+                    </tr>
+                `).join('');
+            }
+        } catch (err) {
+            console.error("Error loading inventory:", err);
+        }
     }
 
     // २. ऍड प्रॉडक्ट
     document.getElementById('productForm').onsubmit = async (e) => {
         e.preventDefault();
+        const btn = e.target.querySelector('button');
+        btn.innerText = "UPLOADING...";
+        btn.disabled = true;
+
         const formData = new FormData(e.target);
-        const res = await fetch('/api/products/add', { method: 'POST', body: formData });
-        const data = await res.json();
-        if(data.success) { alert("✅ Done!"); loadInventory(); e.target.reset(); }
+        try {
+            const res = await fetch('/api/products/add', { method: 'POST', body: formData });
+            const data = await res.json();
+            if(data.success) { 
+                alert("✅ Done! Product Added Successfully."); 
+                loadInventory(); 
+                e.target.reset(); 
+            } else {
+                alert("❌ Error: " + data.message);
+            }
+        } catch (err) {
+            alert("❌ Server connection failed.");
+        } finally {
+            btn.innerText = "UPLOAD TO SITE";
+            btn.disabled = false;
+        }
     };
 
     // ३. स्टॉक आणि साईझ अपडेट
-    async function toggleStock(productId, current) {
-        await fetch('/api/stock/update', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({productId, isOutOfStock: !current}) });
-        loadInventory();
+    async function toggleStock(productId, currentStatus) {
+        try {
+            await fetch('/api/stock/update', { 
+                method: 'POST', 
+                headers: {'Content-Type':'application/json'}, 
+                body: JSON.stringify({productId, isOutOfStock: !currentStatus}) 
+            });
+            loadInventory();
+        } catch (err) { alert("Failed to update stock"); }
     }
+
     async function updateSizes(productId, val) {
-        const disabledSizes = val.split(',').map(s => s.trim()).filter(s => s !== "");
-        await fetch('/api/stock/update', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({productId, disabledSizes}) });
-        alert("Sizes updated!");
+        try {
+            const disabledSizes = val.split(',').map(s => s.trim()).filter(s => s !== "");
+            await fetch('/api/stock/update', { 
+                method: 'POST', 
+                headers: {'Content-Type':'application/json'}, 
+                body: JSON.stringify({productId, disabledSizes}) 
+            });
+            alert("Sizes updated!");
+            loadInventory();
+        } catch (err) { alert("Failed to update sizes"); }
     }
 
     window.onload = loadInventory;

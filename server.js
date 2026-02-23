@@ -90,10 +90,26 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post('/api/products/add', upload.array('productImages', 3), async (req, res) => {
-    const imagePaths = req.files.map(file => '/uploads/' + file.filename);
-    const newProduct = new Product({ ...req.body, images: imagePaths, brand: req.body.name.split(' ')[0] });
-    await newProduct.save();
-    res.json({ success: true });
-});
+    try {
+        // इमेजचा पाथ अचूक करणे
+        const imagePaths = req.files.map(file => 'uploads/' + file.filename);
+        
+        const newProduct = new Product({ 
+            productId: req.body.productId,
+            name: req.body.name,
+            price: req.body.price,
+            category: req.body.category,
+            brand: req.body.name.split(' ')[0], // नावातील पहिला शब्द ब्रँड म्हणून घेणे
+            images: imagePaths,
+            isOutOfStock: false,
+            disabledSizes: []
+        });
 
+        await newProduct.save();
+        res.json({ success: true, message: "प्रॉडक्ट अपलोड झाला!" });
+    } catch (err) {
+        console.error("Upload Error:", err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
 app.listen(process.env.PORT || 3000, () => console.log(`🚀 Server is LIVE!`));
