@@ -4,45 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details | RJ Sports</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
         body { background: #fff; color: #1f2937; }
-        .header { background: #fff; padding: 15px 5%; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; }
-        .logo { font-size: 24px; font-weight: 900; text-decoration: none; color: #1f2937; }
+        
+        /* HEADER */
+        .header { background: #fff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { font-size: 24px; font-weight: 900; text-decoration: none; color: #1f2937; text-transform: uppercase; }
         .logo span { color: #ff3f6c; }
+        .cart-icon { position: relative; text-decoration: none; font-size: 20px; color: #1f2937; }
+        .cart-count { position: absolute; top: -8px; right: -12px; background: #ff3f6c; color: white; font-size: 11px; font-weight: bold; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         
-        .product-layout { max-width: 1200px; margin: 40px auto; display: flex; gap: 50px; padding: 0 20px; }
-        .image-sec { width: 50%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .image-sec img { width: 100%; height: auto; object-fit: cover; border-radius: 8px; }
+        /* BACK BUTTON */
+        .back-nav { max-width: 1200px; margin: 20px auto 0; padding: 0 20px; }
+        .back-nav a { text-decoration: none; color: #535665; font-weight: 600; font-size: 14px; transition: 0.2s; }
+        .back-nav a:hover { color: #ff3f6c; }
+
+        /* PRODUCT LAYOUT */
+        .product-layout { max-width: 1200px; margin: 20px auto 50px; display: flex; gap: 50px; padding: 0 20px; }
+        .image-sec { width: 55%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
+        .image-sec img { width: 100%; height: auto; object-fit: cover; border-radius: 8px; transition: 0.3s; cursor: zoom-in; }
+        .image-sec img:hover { transform: scale(1.02); }
         
-        .detail-sec { width: 50%; padding-top: 20px; }
-        .brand { font-size: 22px; font-weight: bold; margin-bottom: 5px; }
-        .name { font-size: 20px; color: #535665; margin-bottom: 20px; }
-        .price { font-size: 28px; font-weight: bold; margin-bottom: 20px; }
+        .detail-sec { width: 45%; padding-top: 10px; }
+        .brand { font-size: 24px; font-weight: 800; margin-bottom: 5px; text-transform: uppercase; color: #1f2937; }
+        .name { font-size: 20px; color: #535665; margin-bottom: 20px; font-weight: 600; }
+        .price { font-size: 28px; font-weight: 800; margin-bottom: 20px; color: #1f2937; }
         
-        .sizes-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; }
-        .size-grid { display: flex; gap: 10px; margin-bottom: 30px; }
-        .size-btn { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #bfc0c6; background: #fff; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .sizes-title { font-size: 16px; font-weight: 800; margin-bottom: 15px; display: flex; justify-content: space-between; color: #1f2937; }
+        .size-grid { display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap; }
+        .size-btn { width: 50px; height: 50px; border-radius: 50%; border: 1px solid #bfc0c6; background: #fff; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; color: #1f2937; }
         .size-btn:hover:not(:disabled) { border-color: #ff3f6c; color: #ff3f6c; }
         .size-btn.selected { border-color: #ff3f6c; background: #ff3f6c; color: #fff; }
         .size-btn:disabled { background: #f4f4f5; color: #d2d2d6; text-decoration: line-through; cursor: not-allowed; border-color:#eaeaec; }
         
-        .btn-add { width: 100%; padding: 18px; background: #ff3f6c; color: white; font-size: 16px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; gap: 10px; }
-        .btn-add:disabled { background: #a7a9af; cursor: not-allowed; }
+        .btn-add { width: 100%; padding: 18px; background: #ff3f6c; color: white; font-size: 16px; font-weight: 800; border: none; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 12px rgba(255, 63, 108, 0.3); }
+        .btn-add:hover:not(:disabled) { background: #e02f5c; transform: translateY(-2px); }
+        .btn-add:disabled { background: #a7a9af; cursor: not-allowed; box-shadow: none; transform: none; }
         
-        @media(max-width: 768px){ .product-layout { flex-direction: column; } .image-sec, .detail-sec { width: 100%; } }
+        .delivery-info { margin-top: 35px; padding: 20px; border: 1px solid #eaeaec; border-radius: 8px; font-size: 15px; color: #535665; line-height: 1.8; font-weight: 600; background: #f9fafb; }
+        .delivery-info i { color: #ff3f6c; margin-right: 8px; width: 20px; text-align: center; }
+        
+        .loading-text { margin: 50px auto; font-size: 20px; font-weight: 800; color: #6b7280; text-align: center; width: 100%; }
+
+        @media(max-width: 768px){ 
+            .product-layout { flex-direction: column; gap: 25px; margin-top: 20px; } 
+            .image-sec, .detail-sec { width: 100%; } 
+            .image-sec { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
 <header class="header">
     <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
-    <a href="cart.html" style="text-decoration:none; font-size:20px;">🛒 <span id="cart-count"></span></a>
+    <a href="cart.html" class="cart-icon">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cart-count">0</span>
+    </a>
 </header>
 
-<div class="product-layout" id="product-content">
-    <h2 style="margin: 50px auto;">Loading Product...</h2>
+<div class="back-nav">
+    <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i> Back to Products</a>
 </div>
+
+<div class="product-layout" id="product-content">
+    <div class="loading-text"><i class="fas fa-spinner fa-spin"></i> Loading Product Details...</div>
+</div>
+
+
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
@@ -50,65 +82,83 @@
 
     let currentProduct = null;
 
+    // १. कार्ट काउंट अपडेट करणे
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+        const countSpan = document.getElementById('cart-count');
+        if(countSpan) countSpan.innerText = cart.length;
+    }
+
+    // २. प्रॉडक्ट लोड करणे
     async function loadDetail() {
-        const res = await fetch(`/api/products/${productId}`);
-        const data = await res.json();
-        
-        if(!data.success) {
-            document.getElementById('product-content').innerHTML = "<h2>Product Not Found</h2>";
+        if(!productId) {
+            document.getElementById('product-content').innerHTML = "<div class='loading-text'>Product ID Not Found!</div>";
             return;
         }
 
-        currentProduct = data.product;
-        const p = currentProduct;
-        
-        const imagesHtml = p.images.map(img => `<img src="${img}">`).join('');
-        
-        const sizes = [6, 7, 8, 9, 10];
-        const disabledArray = p.disabledSizes || [];
-        const sizesHtml = sizes.map(sz => {
-            const isDisabled = disabledArray.includes(sz.toString());
-            return `<button class="size-btn" ${isDisabled ? 'disabled' : ''} onclick="selectSize(this)">${sz}</button>`;
-        }).join('');
+        try {
+            const res = await fetch(`/api/products/${productId}`);
+            const data = await res.json();
+            
+            if(!data.success) {
+                document.getElementById('product-content').innerHTML = "<div class='loading-text'>Product Not Found or Sold Out</div>";
+                return;
+            }
 
-        document.getElementById('product-content').innerHTML = `
-            <div class="image-sec">
-                ${imagesHtml}
-            </div>
-            <div class="detail-sec">
-                <div class="brand">${p.brand || 'PREMIUM'}</div>
-                <div class="name">${p.name}</div>
-                <hr style="border:0; border-top:1px solid #eee; margin-bottom:20px;">
-                <div class="price">Rs. ${p.price}</div>
-                
-                <div class="sizes-title">
-                    <span>SELECT SIZE (UK)</span>
-                    <span style="color:#ff3f6c; cursor:pointer; font-size:14px;">Size Chart</span>
+            currentProduct = data.product;
+            const p = currentProduct;
+            
+            const imagesHtml = p.images.map(img => `<img src="${img}" onerror="this.src='https://via.placeholder.com/600x600'">`).join('');
+            
+            const sizes = [6, 7, 8, 9, 10];
+            const disabledArray = p.disabledSizes || [];
+            const sizesHtml = sizes.map(sz => {
+                const isDisabled = disabledArray.includes(sz.toString());
+                return `<button class="size-btn" ${isDisabled ? 'disabled' : ''} onclick="selectSize(this)">${sz}</button>`;
+            }).join('');
+
+            document.getElementById('product-content').innerHTML = `
+                <div class="image-sec">
+                    ${imagesHtml}
                 </div>
-                <div class="size-grid">${sizesHtml}</div>
-                
-                <button class="btn-add" onclick="addToCart()" ${p.isOutOfStock ? 'disabled' : ''}>
-                    🛒 ${p.isOutOfStock ? 'OUT OF STOCK' : 'ADD TO BAG'}
-                </button>
-                
-                <div style="margin-top: 30px; padding: 20px; border: 1px solid #eee; border-radius: 4px; font-size: 14px; color: #535665; line-height: 1.6;">
-                    <strong>DELIVERY OPTIONS 🚚</strong><br>
-                    100% Original Products<br>
-                    Pay on delivery might be available<br>
-                    Easy 14 days returns and exchanges
+                <div class="detail-sec">
+                    <div class="brand">${p.brand || 'PREMIUM'}</div>
+                    <div class="name">${p.name}</div>
+                    <hr style="border:0; border-top:1px solid #eaeaec; margin-bottom:20px;">
+                    <div class="price">₹ ${p.price}</div>
+                    
+                    <div class="sizes-title">
+                        <span>SELECT SIZE (UK)</span>
+                    </div>
+                    <div class="size-grid">${sizesHtml}</div>
+                    
+                    <button class="btn-add" onclick="addToCart()" ${p.isOutOfStock ? 'disabled' : ''}>
+                        <i class="fas fa-shopping-bag"></i> ${p.isOutOfStock ? 'OUT OF STOCK' : 'ADD TO BAG'}
+                    </button>
+                    
+                    <div class="delivery-info">
+                        <strong>DELIVERY OPTIONS</strong><br>
+                        <i class="fas fa-truck"></i> Fast Delivery Available<br>
+                        <i class="fas fa-money-bill-wave"></i> Pay on delivery might be available<br>
+                        <i class="fas fa-exchange-alt"></i> Easy 14 days returns and exchanges
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+        } catch (err) {
+            document.getElementById('product-content').innerHTML = "<div class='loading-text'>Error Loading Data. Server Might be Down.</div>";
+        }
     }
 
+    // ३. साईझ सिलेक्ट करणे
     function selectSize(btn) {
         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
     }
 
+    // ४. कार्टमध्ये ऍड करणे
     function addToCart() {
         const selectedBtn = document.querySelector('.size-btn.selected');
-        if(!selectedBtn) return alert("Please select a size!");
+        if(!selectedBtn) return alert("Please select a size first!");
         
         let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
         cart.push({
@@ -116,14 +166,21 @@
             name: currentProduct.name,
             price: currentProduct.price,
             size: selectedBtn.innerText,
-            image: currentProduct.images[0],
+            image: currentProduct.images[0], // पहिला फोटो कार्टमध्ये दिसेल
             quantity: 1
         });
         localStorage.setItem('rj_cart', JSON.stringify(cart));
+        
+        // कार्ट अपडेट करा आणि युजरला कार्ट पेजवर पाठवा
+        updateCartCount();
         window.location.href = 'cart.html';
     }
 
-    window.onload = loadDetail;
+    // पेज लोड झाल्यावर
+    window.onload = () => {
+        updateCartCount();
+        loadDetail();
+    };
 </script>
 </body>
 </html>

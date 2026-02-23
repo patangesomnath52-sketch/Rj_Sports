@@ -5,82 +5,207 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Footwear | RJ Sports</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
         body { background: #f4f6f8; color: #1f2937; }
-        .header { background: #fff; padding: 15px 5%; display: flex; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .logo { font-size: 24px; font-weight: 900; text-decoration: none; color: #1f2937; }
+        
+        .header { background: #fff; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .logo { font-size: 24px; font-weight: 900; text-decoration: none; color: #1f2937; text-transform: uppercase; }
         .logo span { color: #ff3f6c; }
+        .cart-icon { position: relative; text-decoration: none; font-size: 20px; color: #1f2937; }
+        .cart-count { position: absolute; top: -8px; right: -12px; background: #ff3f6c; color: white; font-size: 11px; font-weight: bold; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         
         .layout { display: flex; max-width: 1300px; margin: 30px auto; padding: 0 20px; gap: 30px; }
         
-        /* SIDEBAR (Myntra Style) */
-        .sidebar { width: 250px; background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; height: fit-content; }
-        .sidebar h3 { margin-bottom: 15px; font-size: 16px; text-transform: uppercase; border-bottom: 2px solid #f4f6f8; padding-bottom: 10px; }
-        .filter-group { margin-bottom: 20px; }
-        .filter-label { display: block; margin-bottom: 8px; font-size: 14px; color: #4b5563; cursor: pointer; }
+        .sidebar { width: 250px; background: #fff; padding: 25px 20px; border-radius: 8px; border: 1px solid #e5e7eb; height: fit-content; position: sticky; top: 90px; }
+        .sidebar h3 { margin-bottom: 20px; font-size: 16px; text-transform: uppercase; border-bottom: 2px solid #f4f6f8; padding-bottom: 10px; font-weight: 800; letter-spacing: 1px; }
+        .filter-group { margin-bottom: 25px; }
+        .filter-title { margin-bottom: 12px; font-size: 14px; font-weight: 700; color: #374151; }
+        .filter-label { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 14px; color: #4b5563; cursor: pointer; transition: 0.2s; text-transform: capitalize; }
+        .filter-label:hover { color: #ff3f6c; }
+        .filter-label input[type="checkbox"] { accent-color: #ff3f6c; width: 16px; height: 16px; cursor: pointer; }
         
-        /* PRODUCT GRID */
+        .mobile-filter-btn { display: none; background: #fff; border: 1px solid #e5e7eb; padding: 10px 15px; border-radius: 6px; font-weight: bold; margin-bottom: 20px; cursor: pointer; width: 100%; text-align: center; }
+        
         .main-content { flex: 1; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-        .card { background: #fff; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; position: relative; border: 1px solid #e5e7eb; }
-        .card:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.1); transform: translateY(-5px); }
-        .card img { width: 100%; height: 250px; object-fit: cover; }
-        .info { padding: 15px; }
-        .brand { font-size: 12px; font-weight: bold; color: #888; text-transform: uppercase; }
-        .name { font-size: 15px; margin: 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .price { font-size: 16px; font-weight: bold; color: #1f2937; }
-        .badge { position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.9); padding: 4px 8px; font-size: 11px; font-weight: bold; border-radius: 4px; }
+        .page-title { margin-bottom: 25px; font-weight: 800; font-size: 22px; display: flex; justify-content: space-between; align-items: center; }
+        .product-count { font-size: 14px; color: #6b7280; font-weight: 600; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 25px; }
+        .card { background: #fff; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; position: relative; border: 1px solid #e5e7eb; display: flex; flex-direction: column; }
+        .card:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.08); transform: translateY(-5px); }
+        .img-wrapper { position: relative; width: 100%; padding-top: 100%; overflow: hidden; background: #f9fafb; }
+        .img-wrapper img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:hover .img-wrapper img { transform: scale(1.05); }
+        
+        .info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
+        .brand { font-size: 12px; font-weight: 800; color: #878787; text-transform: uppercase; margin-bottom: 5px; }
+        .name { font-size: 15px; margin-bottom: 8px; font-weight: 600; color: #1f2937; display: -webkit-box; -webkit-line-cla: auto ; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+        .price { font-size: 16px; font-weight: 800; color: #1f2937; margin-top: auto; }
+        
+        .badge { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,0.95); padding: 5px 10px; font-size: 11px; font-weight: 800; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10; }
         .sold-out-badge { background: #ff3f6c; color: white; }
+        .premium-badge { color: #ff3f6c; border: 1px solid #ffe4e6; }
+        
+        .loading-text { grid-column: 1 / -1; text-align: center; padding: 50px; color: #6b7280; font-size: 16px; }
 
-        @media(max-width: 768px){ .layout { flex-direction: column; } .sidebar { width: 100%; } }
+        @media(max-width: 768px){ 
+            .layout { flex-direction: column; padding: 0 15px; margin-top: 20px; gap: 15px; } 
+            .sidebar { width: 100%; position: static; display: none; padding: 15px; } 
+            .sidebar.active { display: block; }
+            .mobile-filter-btn { display: block; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+            .info { padding: 12px; }
+            .name { font-size: 14px; }
+            .price { font-size: 15px; }
+            .badge { padding: 3px 6px; font-size: 10px; }
+        }
     </style>
 </head>
 <body>
 
 <header class="header">
     <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
-    <a href="cart.html" style="text-decoration:none; font-size:20px;">🛒</a>
+    <a href="cart.html" class="cart-icon">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cart-count">0</span>
+    </a>
 </header>
 
 <div class="layout">
-    <aside class="sidebar">
+    <button class="mobile-filter-btn" onclick="toggleFilters()"><i class="fas fa-filter"></i> Filters & Sorting</button>
+    
+    <aside class="sidebar" id="sidebar">
         <h3>Filters</h3>
+        
         <div class="filter-group">
-            <h4 style="margin-bottom: 10px; font-size: 14px;">Categories</h4>
-            <label class="filter-label"><input type="checkbox" checked> Running Shoes</label>
-            <label class="filter-label"><input type="checkbox" checked> Sneakers</label>
-            <label class="filter-label"><input type="checkbox" checked> Sports Shoes</label>
+            <div class="filter-title">Brands</div>
+            <div id="dynamic-brand-filters">
+                </div>
+        </div>
+        
+        <div class="filter-group">
+            <div class="filter-title">Availability</div>
+            <label class="filter-label"><input type="checkbox" id="instock-filter" onchange="applyFilters()"> Exclude Sold Out</label>
         </div>
     </aside>
 
     <main class="main-content">
-        <h2 style="margin-bottom: 20px;">Premium Footwear</h2>
-        <div class="grid" id="product-grid">Loading...</div>
+        <div class="page-title">
+            Premium Footwear 
+            <span class="product-count" id="product-count">0 Items</span>
+        </div>
+        <div class="grid" id="product-grid">
+            <div class="loading-text"><i class="fas fa-spinner fa-spin"></i> Loading latest collection...</div>
+        </div>
     </main>
 </div>
 
 <script>
+    let allProducts = [];
+
+    // १. कार्ट काउंट
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+        const countSpan = document.getElementById('cart-count');
+        if(countSpan) countSpan.innerText = cart.length;
+    }
+
+    // २. मोबाईल टॉगल
+    function toggleFilters() {
+        document.getElementById('sidebar').classList.toggle('active');
+    }
+
+    // ३. डेटाबेस मधून माल आणणे
     async function loadProducts() {
-        const res = await fetch('/api/products');
-        const data = await res.json();
-        const grid = document.getElementById('product-grid');
+        try {
+            const res = await fetch('/api/products');
+            const data = await res.json();
+            
+            if(data.success) {
+                allProducts = data.products.filter(p => p.category === 'Footwear');
+                renderBrandFilters(); // नवीन फंक्शन: ब्रँड चेकमार्क्स बनवणे
+                applyFilters(); 
+            } else {
+                showError("डेटा लोड करण्यात अडचण येत आहे.");
+            }
+        } catch (err) {
+            showError("सर्व्हरशी संपर्क होत नाहीये.");
+        }
+    }
+
+    // ४. आपोआप ब्रँड चेकमार्क्स बनवणे (Smart Feature)
+    function renderBrandFilters() {
+        const container = document.getElementById('dynamic-brand-filters');
         
-        const footwear = data.products.filter(p => p.category === 'Footwear');
-        
-        grid.innerHTML = footwear.map(p => `
-            <div class="card" onclick="window.location.href='product.html?id=${p.productId}'">
-                ${p.isOutOfStock ? `<div class="badge sold-out-badge">SOLD OUT</div>` : `<div class="badge">⭐ Premium</div>`}
-                <img src="${p.images[0]}" alt="${p.name}">
-                <div class="info">
-                    <div class="brand">${p.brand || 'BRAND'}</div>
-                    <div class="name">${p.name}</div>
-                    <div class="price">Rs. ${p.price}</div>
-                </div>
-            </div>
+        // डेटाबेसमधील सर्व युनिक ब्रँड्स शोधून काढणे
+        const uniqueBrands = [...new Set(allProducts.map(p => {
+            return (p.brand || (p.name ? p.name.split(' ')[0] : 'Unknown')).toUpperCase();
+        }))];
+
+        container.innerHTML = uniqueBrands.map(brand => `
+            <label class="filter-label">
+                <input type="checkbox" value="${brand}" class="brand-filter" onchange="applyFilters()"> ${brand}
+            </label>
         `).join('');
     }
-    window.onload = loadProducts;
+
+    // ५. फिल्टर्स लावणे
+    function applyFilters() {
+        const grid = document.getElementById('product-grid');
+        const countDisplay = document.getElementById('product-count');
+        
+        const selectedBrands = Array.from(document.querySelectorAll('.brand-filter:checked')).map(cb => cb.value.toUpperCase());
+        const excludeSoldOut = document.getElementById('instock-filter').checked;
+
+        const filteredProducts = allProducts.filter(p => {
+            const productBrand = (p.brand || (p.name ? p.name.split(' ')[0] : 'Unknown')).toUpperCase();
+            
+            // सर्वात महत्त्वाचा बदल: जर एकही बॉक्स चेक केलेला नसेल, तर सर्व शूज दाखवा!
+            const brandMatch = selectedBrands.length === 0 ? true : selectedBrands.includes(productBrand);
+            const stockMatch = excludeSoldOut ? !p.isOutOfStock : true;
+            
+            return brandMatch && stockMatch;
+        });
+
+        countDisplay.innerText = `${filteredProducts.length} Items`;
+
+        if (filteredProducts.length === 0) {
+            grid.innerHTML = "<div class='loading-text'>तुमच्या फिल्टरनुसार एकही शूज सापडला नाही.</div>";
+            return;
+        }
+
+        grid.innerHTML = filteredProducts.map(p => {
+            const imgUrl = p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/300x300?text=No+Image';
+            const brandName = p.brand || (p.name ? p.name.split(' ')[0] : 'Unknown');
+            
+            return `
+            <div class="card" onclick="window.location.href='product.html?id=${p.productId}'">
+                <div class="img-wrapper">
+                    ${p.isOutOfStock 
+                        ? `<div class="badge sold-out-badge">SOLD OUT</div>` 
+                        : `<div class="badge premium-badge"><i class="fas fa-star" style="font-size:8px;"></i> Premium</div>`}
+                    <img src="${imgUrl}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x300'">
+                </div>
+                <div class="info">
+                    <div class="brand">${brandName}</div>
+                    <div class="name">${p.name}</div>
+                    <div class="price">₹ ${p.price}</div>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function showError(msg) {
+        document.getElementById('product-grid').innerHTML = `<div class='loading-text'>${msg}</div>`;
+    }
+
+    window.onload = () => {
+        updateCartCount();
+        loadProducts();
+    };
 </script>
 </body>
 </html>
