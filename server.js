@@ -9,21 +9,26 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// १. फोल्डर स्ट्रक्चर मॅनेजमेंट
 const uploadDir = path.join(__dirname, 'public', 'uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Static फाईल्स सर्व्ह करण्यासाठी (public फोल्डर)
 app.use(express.static('public'));
 
-// १. MongoDB Connection (तुमचा सुरक्षित पासवर्ड)
+// २. MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://Ram_Jadhav:Ram%401234@cluster0.5ii6lfb.mongodb.net/rjsports?retryWrites=true&w=majority"; 
 
 mongoose.connect(MONGO_URI)
     .then(() => {
         console.log("✅ MongoDB Connected Successfully!");
-        seedDatabase(); // सर्व्हर चालू झाल्यावर जुने शूज चेक करेल
+        seedDatabase(); 
     })
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-// २. प्रॉडक्ट मॉडेल
+// ३. प्रॉडक्ट मॉडेल
 const Product = mongoose.model('Product', new mongoose.Schema({
     productId: { type: String, unique: true },
     name: String,
@@ -35,7 +40,7 @@ const Product = mongoose.model('Product', new mongoose.Schema({
     disabledSizes: { type: Array, default: [] }
 }));
 
-// ३. ऑटोमॅटिक जुने शूज डेटाबेसमध्ये टाकणे (Auto-Seed)
+// ४. ऑटो-सीड (जुन्या ६ शूजसाठी)
 async function seedDatabase() {
     const count = await Product.countDocuments();
     if (count === 0) {
@@ -52,17 +57,20 @@ async function seedDatabase() {
     }
 }
 
-// ४. API Routes
+// ५. API Routes
 app.get('/api/products', async (req, res) => {
-    const products = await Product.find();
-    res.json({ success: true, products });
+    try {
+        const products = await Product.find();
+        res.json({ success: true, products });
+    } catch (err) { res.status(500).json({ success: false }); }
 });
 
-// Myntra सारख्या डिटेल पेजसाठी खास API
 app.get('/api/products/:id', async (req, res) => {
-    const product = await Product.findOne({ productId: req.params.id });
-    if(product) res.json({ success: true, product });
-    else res.status(404).json({ success: false });
+    try {
+        const product = await Product.findOne({ productId: req.params.id });
+        if(product) res.json({ success: true, product });
+        else res.status(404).json({ success: false });
+    } catch (err) { res.status(500).json({ success: false }); }
 });
 
 app.post('/api/stock/update', async (req, res) => {
@@ -71,18 +79,16 @@ app.post('/api/stock/update', async (req, res) => {
         let updateData = {};
         if (isOutOfStock !== undefined) updateData.isOutOfStock = isOutOfStock;
         if (disabledSizes !== undefined) {
-            // "7, 9" असं आल्यास त्याला ॲरे मध्ये बदलणे
-            if(typeof disabledSizes === 'string') {
-                updateData.disabledSizes = disabledSizes.split(',').map(s => s.trim()).filter(s => s);
-            } else {
-                updateData.disabledSizes = disabledSizes;
-            }
+            updateData.disabledSizes = typeof disabledSizes === 'string' 
+                ? disabledSizes.split(',').map(s => s.trim()).filter(s => s)
+                : disabledSizes;
         }
         await Product.findOneAndUpdate({ productId }, { $set: updateData });
         res.json({ success: true });
     } catch (err) { res.status(500).json({ success: false }); }
 });
 
+// ६. इमेज अपलोड सेटिंग (Multer)
 const storage = multer.diskStorage({
     destination: uploadDir,
     filename: (req, file, cb) => cb(null, 'rj-' + Date.now() + path.extname(file.originalname))
@@ -91,7 +97,7 @@ const upload = multer({ storage: storage });
 
 app.post('/api/products/add', upload.array('productImages', 3), async (req, res) => {
     try {
-        // इमेजचा पाथ अचूक करणे
+        // इमेज पाथ अचूक करणे (पुढचा स्लॅश काढून)
         const imagePaths = req.files.map(file => 'uploads/' + file.filename);
         
         const newProduct = new Product({ 
@@ -99,7 +105,7 @@ app.post('/api/products/add', upload.array('productImages', 3), async (req, res)
             name: req.body.name,
             price: req.body.price,
             category: req.body.category,
-            brand: req.body.name.split(' ')[0], // नावातील पहिला शब्द ब्रँड म्हणून घेणे
+            brand: req.body.name ? req.body.name.split(' ')[0] : "PREMIUM",
             images: imagePaths,
             isOutOfStock: false,
             disabledSizes: []
@@ -112,4 +118,6 @@ app.post('/api/products/add', upload.array('productImages', 3), async (req, res)
         res.status(500).json({ success: false, message: err.message });
     }
 });
-app.listen(process.env.PORT || 3000, () => console.log(`🚀 Server is LIVE!`));
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server is LIVE on port ${PORT}!`));
