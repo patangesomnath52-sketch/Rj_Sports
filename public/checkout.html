@@ -11,213 +11,208 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
-        /* ... तुमचे आधीचे सर्व CSS तसेच ठेवा ... */
         :root {
             --bg-color: #f5f5f5;
             --text-color: #121212;
+            --header-bg: #fff;
+            --card-bg: #fff;
+            --border-color: #e5e7eb;
             --accent: #E10600; 
             --green: #03a685;
-            --border-color: #e5e7eb;
         }
-        /* (येथे तुमचे सर्व जुने CSS कोड्स ॲड करा जे मी आधी दिले होते) */
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 80px; }
+
+        .header { background: var(--header-bg); padding: 15px 5%; box-shadow: 0 1px 4px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 24px; font-weight: 900; text-decoration: none; color: var(--text-color); text-transform: uppercase; }
+        .logo span { color: var(--accent); }
+
+        .checkout-wrapper { max-width: 1100px; margin: 30px auto; display: flex; gap: 30px; padding: 0 20px; align-items: flex-start; }
+        .left-column { flex: 1.5; display: flex; flex-direction: column; gap: 20px; }
+        .right-column { flex: 1; position: sticky; top: 80px; }
+
+        .checkout-section { background: var(--card-bg); border-radius: 8px; padding: 25px; border: 1px solid var(--border-color); }
+        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; }
+        .section-title i { color: var(--accent); }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { font-size: 13px; font-weight: 700; display: block; margin-bottom: 5px; }
+        .form-input { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-weight: 600; }
+
+        .summary-card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; }
+        .summary-items { max-height: 300px; overflow-y: auto; padding: 20px; border-bottom: 1px solid var(--border-color); }
+        
+        /* Summary UI */
+        .s-item { display: flex; gap: 15px; margin-bottom: 15px; }
+        .s-img { width: 50px; height: 50px; border-radius: 5px; object-fit: cover; }
+        .s-name { font-weight: 800; font-size: 14px; }
+        
+        .calc-total { font-size: 20px; font-weight: 900; padding-top: 15px; border-top: 1px dashed #ccc; display: flex; justify-content: space-between; }
+        
+        .btn-place-order { background: var(--accent); color: white; border: none; padding: 18px; font-size: 16px; font-weight: 800; border-radius: 6px; cursor: pointer; width: 100%; }
+
+        #toast { visibility: hidden; background: #333; color: #fff; padding: 15px; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 5000; border-radius: 5px; }
+        #toast.show { visibility: visible; }
+
+        @media (max-width: 768px) {
+            .checkout-wrapper { flex-direction: column-reverse; }
+            .right-column { position: static; }
+        }
     </style>
 </head>
 <body>
 
-<script>
+    <header class="header">
+        <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
+    </header>
+
+    <div class="checkout-wrapper">
+        <div class="left-column">
+            <div class="checkout-section">
+                <div class="section-title"><i class="fas fa-user"></i> Contact Details</div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="c-name" class="form-input" placeholder="Your Name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="c-phone" class="form-input" maxlength="10">
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="s-address" class="form-input" placeholder="Building, Area">
+                </div>
+                <button class="btn-place-order" onclick="placeOrder()">PLACE ORDER</button>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="summary-card">
+                <div class="summary-items" id="checkout-items"></div>
+                
+                <div style="padding: 20px;">
+                    <div class="calc-total">
+                        <span>Total:</span>
+                        <span id="t-final">₹0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
     let cartItems = [];
-    let subtotal = 0, totalDiscount = 0, deliveryFee = 0, finalTotal = 0;
-    let selectedPayMethod = "Cash on Delivery"; 
+    let finalTotal = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
         cartItems = JSON.parse(localStorage.getItem('rj_cart')) || [];
+        
+        // चेक करा की कार्टमध्ये काही आहे का
         if (cartItems.length === 0) {
-            showToast("Cart empty! Redirecting...");
-            setTimeout(() => window.location.href = 'index.html', 2000);
+            alert("कार्ट रिकामे आहे!");
+            window.location.href = 'index.html';
             return;
         }
         renderSummary();
-
-        if(window.innerWidth > 768) { 
-            const summaryContent = document.getElementById('summary-content');
-            if(summaryContent) summaryContent.classList.add('open'); 
-        }
     });
 
     function renderSummary() {
-        let html = ''; 
-        subtotal = 0; 
-        totalDiscount = 0;
+        const itemsContainer = document.getElementById('checkout-items');
+        const finalTotalEl = document.getElementById('t-final');
+
+        // जर element सापडले नाहीत तर एरर टाळा
+        if (!itemsContainer || !finalTotalEl) return;
+
+        let html = '';
+        let total = 0;
 
         cartItems.forEach(item => {
-            const price = parseFloat(item.price) || 0;
-            const mrp = Math.round(price * 1.4); 
+            const price = parseFloat(item.price);
             const qty = item.quantity || 1;
+            total += (price * qty);
             
-            subtotal += (mrp * qty);
-            totalDiscount += ((mrp - price) * qty);
-
             html += `
-            <div class="s-item">
-                <img src="${item.image || ''}" class="s-img">
-                <div class="s-info">
-                    <div class="s-name">${item.name}</div>
-                    <div class="s-meta">Size: ${item.size} | Qty: ${qty}</div>
-                    <div class="s-price">₹${price.toLocaleString()} <span style="text-decoration:line-through; color:#878787; font-size:12px; font-weight:normal;">₹${mrp.toLocaleString()}</span></div>
-                </div>
-            </div>`;
+                <div class="s-item">
+                    <img src="${item.image || ''}" class="s-img">
+                    <div class="s-info">
+                        <div class="s-name">${item.name}</div>
+                        <div style="font-size:12px;">Qty: ${qty} | Size: ${item.size}</div>
+                        <div style="font-weight:700;">₹${price.toLocaleString()}</div>
+                    </div>
+                </div>`;
         });
 
-        finalTotal = (subtotal - totalDiscount) + deliveryFee;
-
-        document.getElementById('checkout-items').innerHTML = html;
-        document.getElementById('t-sub').innerText = `₹${subtotal.toLocaleString()}`;
-        document.getElementById('t-disc').innerText = `-₹${totalDiscount.toLocaleString()}`;
-        document.getElementById('t-ship').innerText = deliveryFee === 0 ? "FREE" : `+₹${deliveryFee}`;
-        document.getElementById('t-final').innerText = `₹${finalTotal.toLocaleString()}`;
-        document.getElementById('t-savings').innerText = `🔥 You saved ₹${totalDiscount.toLocaleString()} today`;
-        
-        const mobileTotal = document.getElementById('mobile-summary-total');
-        const mobileBtn = document.getElementById('mobile-btn-total');
-        if(mobileTotal) mobileTotal.innerText = `₹${finalTotal.toLocaleString()}`;
-        if(mobileBtn) mobileBtn.innerText = `PLACE ORDER – ₹${finalTotal.toLocaleString()}`;
-    }
-
-    function selectDelivery(type, fee, el) {
-        document.querySelectorAll('input[name="delivery"]').forEach(r => {
-            r.checked = false; 
-            const box = r.closest('.option-box');
-            if(box) box.classList.remove('selected');
-        });
-        const radio = el.querySelector('input');
-        if(radio) radio.checked = true; 
-        el.classList.add('selected');
-        deliveryFee = fee; 
-        renderSummary(); 
-    }
-
-    function autoDetectCity() {
-        const pin = document.getElementById('s-pin').value;
-        if (pin.length === 6) {
-            // Mock logic: 411 = Pune, 400 = Mumbai, 110 = Delhi
-            if(pin.startsWith('41')) { 
-                document.getElementById('s-city').value = 'Pune'; 
-                document.getElementById('s-state').value = 'Maharashtra'; 
-            } else if(pin.startsWith('40')) {
-                document.getElementById('s-city').value = 'Mumbai'; 
-                document.getElementById('s-state').value = 'Maharashtra';
-            }
-            showToast("Location detected!");
-        }
-    }
-
-    function toggleSummary() { 
-        document.getElementById('summary-content').classList.toggle('open'); 
-    }
-
-    function showToast(msg) {
-        const toast = document.getElementById("toast");
-        if(!toast) return;
-        toast.innerText = msg; toast.className = "show";
-        setTimeout(() => { toast.className = ""; }, 3000);
+        finalTotal = total;
+        itemsContainer.innerHTML = html;
+        finalTotalEl.innerText = `₹${total.toLocaleString()}`;
     }
 
     function generateInvoice(orderData) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
+        // प्रीमियम डिझाइन: वरचा गडद पट्टा
         doc.setFillColor(18, 18, 18);
-        doc.rect(0, 0, 210, 50, 'F');
+        doc.rect(0, 0, 210, 40, 'F');
 
-        doc.setFontSize(32);
+        doc.setFontSize(26);
         doc.setTextColor(255, 255, 255);
-        doc.text("RJ", 20, 30);
+        doc.text("RJ", 20, 25);
         doc.setTextColor(225, 6, 0); 
-        doc.text("SPORTS", 36, 30);
+        doc.text("SPORTS", 35, 25);
 
+        doc.setTextColor(0, 0, 0);
         doc.setFontSize(10);
-        doc.setTextColor(180, 180, 180);
-        doc.text("PREMIUM GEAR | OFFICIAL INVOICE", 20, 38);
+        doc.text(`Order ID: #${orderData.orderId}`, 150, 50);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 150, 55);
 
-        doc.setTextColor(18, 18, 18);
-        doc.setFontSize(12);
-        doc.text(`Customer: ${orderData.customer}`, 20, 65);
-        doc.text(`Order ID: #${orderData.orderId}`, 20, 72);
+        doc.setFont("helvetica", "bold");
+        doc.text("Bill To:", 20, 50);
+        doc.setFont("helvetica", "normal");
+        doc.text(`${orderData.customer}\n${orderData.phone}\n${orderData.address}`, 20, 55);
 
         const tableRows = orderData.items.map(item => [
-            item.name.toUpperCase(),
-            `UK ${item.size}`,
-            item.quantity,
-            `INR ${parseFloat(item.price).toLocaleString()}`
+            item.name, item.size, item.quantity, `INR ${item.price}`
         ]);
 
         doc.autoTable({
-            startY: 85,
-            head: [['ITEM', 'SIZE', 'QTY', 'PRICE']],
+            startY: 75,
+            head: [['Product', 'Size', 'Qty', 'Price']],
             body: tableRows,
-            theme: 'grid',
-            headStyles: { fillColor: [18, 18, 18], textColor: [255, 255, 255] }
+            theme: 'striped',
+            headStyles: { fillColor: [18, 18, 18] }
         });
 
-        const finalY = doc.lastAutoTable.finalY + 15;
         doc.setFontSize(14);
-        doc.text(`GRAND TOTAL: INR ${orderData.total.toLocaleString()}`, 120, finalY);
-
+        doc.text(`TOTAL: INR ${orderData.total.toLocaleString()}`, 140, doc.lastAutoTable.finalY + 20);
+        
         doc.save(`Invoice_${orderData.orderId}.pdf`);
     }
 
     async function placeOrder() {
-        const name = document.getElementById('c-name').value.trim();
-        const phone = document.getElementById('c-phone').value.trim();
-        const address = document.getElementById('s-address').value.trim();
-        const city = document.getElementById('s-city').value.trim();
-        const state = document.getElementById('s-state').value;
-        const pin = document.getElementById('s-pin').value.trim();
+        const name = document.getElementById('c-name').value;
+        const phone = document.getElementById('c-phone').value;
+        const address = document.getElementById('s-address').value;
 
-        if (!name || phone.length !== 10 || !address || !city || !state || !pin) {
-            return showToast("Please fill all details correctly!");
+        if (!name || phone.length !== 10) {
+            alert("कृपया सर्व माहिती अचूक भरा!");
+            return;
         }
 
         const orderId = 'RJ' + Math.floor(Math.random() * 1000000);
-        const orderData = { orderId, customer: name, phone, address: `${address}, ${city}, ${state} - ${pin}`, items: cartItems, total: finalTotal, paymentMethod: "Cash on Delivery" };
+        const orderData = { orderId, customer: name, phone, address, items: cartItems, total: finalTotal };
 
-        let itemsStr = "";
-        cartItems.forEach(item => { itemsStr += `▪️ ${item.quantity}x ${item.name} (Size: ${item.size})\n`; });
-
-        const msg = `🏏 *RJ SPORTS - NEW ORDER!* 🏏\n` +
-                    `-----------------------------------\n` +
-                    `*🆔 Order ID:* #${orderId}\n` +
-                    `*👤 Customer:* ${name}\n` +
-                    `*📞 Phone:* ${phone}\n` +
-                    `*📍 Address:* ${address}, ${city}, ${state} - ${pin}\n` +
-                    `-----------------------------------\n` +
-                    `*🛒 Items:*\n${itemsStr}` +
-                    `*💰 Total:* ₹${finalTotal.toLocaleString()}\n` +
-                    `*💳 Payment:* Cash on Delivery\n` +
-                    `-----------------------------------\n` +
-                    `_Please process my order!_`;
-
-        const myWhatsAppNumber = "919359239161";
-        const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${encodeURIComponent(msg)}`;
-
-        try {
-            await fetch('/api/place-order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-            });
-
-            generateInvoice(orderData);
-            localStorage.removeItem('rj_cart');
-            document.getElementById('success-modal').style.display = 'flex';
-            setTimeout(() => { window.location.href = whatsappUrl; }, 3000);
-
-        } catch (e) {
-            generateInvoice(orderData);
-            window.location.href = whatsappUrl;
-        }
+        generateInvoice(orderData); // बिल डाऊनलोड होईल
+        
+        alert("ऑर्डर यशस्वी झाली! व्हॉट्सॲपवर पाठवत आहोत...");
+        
+        // व्हॉट्सॲप मेसेज
+        const msg = encodeURIComponent(`नवीन ऑर्डर: #${orderId}\nग्राहक: ${name}\nएकूण: ₹${finalTotal}`);
+        window.location.href = `https://wa.me/919359239161?text=${msg}`;
     }
-</script>
-
+    </script>
 </body>
 </html>
