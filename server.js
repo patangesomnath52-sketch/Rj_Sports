@@ -81,6 +81,19 @@ app.post('/api/stock/update', async (req, res) => {
             ? disabledSizes.split(',').map(s => s.trim()).filter(s => s) 
             : disabledSizes;
     }
+    // प्रॉडक्ट कायमचा डिलीट करण्यासाठी API
+app.delete('/api/products/:id', async (req, res) => {
+    try {
+        const result = await Product.findOneAndDelete({ productId: req.params.id });
+        if (result) {
+            res.json({ success: true, message: "प्रॉडक्ट यशस्वीरित्या डिलीट झाला!" });
+        } else {
+            res.status(404).json({ success: false, message: "प्रॉडक्ट सापडला नाही." });
+        }
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
     await Product.findOneAndUpdate({ productId }, { $set: updateData });
     res.json({ success: true });
 });

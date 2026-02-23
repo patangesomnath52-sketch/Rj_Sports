@@ -6,7 +6,7 @@
     <title>RJ Admin | Stock Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --accent: #ff3f6c; --bg: #f4f6f8; --text: #1f2937; }
+        :root { --accent: #ff3f6c; --bg: #f4f6f8; --text: #1f2937; --danger: #e74c3c; }
         body { font-family: sans-serif; background: var(--bg); padding: 20px; color: var(--text); }
         .card { background: white; padding: 25px; border-radius: 12px; max-width: 900px; margin: 0 auto 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -22,6 +22,11 @@
         .soldout { background: #fee2e2; color: #b91c1c; }
         
         .file-input-wrapper { grid-column: span 2; background: #fafafa; padding: 10px; border: 2px dashed #ddd; border-radius: 6px; text-align: center; }
+        
+        /* DELETE BUTTON STYLE */
+        .btn-delete { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 18px; padding: 5px; transition: 0.2s; }
+        .btn-delete:hover { transform: scale(1.2); }
+        .action-btns { display: flex; align-items: center; gap: 15px; }
     </style>
 </head>
 <body>
@@ -79,7 +84,14 @@
                         </td>
                         <td><span class="status-pill ${!p.isOutOfStock ? 'instock' : 'soldout'}">${!p.isOutOfStock ? 'IN STOCK' : 'SOLD OUT'}</span></td>
                         <td><input type="text" value="${p.disabledSizes ? p.disabledSizes.join(', ') : ''}" onchange="updateSizes('${p.productId}', this.value)" style="width:60px; padding:5px;" placeholder="e.g. 7, 9"></td>
-                        <td><button onclick="toggleStock('${p.productId}', ${p.isOutOfStock})" style="padding:5px 10px; cursor:pointer;">Change</button></td>
+                        <td>
+                            <div class="action-btns">
+                                <button onclick="toggleStock('${p.productId}', ${p.isOutOfStock})" style="padding:5px 10px; cursor:pointer;">Change</button>
+                                <button class="btn-delete" onclick="deleteProduct('${p.productId}')" title="Delete Product">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 `).join('');
             }
@@ -88,7 +100,25 @@
         }
     }
 
-    // २. ऍड प्रॉडक्ट
+    // २. डिलीट प्रॉडक्ट फंक्शन
+    async function deleteProduct(productId) {
+        if (!confirm("तुम्हाला खात्री आहे की हा प्रॉडक्ट डिलीट करायचा आहे?")) return;
+
+        try {
+            const res = await fetch(`/api/products/${productId}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                alert("✅ " + data.message);
+                loadInventory(); // लिस्ट रिफ्रेश करा
+            } else {
+                alert("❌ Error: " + data.message);
+            }
+        } catch (err) {
+            alert("❌ डिलीट करताना एरर आला!");
+        }
+    }
+
+    // ३. ऍड प्रॉडक्ट
     document.getElementById('productForm').onsubmit = async (e) => {
         e.preventDefault();
         const btn = e.target.querySelector('button');
@@ -114,7 +144,7 @@
         }
     };
 
-    // ३. स्टॉक आणि साईझ अपडेट
+    // ४. स्टॉक आणि साईझ अपडेट
     async function toggleStock(productId, currentStatus) {
         try {
             await fetch('/api/stock/update', { 
