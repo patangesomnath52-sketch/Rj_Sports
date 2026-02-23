@@ -18,7 +18,7 @@
             --bg-color: #f4f6f8;
             --text-color: #1f2937;
             --header-bg: #fff;
-            --card-bg: #fff; /* प्रॉडक्ट्स आणि कार्टच्या पांढऱ्या बॉक्ससाठी */
+            --card-bg: #fff;
             --border-color: #e5e7eb;
             --accent: #ff3f6c;
         }
@@ -26,18 +26,60 @@
             --bg-color: #121212;
             --text-color: #e5e7eb;
             --header-bg: #1f2937;
-            --card-bg: #1e293b; /* डार्क मोड मधील कार्ड्सचा रंग */
+            --card-bg: #1e293b;
             --border-color: #374151;
         }
         
-        body { background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); transition: background 0.3s, color 0.3s; margin: 0; }
+        body.no-scroll { overflow: hidden; } /* ॲनिमेशन चालू असताना स्क्रोल बंद करण्यासाठी */
+
+        /* ========================================= */
+        /* 🚀 1. NEW: PREMIUM SPLASH SCREEN (FLIPKART STYLE) */
+        /* ========================================= */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background-color: var(--bg-color); z-index: 100000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: top 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* स्मूथ स्लाईड ॲनिमेशन */
+        }
+        
+        /* ॲनिमेटेड स्पोर्ट्स आयकॉन्स */
+        .splash-icons { display: flex; gap: 20px; font-size: 45px; color: var(--text-color); margin-bottom: 20px; }
+        .splash-icons i { opacity: 0; transform: translateY(30px) scale(0.5); animation: popUp 0.6s forwards; }
+        .splash-icons i:nth-child(1) { animation-delay: 0.1s; color: #f59e0b; } /* Cricket */
+        .splash-icons i:nth-child(2) { animation-delay: 0.3s; color: var(--accent); } /* Shoe */
+        .splash-icons i:nth-child(3) { animation-delay: 0.5s; color: #3b82f6; } /* Trophy */
+        
+        /* स्प्लॅश लोगो */
+        .splash-logo-text { font-family: 'Assistant', sans-serif; font-size: 40px; font-weight: 900; color: var(--text-color); opacity: 0; animation: fadeInText 0.5s 0.8s forwards; letter-spacing: 1px;}
+        .splash-logo-text span { color: var(--accent); }
+
+        @keyframes popUp {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes fadeInText {
+            to { opacity: 1; }
+        }
+
+        /* ========================================= */
+        /* 🚀 2. NEW: BRAND LOGO STYLE */
+        /* ========================================= */
+        .rj-logo { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--text-color); order: 2; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .rj-logo span { color: var(--accent); }
+        
+        /* हा आहे तुमचा नवीन मॉडर्न ब्रँड आयकॉन */
+        .brand-icon { 
+            background: var(--accent); color: white; 
+            width: 36px; height: 36px; 
+            display: flex; justify-content: center; align-items: center; 
+            border-radius: 8px; font-size: 20px; 
+            transform: skewX(-12deg); /* थोडं तिरकं (स्पोर्टी लुकसाठी) */
+            box-shadow: 2px 2px 8px rgba(255, 63, 108, 0.3);
+        }
 
         /* --- PREMIUM NAVBAR --- */
         .rj-header-wrapper { background: var(--header-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; position: sticky; top: 0; z-index: 9999; transition: 0.3s; }
         .rj-navbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; max-width: 1200px; margin: 0 auto; position: relative; }
-        
-        .rj-logo { font-size: 26px; font-weight: 900; text-decoration: none; color: var(--text-color); order: 2; transition: 0.3s; }
-        .rj-logo span { color: var(--accent); }
         
         .rj-links { display: flex; gap: 25px; align-items: center; order: 3; }
         .rj-links a { text-decoration: none; color: var(--text-color); font-weight: 800; font-size: 15px; text-transform: uppercase; transition: 0.3s; }
@@ -52,7 +94,7 @@
 
         .rj-menu-toggle { display: none; background: none; border: none; font-size: 24px; color: var(--text-color); cursor: pointer; order: 1; outline: none; }
 
-        /* --- AMAZON-STYLE LIVE SEARCH --- */
+        /* --- SEARCH BAR --- */
         .search-container { max-width: 1200px; margin: 25px auto; padding: 0 5%; }
         .search-wrapper { position: relative; background: var(--header-bg); border-radius: 8px; display: flex; align-items: center; border: 1px solid var(--border-color); box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.3s; }
         .search-wrapper:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 63, 108, 0.1); }
@@ -85,18 +127,29 @@
         }
     </style>
 </head>
-<body>
+<body class="no-scroll">
+
+<div id="splash-screen">
+    <div class="splash-icons">
+        <i class="fas fa-baseball-bat-ball"></i> <i class="fas fa-shoe-prints"></i>       <i class="fas fa-trophy"></i>            </div>
+    <div class="splash-logo-text">RJ <span>SPORTS</span></div>
+</div>
 
 <header class="rj-header-wrapper">
     <div class="rj-navbar">
         <button class="rj-menu-toggle" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
         
-        <a href="index.html" class="rj-logo">RJ <span>SPORTS</span></a>
+        <a href="index.html" class="rj-logo">
+            <div class="brand-icon"><i class="fas fa-running"></i></div> 
+            RJ <span>SPORTS</span>
+        </a>
+
         <nav class="rj-links" id="nav-links">
             <a href="cricket.html">CRICKET HUB</a>
             <a href="footwear.html">FOOTWEAR</a>
             <a href="orders.html" id="login-link">MY ORDERS</a>
-            <a href="settings.html"><i class="fas fa-cog"></i> SETTINGS</a> </nav>
+            <a href="settings.html"><i class="fas fa-cog"></i> SETTINGS</a>
+        </nav>
 
         <div class="rj-icons-group">
             <button id="theme-toggle" class="rj-theme-btn">🌙</button>
@@ -141,7 +194,21 @@
 </div>
 
 <script>
-    // --- 1. Hamburger Menu Logic (Fixed to swap FontAwesome icons) ---
+    // --- 0. Splash Screen Logic (Flipkart Style) ---
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.top = '-100vh'; // पडदा वर ओढल्यासारखे ॲनिमेशन
+            
+            // स्क्रोल पुन्हा चालू करणे
+            document.body.classList.remove('no-scroll'); 
+            
+            // ॲनिमेशन पूर्ण झाल्यावर तो टॅग डिलीट करणे
+            setTimeout(() => splash.remove(), 600); 
+        }, 2200); // २.२ सेकंदांपर्यंत ॲनिमेशन दिसेल
+    });
+
+    // --- 1. Hamburger Menu Logic ---
     const menuBtn = document.getElementById('mobile-menu-btn');
     const navLinks = document.getElementById('nav-links');
     
@@ -151,10 +218,10 @@
         
         if(navLinks.classList.contains('active')) {
             icon.classList.remove('fa-bars');
-            icon.classList.add('fa-times'); // 'X' icon
+            icon.classList.add('fa-times');
         } else {
             icon.classList.remove('fa-times');
-            icon.classList.add('fa-bars'); // Hamburger icon
+            icon.classList.add('fa-bars');
         }
     });
 
@@ -198,12 +265,10 @@
 
     // --- 4. Load Data & Cart on Page Ready ---
     document.addEventListener("DOMContentLoaded", () => {
-        // Update Cart
         const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
         const count = cart.reduce((total, item) => total + item.quantity, 0);
         document.getElementById('cart-count').innerText = count;
 
-        // Change "Sign In" to User's Name if logged in
         const user = localStorage.getItem('rj_loggedInUser');
         const loginLink = document.getElementById('login-link'); 
         
