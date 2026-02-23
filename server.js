@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// १. Cloudinary Configuration (तुमचे डिटेल्स इथे टाका)
+// १. Cloudinary Configuration
 cloudinary.config({
     cloud_name: 'dcxsebtas',
     api_key: '872585929966168',
@@ -43,10 +43,9 @@ const Product = mongoose.model('Product', new mongoose.Schema({
     isOutOfStock: { type: Boolean, default: false },
     disabledSizes: { type: Array, default: [] }
 }));
-// इमेज पाथ सेव्ह करताना सुरुवातीचा स्लॅश (/) टाळा
-const imagePaths = req.files.map(file => 'uploads/' + file.filename);
 
 // ५. API Routes
+
 // अ) नवीन प्रॉडक्ट ऍड करणे (आता फोटो थेट क्लाउडवर जातील)
 app.post('/api/products/add', upload.array('productImages', 3), async (req, res) => {
     try {
@@ -63,11 +62,17 @@ app.post('/api/products/add', upload.array('productImages', 3), async (req, res)
     }
 });
 
+// ब) सर्व प्रॉडक्ट्स मिळवणे
 app.get('/api/products', async (req, res) => {
-    const products = await Product.find();
-    res.json({ success: true, products });
+    try {
+        const products = await Product.find();
+        res.json({ success: true, products });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 
+// क) एक प्रॉडक्ट मिळवणे
 app.get('/api/products/:id', async (req, res) => {
     try {
         const product = await Product.findOne({ productId: req.params.id });
@@ -78,16 +83,26 @@ app.get('/api/products/:id', async (req, res) => {
     }
 });
 
+// ड) स्टॉक आणि साईज अपडेट करणे
 app.post('/api/stock/update', async (req, res) => {
-    const { productId, isOutOfStock, disabledSizes } = req.body;
-    let updateData = {};
-    if (isOutOfStock !== undefined) updateData.isOutOfStock = isOutOfStock;
-    if (disabledSizes !== undefined) {
-        updateData.disabledSizes = typeof disabledSizes === 'string' 
-            ? disabledSizes.split(',').map(s => s.trim()).filter(s => s) 
-            : disabledSizes;
+    try {
+        const { productId, isOutOfStock, disabledSizes } = req.body;
+        let updateData = {};
+        if (isOutOfStock !== undefined) updateData.isOutOfStock = isOutOfStock;
+        if (disabledSizes !== undefined) {
+            updateData.disabledSizes = typeof disabledSizes === 'string' 
+                ? disabledSizes.split(',').map(s => s.trim()).filter(s => s) 
+                : disabledSizes;
+        }
+        
+        await Product.findOneAndUpdate({ productId }, { $set: updateData });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
     }
-    // प्रॉडक्ट कायमचा डिलीट करण्यासाठी API
+});
+
+// ई) प्रॉडक्ट कायमचा डिलीट करण्यासाठी API
 app.delete('/api/products/:id', async (req, res) => {
     try {
         const result = await Product.findOneAndDelete({ productId: req.params.id });
@@ -100,8 +115,6 @@ app.delete('/api/products/:id', async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 });
-    await Product.findOneAndUpdate({ productId }, { $set: updateData });
-    res.json({ success: true });
-});
 
+// ६. सर्व्हर चालू करणे
 app.listen(process.env.PORT || 3000, () => console.log(`🚀 Cloud Server is LIVE!`));
