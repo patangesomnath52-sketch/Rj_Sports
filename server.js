@@ -17,13 +17,19 @@ if (!fs.existsSync(uploadDir)) {
 
 app.use(express.static('public'));
 
-// २. MongoDB कनेक्शन (तुमची लिंक इथे पेस्ट करा)
-const MONGO_URI = "तुमची_खरी_MONGODB_ATLAS_LINK_इथे_टाका"; 
-mongoose.connect(MONGO_URI)
-    .then(() => console.log("✅ Connected to MongoDB Atlas"))
-    .catch(err => console.error("❌ DB Connection Error:", err));
+// २. MongoDB Connection (तुमची सुधारित आणि सुरक्षित लिंक)
+// Render वर असल्यास process.env मधून लिंक घेईल, लोकल असल्यास पुढची लिंक वापरेल.
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://Ram_Jadhav:Ram%401234@cluster0.5ii6lfb.mongodb.net/rjsports?retryWrites=true&w=majority"; 
 
-// ३. डेटाबेस मॉडेल
+if (!MONGO_URI) {
+    console.error("❌ एरर: MONGO_URI सापडत नाहीये.");
+} else {
+    mongoose.connect(MONGO_URI)
+        .then(() => console.log("✅ MongoDB Connected Successfully!"))
+        .catch(err => console.error("❌ MongoDB Connection Error:", err));
+}
+
+// ३. डेटाबेस मॉडेल (Product Schema)
 const Product = mongoose.model('Product', new mongoose.Schema({
     productId: { type: String, unique: true },
     name: String,
@@ -34,7 +40,7 @@ const Product = mongoose.model('Product', new mongoose.Schema({
     disabledSizes: { type: Array, default: [] }
 }));
 
-// ४. इमेज अपलोड सेटिंग
+// ४. इमेज अपलोड सेटिंग (Multer)
 const storage = multer.diskStorage({
     destination: uploadDir,
     filename: (req, file, cb) => {
@@ -45,17 +51,17 @@ const upload = multer({ storage: storage });
 
 // --- API ROUTES ---
 
-// सर्व प्रॉडक्ट्सची लिस्ट मिळवण्यासाठी
+// अ) सर्व प्रॉडक्ट्सची लिस्ट मिळवण्यासाठी
 app.get('/api/products', async (req, res) => {
     try {
         const products = await Product.find();
         res.json({ success: true, products });
     } catch (err) {
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, message: "डेटा आणताना एरर आला" });
     }
 });
 
-// नवीन प्रॉडक्ट आणि ३ इमेजेस ऍड करण्यासाठी
+// ब) नवीन प्रॉडक्ट आणि ३ इमेजेस ऍड करण्यासाठी
 app.post('/api/products/add', upload.array('productImages', 3), async (req, res) => {
     try {
         const imagePaths = req.files.map(file => '/uploads/' + file.filename);
@@ -73,7 +79,7 @@ app.post('/api/products/add', upload.array('productImages', 3), async (req, res)
     }
 });
 
-// स्टॉक आणि साईजेस अपडेट करण्यासाठी
+// क) स्टॉक आणि साईजेस अपडेट करण्यासाठी
 app.post('/api/stock/update', async (req, res) => {
     try {
         const { productId, isOutOfStock, disabledSizes } = req.body;
@@ -84,5 +90,6 @@ app.post('/api/stock/update', async (req, res) => {
     }
 });
 
+// सर्व्हर पोर्ट सेटिंग
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
