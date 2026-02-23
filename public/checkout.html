@@ -6,6 +6,10 @@
     <title>Secure Checkout | RJ Sports</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
     <script>
         if (localStorage.getItem('rj_theme') === 'dark') {
             document.documentElement.classList.add('dark-mode');
@@ -67,7 +71,7 @@
         .s-item { display: flex; gap: 15px; margin-bottom: 15px; }
         .s-img { width: 60px; height: 60px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border-color); }
         .s-info { flex: 1; }
-        .s-name { font-size: 14px; font-weight: 800; margin-bottom: 4px; display: -webkit-box; -webkit-line-clam: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .s-name { font-size: 14px; font-weight: 800; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamps: 1; -webkit-box-orient: vertical; overflow: hidden; }
         .s-meta { font-size: 12px; color: #878787; font-weight: 600; }
         .s-price { font-size: 14px; font-weight: 800; margin-top: 5px; }
 
@@ -82,30 +86,21 @@
         .trust-item i { color: var(--green); font-size: 16px; }
 
         .btn-place-order { background: var(--accent); color: white; border: none; padding: 18px; font-size: 16px; font-weight: 800; border-radius: 6px; cursor: pointer; text-transform: uppercase; width: 100%; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        
-        /* MOBILE */
-        .mobile-summary-toggle { display: none; background: #fafafa; padding: 15px 20px; border-bottom: 1px solid var(--border-color); justify-content: space-between; align-items: center; font-weight: 800; color: var(--accent); cursor: pointer; }
-        .mobile-sticky-bar { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: var(--card-bg); padding: 15px 20px; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); z-index: 2000; border-top: 1px solid var(--border-color); }
-
-        @media (max-width: 768px) {
-            .checkout-wrapper { flex-direction: column-reverse; padding: 0; margin: 0; gap: 0; }
-            .left-column, .right-column { width: 100%; }
-            .mobile-summary-toggle { display: flex; }
-            .summary-collapsible { display: none; }
-            .summary-collapsible.open { display: block; }
-            .form-row { flex-direction: column; gap: 15px; }
-            .desktop-btn { display: none; }
-            .mobile-sticky-bar { display: block; }
-        }
 
         #toast { visibility: hidden; min-width: 250px; background: #333; color: #fff; text-align: center; border-radius: 4px; padding: 15px; position: fixed; z-index: 3000; left: 50%; top: 20px; transform: translateX(-50%); font-weight: bold; }
         #toast.show { visibility: visible; }
 
-        /* SUCCESS MODAL */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5000; align-items: center; justify-content: center; }
         .modal-content { background: var(--card-bg); padding: 40px; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; animation: slideUp 0.4s ease; }
         .modal-icon { font-size: 60px; color: #388e3c; margin-bottom: 20px; }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        @media (max-width: 768px) {
+            .checkout-wrapper { flex-direction: column-reverse; padding: 0; margin: 0; gap: 0; }
+            .left-column, .right-column { width: 100%; }
+            .mobile-sticky-bar { display: block; position: fixed; bottom: 0; width: 100%; padding: 15px; background: var(--card-bg); border-top: 1px solid var(--border-color); z-index: 1001; }
+            .desktop-btn { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -139,7 +134,10 @@
                     <div class="form-group"><label>City</label><input type="text" id="s-city" class="form-input" placeholder="City"></div>
                     <div class="form-group"><label>State</label>
                         <select id="s-state" class="form-input">
-                            <option value="">Select State</option><option value="Maharashtra">Maharashtra</option><option value="Karnataka">Karnataka</option><option value="Other">Other</option>
+                            <option value="">Select State</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                 </div>
@@ -168,21 +166,14 @@
 
         <div class="right-column">
             <div class="summary-card">
-                <div class="mobile-summary-toggle" onclick="toggleSummary()"><span>🛒 Show Summary</span><span id="mobile-summary-total">₹0</span></div>
-                <div class="summary-collapsible" id="summary-content">
-                    <div class="summary-items" id="checkout-items"></div>
-                    <div class="summary-totals">
-                        <div class="calc-row"><span>Subtotal</span> <span id="t-sub">₹0</span></div>
-                        <div class="calc-row"><span style="color:var(--green)">Discount</span> <span id="t-disc" style="color:var(--green)">-₹0</span></div>
-                        <div class="calc-row"><span>Shipping</span> <span id="t-ship" style="color:var(--green)">FREE</span></div>
-                        <div class="calc-total"><span>Total</span> <span id="t-final">₹0</span></div>
-                    </div>
-                    <div class="savings-tag" id="t-savings">🔥 You saved ₹0 today</div>
-                    <div class="trust-section">
-                        <div class="trust-item"><i class="fas fa-lock"></i> Secure Payment</div>
-                        <div class="trust-item"><i class="fas fa-undo"></i> 7 Day Returns</div>
-                    </div>
+                <div class="summary-items" id="checkout-items"></div>
+                <div class="summary-totals">
+                    <div class="calc-row"><span>Subtotal</span> <span id="t-sub">₹0</span></div>
+                    <div class="calc-row"><span style="color:var(--green)">Discount</span> <span id="t-disc" style="color:var(--green)">-₹0</span></div>
+                    <div class="calc-row"><span>Shipping</span> <span id="t-ship" style="color:var(--green)">FREE</span></div>
+                    <div class="calc-total"><span>Total</span> <span id="t-final">₹0</span></div>
                 </div>
+                <div class="savings-tag" id="t-savings">🔥 You saved ₹0 today</div>
             </div>
         </div>
     </div>
@@ -194,7 +185,7 @@
         <div class="modal-content">
             <div class="modal-icon"><i class="fas fa-check-circle"></i></div>
             <h2>Order Placed!</h2>
-            <p>Redirecting to WhatsApp to confirm order details...</p>
+            <p>Invoice downloaded. Redirecting to WhatsApp...</p>
             <div class="loading-dots" style="color: var(--accent); font-weight: 800;">Please wait...</div>
         </div>
     </div>
@@ -212,10 +203,6 @@
             return;
         }
         renderSummary();
-        if(window.innerWidth > 768) { 
-            const summaryContent = document.getElementById('summary-content');
-            if(summaryContent) summaryContent.classList.add('open'); 
-        }
     });
 
     function renderSummary() {
@@ -235,40 +222,25 @@
         document.getElementById('t-ship').innerText = deliveryFee === 0 ? "FREE" : `+₹${deliveryFee}`;
         document.getElementById('t-final').innerText = `₹${finalTotal.toLocaleString()}`;
         document.getElementById('t-savings').innerText = `🔥 You saved ₹${totalDiscount.toLocaleString()} today`;
-        document.getElementById('mobile-summary-total').innerText = `₹${finalTotal.toLocaleString()}`;
         document.getElementById('mobile-btn-total').innerText = `PLACE ORDER – ₹${finalTotal.toLocaleString()}`;
     }
 
-    // १. डिलिव्हरी मेथड निवडणे
     function selectDelivery(type, fee, el) {
         document.querySelectorAll('input[name="delivery"]').forEach(r => {
-            r.checked = false; 
-            const box = r.closest('.option-box');
-            if(box) box.classList.remove('selected');
+            r.checked = false; r.closest('.option-box').classList.remove('selected');
         });
-        const radio = el.querySelector('input');
-        if(radio) radio.checked = true; 
-        el.classList.add('selected');
-        deliveryFee = fee; 
-        renderSummary();
+        el.querySelector('input').checked = true; el.classList.add('selected');
+        deliveryFee = fee; renderSummary();
     }
 
-    // २. पेमेंट मेथड निवडणे
     function selectPayment(method, el) {
         document.querySelectorAll('input[name="payment"]').forEach(r => {
-            r.checked = false; 
-            const box = r.closest('.option-box');
-            if(box) box.classList.remove('selected');
+            r.checked = false; r.closest('.option-box').classList.remove('selected');
         });
-        const input = el.querySelector('input'); 
-        if(input) {
-            input.checked = true;
-            selectedPayMethod = input.value;
-        }
-        el.classList.add('selected'); 
+        const input = el.querySelector('input'); input.checked = true;
+        el.classList.add('selected'); selectedPayMethod = input.value;
     }
 
-    // ३. पिनकोड डिटेक्ट करणे
     function autoDetectCity() {
         const pin = document.getElementById('s-pin').value;
         if (pin.length === 6) {
@@ -280,17 +252,59 @@
         }
     }
 
-    function toggleSummary() { 
-        document.getElementById('summary-content').classList.toggle('open'); 
-    }
-
     function showToast(msg) {
         const toast = document.getElementById("toast");
         toast.innerText = msg; toast.className = "show";
         setTimeout(() => { toast.className = ""; }, 3000);
     }
 
-    // ४. मुख्य ऑर्डर फंक्शन (Async)
+    // --- Invoice Generation Function ---
+    function generateInvoice(orderData) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFontSize(22);
+        doc.setTextColor(225, 6, 0); 
+        doc.text("RJ SPORTS", 20, 20);
+        
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text("Premium Sports Gear & Footwear", 20, 27);
+        doc.text(`Order ID: #${orderData.orderId}`, 140, 20);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 140, 27);
+
+        doc.setDrawColor(200);
+        doc.line(20, 35, 190, 35);
+        doc.setFontSize(12);
+        doc.setTextColor(0);
+        doc.text("BILL TO:", 20, 45);
+        doc.setFontSize(10);
+        doc.text(`${orderData.customer}`, 20, 52);
+        doc.text(`${orderData.phone}`, 20, 57);
+        doc.text(`${orderData.address}`, 20, 62);
+
+        const tableRows = orderData.items.map(item => [
+            item.name, item.size, item.quantity, `INR ${item.price}`
+        ]);
+
+        doc.autoTable({
+            startY: 70,
+            head: [['Product Name', 'Size', 'Qty', 'Price']],
+            body: tableRows,
+            theme: 'grid',
+            headStyles: { fillColor: [18, 18, 18] }
+        });
+
+        const finalY = doc.lastAutoTable.finalY + 10;
+        doc.setFontSize(12);
+        doc.text(`Payment Mode: ${orderData.paymentMethod}`, 20, finalY);
+        doc.setFontSize(14);
+        doc.text(`GRAND TOTAL: INR ${orderData.total.toLocaleString()}`, 120, finalY);
+        doc.text("Thank you for shopping!", 20, finalY + 20);
+
+        doc.save(`Invoice-${orderData.orderId}.pdf`);
+    }
+
     async function placeOrder() {
         const name = document.getElementById('c-name').value.trim();
         const phone = document.getElementById('c-phone').value.trim();
@@ -298,7 +312,6 @@
         const city = document.getElementById('s-city').value.trim();
         const state = document.getElementById('s-state').value;
         const pin = document.getElementById('s-pin').value.trim();
-        const isWhatsapp = document.getElementById('c-whatsapp').checked ? 'Yes' : 'No';
 
         if (!name || phone.length !== 10 || !address || !city || !state || !pin) {
             return showToast("Fill all details correctly!");
@@ -307,7 +320,6 @@
         const orderId = 'RJ' + Math.floor(Math.random() * 1000000);
         const orderData = { orderId, customer: name, phone, address: `${address}, ${city}, ${state}`, pincode: pin, items: cartItems, total: finalTotal, paymentMethod: selectedPayMethod };
 
-        // WhatsApp Message
         let itemsStr = "";
         cartItems.forEach(item => { itemsStr += `▪️ ${item.quantity}x ${item.name} (Size: ${item.size})\n`; });
 
@@ -315,8 +327,7 @@
                     `-----------------------------------\n` +
                     `*🆔 Order ID:* #${orderId}\n` +
                     `*👤 Customer:* ${name}\n` +
-                    `*📍 Address:* ${address}, ${city}, ${state} - ${pin}\n` +
-                    `-----------------------------------\n` +
+                    `*📞 Phone:* ${phone}\n\n` +
                     `*🛒 Items:*\n${itemsStr}` +
                     `*💰 Total:* ₹${finalTotal.toLocaleString()}\n` +
                     `*💳 Payment:* ${selectedPayMethod}\n` +
@@ -326,7 +337,6 @@
         const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${encodeURIComponent(msg)}`;
 
         try {
-            // API ला डेटा पाठवणे
             await fetch('/api/place-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -334,15 +344,16 @@
             });
 
             localStorage.removeItem('rj_cart');
+            generateInvoice(orderData); // बिल डाऊनलोड करा
             document.getElementById('success-modal').style.display = 'flex';
             setTimeout(() => { window.location.href = whatsappUrl; }, 3000);
 
         } catch (e) {
-            // जर सर्व्हर डाऊन असेल तरी WhatsApp वर पाठवा
             localStorage.removeItem('rj_cart');
+            generateInvoice(orderData);
             window.location.href = whatsappUrl;
         }
     }
-</script>
+    </script>
 </body>
 </html>
