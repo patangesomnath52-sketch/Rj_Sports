@@ -100,63 +100,68 @@
 
     // २. प्रॉडक्ट लोड करणे
     async function loadDetail() {
-        if(!productId) {
-            document.getElementById('product-content').innerHTML = "<div class='loading-text'>Product ID Not Found!</div>";
+    if(!productId) {
+        document.getElementById('product-content').innerHTML = "<div class='loading-text'>Product ID Not Found!</div>";
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/products/${productId}`);
+        const data = await res.json();
+        
+        if(!data.success || !data.product) {
+            document.getElementById('product-content').innerHTML = "<div class='loading-text'>Product Not Found or Sold Out</div>";
             return;
         }
 
-        try {
-            const res = await fetch(`/api/products/${productId}`);
-            const data = await res.json();
-            
-            if(!data.success) {
-                document.getElementById('product-content').innerHTML = "<div class='loading-text'>Product Not Found or Sold Out</div>";
-                return;
-            }
+        currentProduct = data.product;
+        const p = currentProduct;
+        
+        // फोटोची लिंक क्लाउडवर आहे की स्थानिक (local) आहे ते तपासा
+        const imagesHtml = p.images.map(img => {
+            const imgSrc = img.startsWith('http') ? img : `/${img}`;
+            return `<img src="${imgSrc}" onerror="this.src='https://via.placeholder.com/600x600?text=Image+Not+Found'">`;
+        }).join('');
+        
+        const sizes = [6, 7, 8, 9, 10];
+        const disabledArray = p.disabledSizes || [];
+        const sizesHtml = sizes.map(sz => {
+            const isDisabled = disabledArray.includes(sz.toString());
+            return `<button class="size-btn" ${isDisabled ? 'disabled' : ''} onclick="selectSize(this)">${sz}</button>`;
+        }).join('');
 
-            currentProduct = data.product;
-            const p = currentProduct;
-            
-            const imagesHtml = p.images.map(img => `<img src="${img}" onerror="this.src='https://via.placeholder.com/600x600'">`).join('');
-            
-            const sizes = [6, 7, 8, 9, 10];
-            const disabledArray = p.disabledSizes || [];
-            const sizesHtml = sizes.map(sz => {
-                const isDisabled = disabledArray.includes(sz.toString());
-                return `<button class="size-btn" ${isDisabled ? 'disabled' : ''} onclick="selectSize(this)">${sz}</button>`;
-            }).join('');
-
-            document.getElementById('product-content').innerHTML = `
-                <div class="image-sec">
-                    ${imagesHtml}
+        document.getElementById('product-content').innerHTML = `
+            <div class="image-sec">
+                ${imagesHtml}
+            </div>
+            <div class="detail-sec">
+                <div class="brand">${p.brand || 'PREMIUM'}</div>
+                <div class="name">${p.name}</div>
+                <hr style="border:0; border-top:1px solid #eaeaec; margin-bottom:20px;">
+                <div class="price">₹ ${p.price}</div>
+                
+                <div class="sizes-title">
+                    <span>SELECT SIZE (UK)</span>
                 </div>
-                <div class="detail-sec">
-                    <div class="brand">${p.brand || 'PREMIUM'}</div>
-                    <div class="name">${p.name}</div>
-                    <hr style="border:0; border-top:1px solid #eaeaec; margin-bottom:20px;">
-                    <div class="price">₹ ${p.price}</div>
-                    
-                    <div class="sizes-title">
-                        <span>SELECT SIZE (UK)</span>
-                    </div>
-                    <div class="size-grid">${sizesHtml}</div>
-                    
-                    <button class="btn-add" onclick="addToCart()" ${p.isOutOfStock ? 'disabled' : ''}>
-                        <i class="fas fa-shopping-bag"></i> ${p.isOutOfStock ? 'OUT OF STOCK' : 'ADD TO BAG'}
-                    </button>
-                    
-                    <div class="delivery-info">
-                        <strong>DELIVERY OPTIONS</strong><br>
-                        <i class="fas fa-truck"></i> Fast Delivery Available<br>
-                        <i class="fas fa-money-bill-wave"></i> Pay on delivery might be available<br>
-                        <i class="fas fa-exchange-alt"></i> Easy 14 days returns and exchanges
-                    </div>
+                <div class="size-grid">${sizesHtml}</div>
+                
+                <button class="btn-add" onclick="addToCart()" ${p.isOutOfStock ? 'disabled' : ''}>
+                    <i class="fas fa-shopping-bag"></i> ${p.isOutOfStock ? 'OUT OF STOCK' : 'ADD TO BAG'}
+                </button>
+                
+                <div class="delivery-info">
+                    <strong>DELIVERY OPTIONS</strong><br>
+                    <i class="fas fa-truck"></i> Fast Delivery Available<br>
+                    <i class="fas fa-money-bill-wave"></i> Pay on delivery might be available<br>
+                    <i class="fas fa-exchange-alt"></i> Easy 14 days returns and exchanges
                 </div>
-            `;
-        } catch (err) {
-            document.getElementById('product-content').innerHTML = "<div class='loading-text'>Error Loading Data. Server Might be Down.</div>";
-        }
+            </div>
+        `;
+    } catch (err) {
+        console.error("Fetch error:", err);
+        document.getElementById('product-content').innerHTML = "<div class='loading-text'>Error Loading Data. Server Might be Down.</div>";
     }
+}
 
     // ३. साईझ सिलेक्ट करणे
     function selectSize(btn) {

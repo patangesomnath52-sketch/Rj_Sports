@@ -67,9 +67,13 @@ app.get('/api/products', async (req, res) => {
 });
 
 app.get('/api/products/:id', async (req, res) => {
-    const product = await Product.findOne({ productId: req.params.id });
-    if(product) res.json({ success: true, product });
-    else res.status(404).json({ success: false });
+    try {
+        const product = await Product.findOne({ productId: req.params.id });
+        if(product) res.json({ success: true, product });
+        else res.status(404).json({ success: false, message: "Product not found" });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 
 app.post('/api/stock/update', async (req, res) => {
