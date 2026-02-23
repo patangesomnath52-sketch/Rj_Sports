@@ -3,94 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RJ Admin | Stock Manager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>RJ Sports | Master Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --accent: #ff3f6c; --bg: #f4f6f8; --text: #1f2937; }
         body { font-family: 'Assistant', sans-serif; background: var(--bg); padding: 20px; color: var(--text); }
-        .admin-container { max-width: 900px; margin: 0 auto; }
+        .admin-container { max-width: 1000px; margin: 0 auto; }
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        h2 { border-left: 5px solid var(--accent); padding-left: 15px; margin-bottom: 20px; }
+        h2 { border-left: 5px solid var(--accent); padding-left: 15px; margin-bottom: 20px; font-size: 22px; }
         
-        .stock-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 6px; outline: none; }
-        .btn-update { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 800; cursor: pointer; grid-column: span 2; }
-        
-        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .status-shipped { background: #e0f2fe; color: #0369a1; }
-        .status-delivered { background: #dcfce7; color: #15803d; }
+        /* Form Styles */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 6px; outline: none; font-size: 14px; }
+        .full-width { grid-column: span 2; }
+        .btn-add { background: #2ecc71; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 800; cursor: pointer; }
+        .btn-update { background: var(--accent); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 800; cursor: pointer; }
+
+        /* Inventory Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: #666; font-size: 13px; text-transform: uppercase; }
+        .img-preview { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+        .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .instock { background: #dcfce7; color: #15803d; }
+        .soldout { background: #fee2e2; color: #b91c1c; }
     </style>
 </head>
 <body>
 
 <div class="admin-container">
-    <h1>🚀 RJ Sports Control Panel</h1>
+    <h1>🚀 RJ Sports Master Control</h1>
 
     <div class="card">
-        <h2>📦 Stock & Inventory Manager</h2>
-        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Product ID टाका (उदा. s1, s2) आणि स्टॉक अपडेट करा.</p>
-        <div class="stock-form">
-            <input type="text" id="stock-id" placeholder="Product ID (e.g., s1)">
-            <select id="stock-status">
-                <option value="false">✅ In Stock</option>
-                <option value="true">🚫 Entire Product Out of Stock</option>
+        <h2>🆕 Add New Product</h2>
+        <div class="form-grid">
+            <input type="text" id="p-id" placeholder="Product ID (e.g., s10, c5)">
+            <input type="text" id="p-name" placeholder="Product Name (नाव)">
+            <input type="number" id="p-price" placeholder="Price (किंमत)">
+            <select id="p-category">
+                <option value="Footwear">Footwear</option>
+                <option value="Cricket">Cricket Hub</option>
             </select>
-            <input type="text" id="disabled-sizes" placeholder="संपलेले साईझ टाका (उदा. 8, 10)" style="grid-column: span 2;">
-            <button class="btn-update" onclick="updateStock()">UPDATE LIVE STOCK</button>
+            <input type="text" id="p-img" class="full-width" placeholder="Image URL / Path (उदा: nike.jpg)">
+            <button class="btn-add full-width" onclick="addNewProduct()">+ ADD PRODUCT TO SITE</button>
         </div>
     </div>
 
     <div class="card">
-        <h2>🛒 Recent Orders</h2>
-        <div id="admin-orders-list">Loading orders...</div>
+        <h2>📦 Live Inventory & Stock Control</h2>
+        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">इथून तुम्ही कोणत्याही प्रॉडक्टचा स्टॉक ऑन/ऑफ करू शकता.</p>
+        <table id="inventory-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>ID</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="inventory-list">
+                </tbody>
+        </table>
     </div>
 </div>
 
 <script>
-    // 🔴 १. स्टॉक अपडेट करण्याचे लॉजिक
-    async function updateStock() {
-        const productId = document.getElementById('stock-id').value.trim();
-        const isOutOfStock = document.getElementById('stock-status').value === 'true';
-        const sizesInput = document.getElementById('disabled-sizes').value.trim();
+    // --- प्रॉडक्ट्सचा डेटा (हा आपण भविष्यात डेटाबेसशी जोडू) ---
+    let products = [
+        { id: 's1', name: 'Puma Nitro Red', price: 2499, category: 'Footwear', status: true },
+        { id: 's2', name: 'Puma Sky Blue', price: 1899, category: 'Footwear', status: true },
+        { id: 'c1', name: 'MRF Genius Bat', price: 4500, category: 'Cricket', status: true }
+    ];
+
+    // १. नवीन प्रॉडक्ट ऍड करण्याचे फंक्शन
+    function addNewProduct() {
+        const id = document.getElementById('p-id').value;
+        const name = document.getElementById('p-name').value;
+        const price = document.getElementById('p-price').value;
+        const category = document.getElementById('p-category').value;
         
-        // स्वल्पविरामाने (comma) वेगळे केलेले साईझ ॲरेमध्ये रूपांतरित करा
-        const disabledSizes = sizesInput ? sizesInput.split(',').map(s => s.trim()) : [];
+        if(!id || !name || !price) return alert("कृपया सर्व माहिती भरा!");
 
-        if(!productId) return alert("कृपया Product ID टाका!");
+        const newP = { id, name, price, category, status: true };
+        products.push(newP);
+        renderInventory(); // लिस्ट अपडेट करा
+        alert("🚀 " + name + " वेबसाईटवर ऍड झाला आहे!");
+    }
 
+    // २. स्टॉक अपडेट करण्याचे फंक्शन (बॅकडेक कडून येणारा डेटा)
+    async function toggleStock(id, currentStatus) {
+        const newStatus = !currentStatus;
         try {
             const res = await fetch('/api/stock/update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productId, isOutOfStock, disabledSizes })
+                body: JSON.stringify({ productId: id, isOutOfStock: !newStatus })
             });
             const data = await res.json();
             if(data.success) {
-                alert("🚀 वेबसाईटवर स्टॉक अपडेट झाला आहे!");
+                alert("Stock Status Updated!");
+                location.reload(); // पेज रिफ्रेश करून बदल पहा
             }
-        } catch (err) {
-            alert("Error updating stock");
-        }
+        } catch (err) { alert("Error connecting to server"); }
     }
 
-    // २. ऑर्डर्स लोड करणे (जुना कोड जो आपण आधी पाहिला होता)
-    async function loadOrders() {
-        const list = document.getElementById('admin-orders-list');
-        try {
-            const res = await fetch('/api/orders');
-            const data = await res.json();
-            if(data.success) {
-                list.innerHTML = data.orders.map(order => `
-                    <div style="border-bottom: 1px solid #eee; padding: 15px 0;">
-                        <b>#${order.orderId}</b> - ${order.customer} <br>
-                        <small>${order.phone} | Total: ₹${order.total}</small> <br>
-                        <span class="status-badge ${order.status === 'Delivered' ? 'status-delivered' : 'status-shipped'}">${order.status}</span>
-                    </div>
-                `).join('');
-            }
-        } catch (err) { list.innerHTML = "Error loading orders"; }
+    // ३. इन्व्हेंटरी लिस्ट दाखवणे
+    function renderInventory() {
+        const list = document.getElementById('inventory-list');
+        list.innerHTML = products.map(p => `
+            <tr>
+                <td><strong>${p.name}</strong><br><small>${p.category}</small></td>
+                <td><code>${p.id}</code></td>
+                <td>₹${p.price}</td>
+                <td><span class="status-pill ${p.status ? 'instock' : 'soldout'}">${p.status ? 'IN STOCK' : 'SOLD OUT'}</span></td>
+                <td>
+                    <button class="btn-update" onclick="toggleStock('${p.id}', ${p.status})">
+                        ${p.status ? 'Make Sold Out' : 'Make In Stock'}
+                    </button>
+                </td>
+            </tr>
+        `).join('');
     }
-    loadOrders();
+
+    window.onload = renderInventory;
 </script>
 
 </body>
