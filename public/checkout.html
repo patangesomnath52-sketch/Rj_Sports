@@ -147,7 +147,6 @@
             document.getElementById('step2-content').classList.add('active');
         }
 
-        // 🔴 FIX: 100% Corrected Order saving & WhatsApp Logic
         async function saveAndConfirm() {
             const name = document.getElementById('name-input').value.trim();
             const pin = document.getElementById('pin-input').value.trim();
@@ -173,27 +172,29 @@
                     // २. यशस्वी झाल्यावर कार्ट रिकामी करा
                     localStorage.removeItem('rj_cart');
 
-                    // ३. WhatsApp मेसेज तयार करा
+                    // 🔴 ३. THE FIX: WhatsApp मेसेज तयार करा (Real Newlines वापरून) 🔴
                     let itemsStr = "";
                     cartItems.forEach(item => {
-                        itemsStr += `▪️ ${item.quantity}x ${item.name}%0A`;
+                        itemsStr += `▪️ ${item.quantity}x ${item.name}\n`;
                     });
 
-                    const msg = `🏏 *RJ SPORTS - NEW ORDER!* 🏏%0A` +
-                                `-----------------------------------%0A` +
-                                `*🆔 Order ID:* #${orderId}%0A` +
-                                `*👤 Customer:* ${name}%0A` +
-                                `*📞 Phone:* ${userPhone}%0A` +
-                                `*📍 Address:* ${address}, ${pin}%0A` +
-                                `-----------------------------------%0A` +
-                                `*🛒 Items Ordered:*%0A${itemsStr}` +
-                                `-----------------------------------%0A` +
-                                `*💰 Total Amount:* ₹${finalTotal}%0A` +
-                                `-----------------------------------%0A` +
+                    const msg = `🏏 *RJ SPORTS - NEW ORDER!* 🏏\n` +
+                                `-----------------------------------\n` +
+                                `*🆔 Order ID:* #${orderId}\n` +
+                                `*👤 Customer:* ${name}\n` +
+                                `*📞 Phone:* ${userPhone}\n` +
+                                `*📍 Address:* ${address}, ${pin}\n` +
+                                `-----------------------------------\n` +
+                                `*🛒 Items Ordered:*\n${itemsStr}` +
+                                `-----------------------------------\n` +
+                                `*💰 Total Amount:* ₹${finalTotal}\n` +
+                                `-----------------------------------\n` +
                                 `_Please process my order as soon as possible!_`;
 
                     const myWhatsAppNumber = "919359239161";
-                    const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${msg}`;
+                    
+                    // 🔴 THE FIX: encodeURIComponent वापरल्याने इमोजी कधीच क्रॅश होणार नाहीत 🔴
+                    const whatsappUrl = `https://wa.me/${myWhatsAppNumber}?text=${encodeURIComponent(msg)}`;
 
                     // ४. ग्राहकाला थेट WhatsApp वर घेऊन जा
                     window.location.href = whatsappUrl;
