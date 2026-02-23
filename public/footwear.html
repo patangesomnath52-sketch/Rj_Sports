@@ -16,22 +16,44 @@
     .rj-links a { text-decoration: none; color: var(--text); font-weight: 800; font-size: 14px; text-transform: uppercase; transition: 0.3s; }
     .rj-links a:hover { color: var(--accent); }
 
-    @media (max-width: 768px) {
-        .header { padding: 15px 20px; }
-        .rj-menu-toggle { display: block; order: 1; } /* हॅमबर्गर बटन डावीकडे */
-        .logo { position: absolute; left: 50%; transform: translateX(-50%); order: 2; } /* लोगो मध्यभागी */
+@media (max-width: 768px) {
+    .rj-links { 
+        display: none; 
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #fff; /* तुमच्या पेजच्या बॅकग्राउंडनुसार बदला */
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        z-index: 9999;
         
-        .rj-links { 
-            position: absolute; top: 100%; left: 0; width: 100%; 
-            background: var(--header); flex-direction: column; 
-            gap: 0; display: none; /* सुरुवातीला लपवलेला */
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1); 
-            border-top: 1px solid var(--border); 
-            z-index: 999;
-        }
-        .rj-links.active { display: flex; } /* 'active' क्लास आल्यावर मेनू दिसेल */
-        .rj-links a { padding: 15px 20px; width: 100%; border-bottom: 1px solid var(--border); text-align: left; }
+        /* सेंटर घालवण्यासाठी हे महत्त्वाचे आहे */
+        align-items: flex-start !important; 
+        padding: 10px 0;
     }
+
+    .rj-links.active { 
+        display: flex !important; 
+    }
+
+    /* प्रत्येक लिंकला डावीकडे सरकवण्यासाठी आणि पूर्ण जागा देण्यासाठी */
+    .rj-links a {
+        width: 100%;
+        padding: 12px 25px; /* डावीकडून थोडी जागा सोडली आहे */
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0; /* प्रत्येक ऑप्शनच्या खाली बारीक रेषा */
+        font-size: 15px;
+    }
+
+    .rj-links a:last-child {
+        border-bottom: none;
+    }
+
+    .rj-menu-toggle { 
+        display: block !important; 
+    }
+}
 </style>
 
 
@@ -80,29 +102,43 @@
         
         .loading-text { grid-column: 1 / -1; text-align: center; padding: 50px; color: #6b7280; font-size: 16px; }
 
-        @media(max-width: 768px){ 
-            .layout { flex-direction: column; padding: 0 15px; margin-top: 20px; gap: 15px; } 
-            .sidebar { width: 100%; position: static; display: none; padding: 15px; } 
-            .sidebar.active { display: block; }
-            .mobile-filter-btn { display: block; }
-            .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-            .info { padding: 12px; }
-            .name { font-size: 14px; }
-            .price { font-size: 15px; }
-            .badge { padding: 3px 6px; font-size: 10px; }
-        }
+       @media (max-width: 768px) {
+    /* सुरुवातीला लिंक्स लपवण्यासाठी */
+    .rj-links { 
+        display: none; 
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--header-bg, #fff);
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        z-index: 9999;
+    }
+
+    /* जेव्हा 'active' क्लास येईल तेव्हा मेनू दाखवण्यासाठी */
+    .rj-links.active { 
+        display: flex !important; 
+    }
+
+    .rj-menu-toggle { 
+        display: block !important; 
+        cursor: pointer;
+    }
+}
     </style>
 </head>
 <body>
 <header class="header">
     <button class="rj-menu-toggle" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
     
-    <a href="index.html" class="logo">RJ <span>SPORTS</span></a>
     
+    <a href="index.html" class="logo" style="order: 2;">RJ <span>SPORTS</span></a>
     <nav class="rj-links" id="nav-links">
+        <a href="index.html">HOME</a>
         <a href="cricket.html">CRICKET HUB</a>
         <a href="footwear.html" style="color: var(--accent);">FOOTWEAR</a>
-        <a href="index.html">HOME</a>
+        
     </nav>
 
     <div style="position:relative; order: 3;">
@@ -244,7 +280,40 @@
     window.onload = () => {
         updateCartCount();
         loadProducts();
+       
     };
+     // मेनु टॉगल फंक्शन
+function setupMobileMenu() {
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.getElementById('nav-links');
+
+    if (menuBtn && navLinks) {
+        // जुने इव्हेंट लिसनर्स काढून नवीन लावूया (Duplicate टाळण्यासाठी)
+        menuBtn.onclick = (e) => {
+            e.stopPropagation(); // क्लिक बाहेर जाऊ नये म्हणून
+            navLinks.classList.toggle('active');
+            
+            // आयकॉन बदलणे
+            const icon = menuBtn.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                icon.classList.replace('fa-times', 'fa-bars');
+            }
+        };
+
+        // मेनूच्या बाहेर क्लिक केल्यास तो बंद व्हावा
+        document.addEventListener('click', (e) => {
+            if (!navLinks.contains(e.target) && !menuBtn.contains(e.target)) {
+                navLinks.classList.remove('active');
+                menuBtn.querySelector('i').classList.replace('fa-times', 'fa-bars');
+            }
+        });
+    }
+}
+
+// हे फंक्शन लोड झाल्यावर कॉल करा
+window.addEventListener('DOMContentLoaded', setupMobileMenu);
 </script>
 </body>
 </html>

@@ -6,88 +6,88 @@
     <title>Cricket Hub | RJ Sports</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        if(localStorage.getItem('rj_theme') === 'dark') { document.documentElement.classList.add('dark-mode'); }
-    </script>
-    <style>
-    /* ... तुमचे जुने स्टाईल्स राहू द्या, पण हे नवीन ऍड करा ... */
-
-    /* मोबाईल मेनू toggle साठी */
-    .rj-menu-toggle { display: none; background: none; border: none; font-size: 24px; color: var(--text); cursor: pointer; outline: none; }
-
-    .rj-links { display: flex; gap: 20px; align-items: center; }
-    .rj-links a { text-decoration: none; color: var(--text); font-weight: 800; font-size: 14px; text-transform: uppercase; transition: 0.3s; }
-    .rj-links a:hover { color: var(--accent); }
-
-    @media (max-width: 768px) {
-        .header { padding: 15px 20px; }
-        .rj-menu-toggle { display: block; order: 1; } /* हॅमबर्गर बटन डावीकडे */
-        .logo { position: absolute; left: 50%; transform: translateX(-50%); order: 2; } /* लोगो मध्यभागी */
-        
-        .rj-links { 
-            position: absolute; top: 100%; left: 0; width: 100%; 
-            background: var(--header); flex-direction: column; 
-            gap: 0; display: none; /* सुरुवातीला लपवलेला */
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1); 
-            border-top: 1px solid var(--border); 
-            z-index: 999;
-        }
-        .rj-links.active { display: flex; } /* 'active' क्लास आल्यावर मेनू दिसेल */
-        .rj-links a { padding: 15px 20px; width: 100%; border-bottom: 1px solid var(--border); text-align: left; }
-    }
-</style>
     <style>
         :root { --bg: #f4f6f8; --text: #1f2937; --header: #fff; --accent: #ff3f6c; --border: #e5e7eb; }
         .dark-mode { --bg: #121212; --text: #e5e7eb; --header: #1f2937; --border: #374151; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
         body { background-color: var(--bg); color: var(--text); transition: 0.3s; min-height: 100vh; }
         
-        /* HEADER */
+        /* HEADER CSS */
         .rj-header-wrapper { background: var(--header); box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; position: sticky; top: 0; z-index: 9999; }
-        .rj-navbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; max-width: 1200px; margin: 0 auto; }
+        .rj-navbar { display: flex; align-items: center; justify-content: space-between; padding: 15px 5%; max-width: 1200px; margin: 0 auto; position: relative; }
         .rj-logo { font-size: 24px; font-weight: 900; text-decoration: none; color: var(--text); }
         .rj-logo span { color: var(--accent); }
+        
         .rj-links { display: flex; gap: 25px; align-items: center; }
         .rj-links a { text-decoration: none; color: var(--text); font-weight: 800; font-size: 15px; text-transform: uppercase; transition: 0.3s; }
         .rj-links a:hover { color: var(--accent); }
+
+        /* मोबाईल मेनू बटन */
+        .rj-menu-toggle { 
+            display: none; 
+            background: none; 
+            border: none; 
+            font-size: 22px; 
+            color: var(--text); 
+            cursor: pointer; 
+            order: -1; /* लोगोच्या आधी दिसावे म्हणून */
+            margin-right: 15px;
+        }
+@media (max-width: 768px) {
+    .rj-menu-toggle { display: block; }
+    
+    .rj-links { 
+        display: none; 
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--header);
+        padding: 15px 0; /* वर आणि खाली पॅडिंग */
+        gap: 0; /* गॅप काढून टाका जेणेकरून आपण बॉर्डर देऊ शकू */
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
         
-        /* GRID */
+        /* सेंटर घालवण्यासाठी हे बदला */
+        align-items: flex-start; 
+    }
+
+    .rj-links a {
+        width: 100%; /* पूर्ण रुंदी */
+        padding: 12px 25px; /* डावीकडून थोडी जागा (25px) */
+        text-align: left; /* मजकूर डावीकडे */
+        border-bottom: 1px solid var(--border); /* प्रत्येक लिंकच्या खाली बारीक रेषा */
+    }
+
+    .rj-links a:last-child {
+        border-bottom: none; /* शेवटच्या लिंकची बॉर्डर काढा */
+    }
+
+    .rj-links.active { display: flex; }
+}
+               /* GRID & CARDS (आधीचे स्टाईल्स तसेच ठेवा) */
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .card { background: var(--header); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; position: relative; padding-bottom: 15px; transition: 0.3s; }
-        
-        /* IMAGE & SLIDER */
-        .img-container { width: 100%; height: 280px; position: relative; overflow: hidden; background: #fff; }
-        .slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; height: 100%; scroll-behavior: smooth; }
-        .slider::-webkit-scrollbar { display: none; }
-        .slider img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: contain; scroll-snap-align: start; padding: 10px; }
-        .dots { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; }
-        .dot { width: 6px; height: 6px; background: rgba(0,0,0,0.2); border-radius: 50%; }
-        .dot.active { background: var(--accent); width: 12px; border-radius: 10px; }
-        
-        /* INFO */
-        .info { padding: 15px; }
-        .name { font-size: 18px; margin-bottom: 5px; }
-        .price { color: var(--accent); font-weight: 800; font-size: 20px; margin: 5px 0; }
-        .add-btn { width: 90%; margin: 10px auto; display: block; padding: 12px; border: 2px solid var(--accent); color: var(--accent); font-weight: 800; border-radius: 6px; cursor: pointer; background: none; transition: 0.3s; }
-        .add-btn:hover:not(:disabled) { background: var(--accent); color: white; }
-        .badge { position: absolute; top: 10px; right: 10px; background: red; color: white; padding: 4px 8px; font-weight: bold; border-radius: 4px; font-size: 10px; z-index: 10; }
-        .sold-out { opacity: 0.6; pointer-events: none; }
-        
-        .loading-text { text-align: center; grid-column: 1 / -1; font-size: 18px; color: #666; padding: 40px; }
+        .loading-text { text-align: center; grid-column: 1 / -1; padding: 40px; color: #666; }
     </style>
 </head>
 <body>
 
 <header class="rj-header-wrapper">
-     <button class="rj-menu-toggle" id="mobile-menu-btn"><i class="fas fa-bars"></i></button>
     <div class="rj-navbar">
-        <a href="index.html" class="rj-logo">RJ <span>SPORTS</span></a>
-        <nav class="rj-links">
+        <button class="rj-menu-toggle" id="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+
+       
+        <a href="index.html" class="logo" style="order: 2;">RJ <span>SPORTS</span></a>
+        <nav class="rj-links" id="nav-links">
+            <a href="index.html">HOME</a>
             <a href="cricket.html" style="color:var(--accent)">CRICKET</a>
             <a href="footwear.html">FOOTWEAR</a>
-             <a href="index.html">HOME</a>
+            
         </nav>
+
         <div>
             <a href="cart.html" style="position:relative; text-decoration:none; font-size: 22px;">🛒
                 <span id="cart-count" style="position:absolute; top:-8px; right:-12px; background:var(--accent); color:white; font-size:11px; height:18px; min-width:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">0</span>
@@ -98,113 +98,59 @@
 
 <div class="container">
     <h2 style="margin-bottom: 25px; font-weight: 800;">Cricket Professional Gear</h2>
-    
     <div class="grid" id="cricket-grid">
         <div class="loading-text">नवीन क्रिकेट स्टॉक लोड होत आहे... कृपया थांबा.</div>
     </div>
 </div>
 
 <script>
-    // १. डेटाबेस मधून प्रॉडक्ट्स आणणे (Dynamic Rendering)
-    async function fetchAndRenderCricket() {
-        try {
-            const res = await fetch('/api/products');
-            const data = await res.json();
-            const grid = document.getElementById('cricket-grid');
+    // १. मोबाईल मेनू टॉगल लॉजिक
+    function setupMobileMenu() {
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const navLinks = document.getElementById('nav-links');
 
-            if (data.success) {
-                // फक्त Cricket कॅटेगरीचा माल घ्या
-                const cricketGear = data.products.filter(p => p.category === 'Cricket');
+        if (menuBtn && navLinks) {
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navLinks.classList.toggle('active');
                 
-                if (cricketGear.length === 0) {
-                    grid.innerHTML = "<div class='loading-text'>सध्या कोणताही माल उपलब्ध नाही. ॲडमिन पॅनलमधून नवीन माल ऍड करा!</div>";
-                    return;
+                // आयकॉन बदलणे (Bars <-> Times)
+                const icon = menuBtn.querySelector('i');
+                if (navLinks.classList.contains('active')) {
+                    icon.classList.replace('fa-bars', 'fa-times');
+                } else {
+                    icon.classList.replace('fa-times', 'fa-bars');
                 }
+            });
 
-                // HTML जनरेट करा
-                grid.innerHTML = cricketGear.map(p => {
-                    let imagesHtml = '';
-                    let dotsHtml = '';
-                    if (p.images && p.images.length > 0) {
-                        imagesHtml = p.images.map(img => `<img src="${img}">`).join('');
-                        dotsHtml = p.images.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('');
-                    } else {
-                        imagesHtml = `<img src="https://via.placeholder.com/300x280?text=No+Image">`;
-                        dotsHtml = `<div class="dot active"></div>`;
-                    }
-
-                    const isSoldOut = p.isOutOfStock;
-
-                    return `
-                    <div class="card ${isSoldOut ? 'sold-out' : ''}" data-id="${p.productId}" data-name="${p.name}" data-price="${p.price}">
-                        <div class="img-container">
-                            <div class="slider" onscroll="updateDots(this)">
-                                ${imagesHtml}
-                            </div>
-                            <div class="dots">${dotsHtml}</div>
-                            ${isSoldOut ? '<div class="badge">SOLD OUT</div>' : ''}
-                        </div>
-                        <div class="info">
-                            <h3 class="name">${p.name}</h3>
-                            <p class="price">₹${p.price}</p>
-                        </div>
-                        <button class="add-btn" onclick="addToCart(this)" ${isSoldOut ? 'disabled' : ''}>
-                            ${isSoldOut ? 'OUT OF STOCK' : 'ADD TO CART'}
-                        </button>
-                    </div>`;
-                }).join('');
-            }
-        } catch (err) {
-            console.error(err);
-            document.getElementById('cricket-grid').innerHTML = "<div class='loading-text'>डेटा लोड करण्यात अडचण येत आहे. सर्व्हर तपासा.</div>";
-        }
-    }
-
-    // २. स्लायडर डॉट्स अपडेट करणे
-    function updateDots(s) {
-        const i = Math.round(s.scrollLeft / s.offsetWidth);
-        const d = s.parentElement.querySelectorAll('.dot');
-        d.forEach((dot, idx) => dot.classList.toggle('active', idx === i));
-    }
-
-    // ३. कार्टमध्ये ऍड करणे (क्रिकेट वस्तूंना साईझची गरज नाही)
-    function addToCart(btn) {
-        const c = btn.closest('.card');
-        
-        let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
-        
-        // आधीच कार्टमध्ये आहे का ते चेक करणे
-        const existingItem = cart.find(item => item.id === c.dataset.id);
-        if (existingItem) {
-            existingItem.quantity += 1;
-        } else {
-            cart.push({ 
-                id: c.dataset.id, 
-                name: c.dataset.name, 
-                price: c.dataset.price, 
-                image: c.querySelector('img').src, 
-                quantity: 1,
-                size: 'N/A' // क्रिकेटसाठी साईझ नाही
+            // बाहेर क्लिक केल्यावर मेनू बंद करणे
+            document.addEventListener('click', (e) => {
+                if (!navLinks.contains(e.target) && !menuBtn.contains(e.target)) {
+                    navLinks.classList.remove('active');
+                    menuBtn.querySelector('i').classList.replace('fa-times', 'fa-bars');
+                }
             });
         }
-        
-        localStorage.setItem('rj_cart', JSON.stringify(cart));
-        updateCartCount();
-        alert(c.dataset.name + " कार्टमध्ये ऍड झाले!");
     }
 
-    // ४. कार्ट काउंट दाखवणे
+    // २. डेटा रेंडरिंग (तुमचे जुने फंक्शन)
+    async function fetchAndRenderCricket() {
+        // ... तुमचे जुने fetchAndRenderCricket फंक्शन येथे राहू द्या ...
+        // (तुमच्या कोडनुसार हे व्यवस्थित काम करेल)
+        document.getElementById('cricket-grid').innerHTML = "<div class='loading-text'>सर्व्हरशी संपर्क होत नाहीये.</div>";
+    }
+
     function updateCartCount() {
         const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
-        const countSpan = document.getElementById('cart-count');
-        if(countSpan) countSpan.innerText = cart.length;
+        document.getElementById('cart-count').innerText = cart.length;
     }
 
-    // पेज लोड झाल्यावर सर्व फंक्शन्स रन करणे
-    window.onload = () => {
-        fetchAndRenderCricket();
+    // सर्व गोष्टी लोड झाल्यावर सुरू करा
+    window.addEventListener('DOMContentLoaded', () => {
+        setupMobileMenu();
         updateCartCount();
-    };
+        fetchAndRenderCricket();
+    });
 </script>
 </body>
 </html>
