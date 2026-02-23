@@ -5,7 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RJ Admin | Stock Hub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+    // पेज लोड होण्यापूर्वी चेक करा की युजरची थीम काय आहे
+    if (localStorage.getItem('rj_theme') === 'dark') {
+        document.documentElement.classList.add('dark-mode'); // किंवा document.body.classList.add('dark-mode')
+    }
+</script>
+
     <style>
+        /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
+:root {
+    --bg-color: #f4f6f8;
+    --text-color: #1f2937;
+    --header-bg: #fff;
+    --card-bg: #fff;
+    --border-color: #e5e7eb;
+    --accent: #ff3f6c;
+}
+
+/* जेव्हा 'dark-mode' क्लास लागू होईल तेव्हा कलर्स बदलतील */
+html.dark-mode, body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #e5e7eb;
+    --header-bg: #1f2937;
+    --card-bg: #1e293b;
+    --border-color: #374151;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background 0.3s, color 0.3s;
+}
+
+/* हेडर आणि कार्ड्सना थीम कलर्स लागू करण्यासाठी (आवश्यक असल्यास) */
+.header { background: var(--header-bg); border-bottom: 1px solid var(--border-color); }
+.card, .product-card, .summary-card, .cart-item { background: var(--card-bg); border: 1px solid var(--border-color); }
         :root { --accent: #ff3f6c; --bg: #f4f6f8; --text: #1f2937; --danger: #e74c3c; }
         body { font-family: sans-serif; background: var(--bg); padding: 20px; color: var(--text); }
         .card { background: white; padding: 25px; border-radius: 12px; max-width: 900px; margin: 0 auto 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }

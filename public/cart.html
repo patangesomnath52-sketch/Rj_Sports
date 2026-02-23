@@ -6,7 +6,36 @@
     <title>Shopping Bag | RJ Sports</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+    // पेज लोड होण्यापूर्वी चेक करा की युजरची थीम काय आहे
+    if (localStorage.getItem('rj_theme') === 'dark') {
+        document.documentElement.classList.add('dark-mode'); // किंवा document.body.classList.add('dark-mode')
+    }
+</script>
     <style>
+        /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
+:root {
+    --bg-color: #f4f6f8;
+    --text-color: #1f2937;
+    --header-bg: #fff;
+    --card-bg: #fff;
+    --border-color: #e5e7eb;
+    --accent: #ff3f6c;
+}
+
+/* जेव्हा 'dark-mode' क्लास लागू होईल तेव्हा कलर्स बदलतील */
+html.dark-mode, body.dark-mode {
+    --bg-color: #121212;
+    --text-color: #e5e7eb;
+    --header-bg: #1f2937;
+    --card-bg: #1e293b;
+    --border-color: #374151;
+}
+
+
+/* हेडर आणि कार्ड्सना थीम कलर्स लागू करण्यासाठी (आवश्यक असल्यास) */
+.header { background: var(--header-bg); border-bottom: 1px solid var(--border-color); }
+.card, .product-card, .summary-card, .cart-item { background: var(--card-bg); border: 1px solid var(--border-color); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Assistant', sans-serif; }
         body { background: #f4f6f8; color: #1f2937; min-height: 100vh; }
         

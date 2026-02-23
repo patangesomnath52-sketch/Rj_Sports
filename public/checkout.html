@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Checkout | RJ Sports</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+    // पेज लोड होण्यापूर्वी चेक करा की युजरची थीम काय आहे
+    if (localStorage.getItem('rj_theme') === 'dark') {
+        document.documentElement.classList.add('dark-mode'); // किंवा document.body.classList.add('dark-mode')
+    }
+</script>
     <style>
         /* --- UNIVERSAL DARK/LIGHT MODE STYLES --- */
         :root {
