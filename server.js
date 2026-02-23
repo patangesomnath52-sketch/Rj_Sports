@@ -57,10 +57,11 @@ app.get('/api/products', async (req, res) => {
         const products = await Product.find();
         res.json({ success: true, products });
     } catch (err) {
+        // ही लाईन आपल्याला टर्मिनलमध्ये नेमका एरर दाखवेल
+        console.error("❌ डेटाबेस एरर (GET /api/products):", err); 
         res.status(500).json({ success: false, message: "डेटा आणताना एरर आला" });
     }
 });
-
 // ब) नवीन प्रॉडक्ट आणि ३ इमेजेस ऍड करण्यासाठी
 app.post('/api/products/add', upload.array('productImages', 3), async (req, res) => {
     try {

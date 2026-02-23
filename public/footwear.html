@@ -66,119 +66,157 @@
 
 
 <script>
-    // १. डेटाबेस मधून प्रॉडक्ट्स आणणे (Dynamic Rendering)
-    async function fetchAndRenderFootwear() {
-        try {
-            const res = await fetch('/api/products');
-            const data = await res.json();
-            const grid = document.getElementById('footwear-grid');
+    // तुमचे जुने फिक्स शूज (Default Data)
+const oldShoes = [
+    {
+        productId: "s1", name: "Puma Nitro Red Runner", price: 2499, category: "Footwear", 
+        images: ["puma nitro red runner.jpeg", "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600", "https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=600"], 
+        isOutOfStock: false, disabledSizes: []
+    },
+    {
+        productId: "s2", name: "Puma Sky Blue Sneakers", price: 1899, category: "Footwear", 
+        images: ["pumma skyblue sneakers.jpeg", "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=600", "https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=600"], 
+        isOutOfStock: false, disabledSizes: []
+    },
+    {
+        productId: "s3", name: "HiGrip Black Runner", price: 1299, category: "Footwear", 
+        images: ["fashion rung runner.jpeg", "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=600", "https://images.unsplash.com/photo-1584735175315-9d5df23860e6?q=80&w=600"], 
+        isOutOfStock: false, disabledSizes: []
+    },
+    {
+        productId: "s4", name: "Puma Classic B&W", price: 1999, category: "Footwear", 
+        images: ["puma black runner.jpeg", "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=600", "https://images.unsplash.com/photo-1512374382149-4332c6c021f1?q=80&w=600"], 
+        isOutOfStock: false, disabledSizes: []
+    },
+    {
+        productId: "s5", name: "ProNine Sport White", price: 999, category: "Footwear", 
+        images: ["pro nine sports.jpeg", "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?q=80&w=600", "https://images.unsplash.com/photo-1543508282-6319a3e2621f?q=80&w=600"], 
+        isOutOfStock: false, disabledSizes: []
+    },
+    {
+        productId: "s7", name: "Nike Smile Edition", price: 2999, category: "Footwear", 
+        images: ["nike.jpeg", "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?q=80&w=600", "https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=600"], 
+        isOutOfStock: false, disabledSizes: []
+    }
+];
 
-            if (data.success) {
-                // फक्त Footwear कॅटेगरीचा माल घ्या
-                const footwear = data.products.filter(p => p.category === 'Footwear');
-                
-                if (footwear.length === 0) {
-                    grid.innerHTML = "<div class='loading-text'>सध्या कोणताही शूज उपलब्ध नाही. ॲडमिन पॅनलमधून नवीन शूज ऍड करा!</div>";
-                    return;
-                }
+// १. डेटाबेस मधून प्रॉडक्ट्स आणणे आणि जुने शूज एकत्र करणे
+async function fetchAndRenderFootwear() {
+    try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        const grid = document.getElementById('footwear-grid');
 
-                // HTML जनरेट करा
-                grid.innerHTML = footwear.map(p => {
-                    // इमेजेस सेट करणे
-                    let imagesHtml = '';
-                    let dotsHtml = '';
-                    if (p.images && p.images.length > 0) {
-                        imagesHtml = p.images.map(img => `<img src="${img}">`).join('');
-                        dotsHtml = p.images.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('');
-                    } else {
-                        imagesHtml = `<img src="https://via.placeholder.com/300x280?text=No+Image">`;
-                        dotsHtml = `<div class="dot active"></div>`;
-                    }
+        let allFootwear = [...oldShoes]; // आधी जुने शूज घ्या
 
-                    // साईजेस सेट करणे (6 ते 10)
-                    const sizes = [6, 7, 8, 9, 10];
-                    const disabledArray = p.disabledSizes || [];
-                    const sizesHtml = sizes.map(sz => {
-                        const isDisabled = disabledArray.includes(sz.toString());
-                        return `<button class="size-btn" ${isDisabled ? 'disabled' : ''} onclick="selectSize(this)">${sz}</button>`;
-                    }).join('');
-
-                    // Sold Out लॉजिक
-                    const isSoldOut = p.isOutOfStock;
-
-                    return `
-                    <div class="card ${isSoldOut ? 'sold-out' : ''}" data-id="${p.productId}" data-name="${p.name}" data-price="${p.price}">
-                        <div class="img-container">
-                            <div class="slider" onscroll="updateDots(this)">
-                                ${imagesHtml}
-                            </div>
-                            <div class="dots">${dotsHtml}</div>
-                            ${isSoldOut ? '<div class="badge">SOLD OUT</div>' : ''}
-                        </div>
-                        <div class="info">
-                            <span class="brand">PREMIUM</span>
-                            <h3 class="name">${p.name}</h3>
-                            <p class="price">₹${p.price}</p>
-                            <div class="sizes">
-                                ${sizesHtml}
-                            </div>
-                        </div>
-                        <button class="add-btn" onclick="addToCart(this)" ${isSoldOut ? 'disabled' : ''}>
-                            ${isSoldOut ? 'OUT OF STOCK' : 'ADD TO CART'}
-                        </button>
-                    </div>`;
-                }).join('');
-            }
-        } catch (err) {
-            console.error(err);
-            document.getElementById('footwear-grid').innerHTML = "<div class='loading-text'>डेटा लोड करण्यात अडचण येत आहे. सर्व्हर तपासा.</div>";
+        if (data.success) {
+            // डेटाबेसमधील नवीन शूज घ्या आणि जुन्यांसोबत जोडा
+            const newFootwear = data.products.filter(p => p.category === 'Footwear');
+            allFootwear = [...oldShoes, ...newFootwear]; 
         }
-    }
 
-    // २. स्लायडर डॉट्स अपडेट करणे
-    function updateDots(s) {
-        const i = Math.round(s.scrollLeft / s.offsetWidth);
-        const d = s.parentElement.querySelectorAll('.dot');
-        d.forEach((dot, idx) => dot.classList.toggle('active', idx === i));
-    }
+        if (allFootwear.length === 0) {
+            grid.innerHTML = "<div class='loading-text'>सध्या कोणताही शूज उपलब्ध नाही.</div>";
+            return;
+        }
 
-    // ३. साईज सिलेक्ट करणे
-    function selectSize(b) {
-        b.parentElement.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('selected'));
-        b.classList.add('selected');
-    }
+        // HTML जनरेट करा
+        grid.innerHTML = allFootwear.map(p => {
+            // इमेजेस सेट करणे
+            let imagesHtml = '';
+            let dotsHtml = '';
+            if (p.images && p.images.length > 0) {
+                imagesHtml = p.images.map(img => `<img src="${img}">`).join('');
+                dotsHtml = p.images.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('');
+            } else {
+                imagesHtml = `<img src="https://via.placeholder.com/300x280?text=No+Image">`;
+                dotsHtml = `<div class="dot active"></div>`;
+            }
 
-    // ४. कार्टमध्ये ऍड करणे
-    function addToCart(btn) {
-        const c = btn.closest('.card');
-        const s = c.querySelector('.size-btn.selected');
-        if(!s) return alert("Please select a size first!");
+            // साईजेस सेट करणे (6 ते 10)
+            const sizes = [6, 7, 8, 9, 10];
+            const disabledArray = p.disabledSizes || [];
+            const sizesHtml = sizes.map(sz => {
+                const isDisabled = disabledArray.includes(sz.toString());
+                return `<button class="size-btn" ${isDisabled ? 'disabled' : ''} onclick="selectSize(this)">${sz}</button>`;
+            }).join('');
+
+            // Sold Out लॉजिक
+            const isSoldOut = p.isOutOfStock;
+
+            return `
+            <div class="card ${isSoldOut ? 'sold-out' : ''}" data-id="${p.productId}" data-name="${p.name}" data-price="${p.price}">
+                <div class="img-container">
+                    <div class="slider" onscroll="updateDots(this)">
+                        ${imagesHtml}
+                    </div>
+                    <div class="dots">${dotsHtml}</div>
+                    ${isSoldOut ? '<div class="badge">SOLD OUT</div>' : ''}
+                </div>
+                <div class="info">
+                    <span class="brand">${p.name.split(' ')[0]}</span>
+                    <h3 class="name">${p.name}</h3>
+                    <p class="price">₹${p.price}</p>
+                    <div class="sizes">
+                        ${sizesHtml}
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addToCart(this)" ${isSoldOut ? 'disabled' : ''}>
+                    ${isSoldOut ? 'OUT OF STOCK' : 'ADD TO CART'}
+                </button>
+            </div>`;
+        }).join('');
         
-        let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
-        cart.push({ 
-            id: c.dataset.id, 
-            name: c.dataset.name, 
-            price: c.dataset.price, 
-            size: s.innerText, 
-            image: c.querySelector('img').src, 
-            quantity: 1 
-        });
-        localStorage.setItem('rj_cart', JSON.stringify(cart));
-        window.location.href = 'cart.html';
+    } catch (err) {
+        console.error(err);
+        document.getElementById('footwear-grid').innerHTML = "<div class='loading-text'>डेटा लोड करण्यात अडचण येत आहे. सर्व्हर तपासा.</div>";
     }
+}
 
-    // ५. कार्ट काउंट दाखवणे
-    function updateCartCount() {
-        const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
-        const countSpan = document.getElementById('cart-count');
-        if(countSpan) countSpan.innerText = cart.length;
-    }
+// २. स्लायडर डॉट्स अपडेट करणे
+function updateDots(s) {
+    const i = Math.round(s.scrollLeft / s.offsetWidth);
+    const d = s.parentElement.querySelectorAll('.dot');
+    d.forEach((dot, idx) => dot.classList.toggle('active', idx === i));
+}
 
-    // पेज लोड झाल्यावर सर्व फंक्शन्स रन करणे
-    window.onload = () => {
-        fetchAndRenderFootwear();
-        updateCartCount();
-    };
+// ३. साईज सिलेक्ट करणे
+function selectSize(b) {
+    b.parentElement.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('selected'));
+    b.classList.add('selected');
+}
+
+// ४. कार्टमध्ये ऍड करणे
+function addToCart(btn) {
+    const c = btn.closest('.card');
+    const s = c.querySelector('.size-btn.selected');
+    if(!s) return alert("Please select a size first!");
+    
+    let cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+    cart.push({ 
+        id: c.dataset.id, 
+        name: c.dataset.name, 
+        price: c.dataset.price, 
+        size: s.innerText, 
+        image: c.querySelector('img').src, 
+        quantity: 1 
+    });
+    localStorage.setItem('rj_cart', JSON.stringify(cart));
+    window.location.href = 'cart.html';
+}
+
+// ५. कार्ट काउंट दाखवणे
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('rj_cart')) || [];
+    const countSpan = document.getElementById('cart-count');
+    if(countSpan) countSpan.innerText = cart.length;
+}
+
+// पेज लोड झाल्यावर सर्व फंक्शन्स रन करणे
+window.onload = () => {
+    fetchAndRenderFootwear();
+    updateCartCount();
+};
 </script>
 </body>
 </html>
