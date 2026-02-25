@@ -187,8 +187,8 @@
         let mrpTotal = 0;
 
         cartItems.forEach(item => {
-            const price = parseFloat(item.price);
-            const mrp = Math.round(price * 1.4); // Mocking MRP
+            const price = parseFloat(item.price) || 0;
+            const mrp = Math.round(price * 1.4); 
             const qty = item.quantity || 1;
             
             actualTotal += (price * qty);
@@ -216,17 +216,49 @@
         document.getElementById('savings-msg').innerText = `🔥 You saved ₹${savings.toLocaleString()} today!`;
     }
 
-    function autoDetectLocation() {
-        const pin = document.getElementById('s-pin').value;
-        if(pin.length === 6) {
-            // Mock Detection (Can be replaced with a real API like Zippopotam.us)
-            if(pin.startsWith('411')) {
-                document.getElementById('s-city').value = 'Pune';
-                document.getElementById('s-state').value = 'Maharashtra';
-            } else if(pin.startsWith('400')) {
-                document.getElementById('s-city').value = 'Mumbai';
-                document.getElementById('s-state').value = 'Maharashtra';
+    // --- 🔴 THE FIX: REAL PINCODE API ---
+    async function autoDetectLocation() {
+        const pinInput = document.getElementById('s-pin');
+        const cityInput = document.getElementById('s-city');
+        const stateInput = document.getElementById('s-state');
+        const pincode = pinInput.value.trim();
+
+        // फक्त जर ६ आकडे असतील तरच API कॉल करा
+        if (pincode.length === 6) {
+            cityInput.value = "Detecting...";
+            stateInput.value = "Detecting...";
+
+            try {
+                // Free Indian Post Office API
+                const response = await fetch(`https://api.postalpincode.in/postoffice/${pincode}`);
+                const data = await response.json();
+
+                if (data[0].Status === "Success") {
+                    const postOffice = data[0].PostOffice[0];
+                    cityInput.value = postOffice.District;
+                    stateInput.value = postOffice.State;
+                    cityInput.style.borderColor = "var(--green)";
+                    stateInput.style.borderColor = "var(--green)";
+                } else {
+                    cityInput.value = "";
+                    stateInput.value = "";
+                    alert("Invalid Pincode. Please check again.");
+                    pinInput.style.borderColor = "red";
+                }
+            } catch (error) {
+                console.error("Error fetching pincode:", error);
+                cityInput.value = "";
+                stateInput.value = "";
+                cityInput.placeholder = "Enter manually";
+                stateInput.placeholder = "Enter manually";
             }
+        } else {
+            // जर ६ पेक्षा कमी आकडे असतील तर फील्ड्स रिकामी करा
+            cityInput.value = "";
+            stateInput.value = "";
+            cityInput.style.borderColor = "var(--border-color)";
+            stateInput.style.borderColor = "var(--border-color)";
+            pinInput.style.borderColor = "var(--border-color)";
         }
     }
 
@@ -234,7 +266,6 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Header
         doc.setFillColor(18, 18, 18);
         doc.rect(0, 0, 210, 40, 'F');
         doc.setFontSize(26);
@@ -243,7 +274,6 @@
         doc.setTextColor(225, 6, 0); 
         doc.text("SPORTS", 35, 25);
 
-        // Details
         doc.setTextColor(0, 0, 0);
         doc.setFontSize(10);
         doc.text(`Invoice ID: ${orderData.orderId}`, 140, 50);
@@ -263,13 +293,13 @@
     }
 
     async function placeOrder() {
-        const name = document.getElementById('c-name').value;
-        const phone = document.getElementById('c-phone').value;
-        const address = document.getElementById('s-address').value;
-        const city = document.getElementById('s-city').value;
-        const pin = document.getElementById('s-pin').value;
+        const name = document.getElementById('c-name').value.trim();
+        const phone = document.getElementById('c-phone').value.trim();
+        const address = document.getElementById('s-address').value.trim();
+        const city = document.getElementById('s-city').value.trim();
+        const pin = document.getElementById('s-pin').value.trim();
 
-        if (!name || phone.length !== 10 || !pin) {
+        if (!name || phone.length !== 10 || !pin || !city) {
             alert("Please fill all details correctly!");
             return;
         }
