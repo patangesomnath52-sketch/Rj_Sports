@@ -7,9 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-
     <style>
         :root {
             --bg-color: #f5f5f5;
@@ -222,13 +219,12 @@
         document.getElementById('savings-msg').innerText = `🔥 You saved ₹${savings.toLocaleString()} today!`;
     }
 
-    // 🔴 EXACT PINCODE API LOGIC (100% Working)
+    // 🔴 EXACT PINCODE API LOGIC
     async function autoDetectLocation() {
         const pinInput = document.getElementById('s-pin');
         const cityInput = document.getElementById('s-city');
         const stateInput = document.getElementById('s-state');
         
-        // Remove non-numeric characters
         let pincode = pinInput.value.replace(/[^0-9]/g, '');
         pinInput.value = pincode;
 
@@ -243,7 +239,6 @@
                 if (data && data[0] && data[0].Status === "Success" && data[0].PostOffice && data[0].PostOffice.length > 0) {
                     const postOffice = data[0].PostOffice[0];
                     
-                    // Fallback logic for District name
                     let detectedCity = postOffice.District;
                     if (!detectedCity || detectedCity === "NA") {
                         detectedCity = postOffice.Block || postOffice.Region || postOffice.Name;
@@ -252,7 +247,6 @@
                     cityInput.value = detectedCity;
                     stateInput.value = postOffice.State;
                     
-                    // Success colors
                     pinInput.style.borderColor = "var(--green)";
                     cityInput.style.borderColor = "var(--green)";
                     stateInput.style.borderColor = "var(--green)";
@@ -269,7 +263,6 @@
                 showToast("Pincode not found. Please type City manually.");
             }
         } else {
-            // Reset if less than 6 digits
             pinInput.style.borderColor = "var(--border-color)";
             cityInput.style.borderColor = "var(--border-color)";
             stateInput.style.borderColor = "var(--border-color)";
@@ -280,36 +273,7 @@
         }
     }
 
-    function generateInvoice(orderData) {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        doc.setFillColor(18, 18, 18);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setFontSize(26);
-        doc.setTextColor(255, 255, 255);
-        doc.text("RJ", 20, 25);
-        doc.setTextColor(225, 6, 0); 
-        doc.text("SPORTS", 35, 25);
-
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(10);
-        doc.text(`Invoice ID: ${orderData.orderId}`, 140, 50);
-        doc.text(`Customer: ${orderData.customer}`, 20, 50);
-        doc.text(`Address: ${orderData.address}`, 20, 56);
-
-        const tableRows = orderData.items.map(item => [item.name, item.size, item.quantity, `INR ${item.price}`]);
-        doc.autoTable({
-            startY: 70,
-            head: [['Product', 'Size', 'Qty', 'Price']],
-            body: tableRows,
-            headStyles: { fillColor: [18, 18, 18] }
-        });
-
-        doc.setFontSize(14);
-        doc.text(`TOTAL AMOUNT: INR ${orderData.total.toLocaleString()}`, 130, doc.lastAutoTable.finalY + 15);
-        doc.save(`RJ_Sports_Invoice_${orderData.orderId}.pdf`);
-    }
+    // Invoice Function Removed
 
     async function placeOrder() {
         const name = document.getElementById('c-name').value.trim();
@@ -325,9 +289,6 @@
         }
 
         const orderId = 'RJ' + Math.floor(Math.random() * 1000000);
-        const orderData = { orderId, customer: name, phone, address: `${address}, ${city}, ${state} - ${pin}`, items: cartItems, total: finalTotal };
-
-        generateInvoice(orderData); 
         
         const itemsSummary = cartItems.map(i => `${i.name} (UK${i.size}) x${i.quantity}`).join(', ');
         const waMsg = encodeURIComponent(`🔥 *नवीन ऑर्डर (RJ Sports)*\n\n🆔 ID: #${orderId}\n👤 ग्राहक: ${name}\n📞 फोन: ${phone}\n📍 पत्ता: ${address}, ${city}, ${state} - ${pin}\n🛒 वस्तू: ${itemsSummary}\n💰 एकूण: ₹${finalTotal.toLocaleString()}\n💳 पेमेंट: Cash on Delivery\n\n_कृपया ऑर्डर कन्फर्म करा!_`);
