@@ -173,7 +173,28 @@ app.get('/api/orders', async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 });
+// ह) ऑर्डरचे स्टेटस अपडेट करणे (Admin पॅनलसाठी) - NEW 🟢
+app.post('/api/orders/update-status', async (req, res) => {
+    try {
+        const { orderId, status } = req.body;
+        
+        // MongoDB मध्ये ऑर्डर शोधून तिचे नवीन स्टेटस सेव्ह करा
+        const updatedOrder = await Order.findOneAndUpdate(
+            { orderId: orderId },
+            { $set: { status: status } },
+            { new: true }
+        );
 
+        if (updatedOrder) {
+            res.json({ success: true, message: "ऑर्डर स्टेटस अपडेट झाले!", order: updatedOrder });
+        } else {
+            res.status(404).json({ success: false, message: "ऑर्डर सापडली नाही." });
+        }
+    } catch (err) {
+        console.error("Status Update Error:", err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
 // ७. सर्व्हर चालू करणे
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 RJ Sports Cloud Server is LIVE on port ${PORT}!`));
