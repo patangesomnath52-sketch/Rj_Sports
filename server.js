@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// १. Cloudinary Configuration (Security: Environment Variables वापरणे उत्तम)
+// १. Cloudinary Configuration
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME || 'dcxsebtas',
     api_key: process.env.CLOUDINARY_API_KEY || '872585929966168',
@@ -33,7 +33,7 @@ mongoose.connect(MONGO_URI)
     .then(() => console.log("✅ MongoDB Connected!"))
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-// ४. प्रॉडक्ट मॉडेल
+// ४. प्रॉडक्ट मॉडेल (Product Model)
 const Product = mongoose.model('Product', new mongoose.Schema({
     productId: { type: String, unique: true, required: true },
     name: String,
@@ -45,17 +45,29 @@ const Product = mongoose.model('Product', new mongoose.Schema({
     disabledSizes: { type: Array, default: [] }
 }));
 
-// ५. API Routes
+// ५. ऑर्डर्ससाठी मॉडेल (Order Model) - NEW 🟢
+const Order = mongoose.model('Order', new mongoose.Schema({
+    orderId: { type: String, unique: true, required: true },
+    customer: String,
+    phone: String,
+    address: String,
+    items: Array,
+    total: Number,
+    paymentMethod: { type: String, default: 'Cash on Delivery' },
+    status: { type: String, default: 'Processing' }, // Processing, Shipped, Delivered, Cancelled
+    date: { type: Date, default: Date.now }
+}));
+
+// ६. API Routes
 
 // अ) नवीन प्रॉडक्ट ऍड करणे
 app.post('/api/products/add', upload.array('productImages', 3), async (req, res) => {
     try {
-        // सुरक्षितता: जर फोटो नसतील तर एरर देऊया
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ success: false, message: "कृपया फोटो अपलोड करा!" });
         }
 
-        const imagePaths = req.files.map(file => file.path); // Cloudinary URL मिळेल
+        const imagePaths = req.files.map(file => file.path);
 
         const newProduct = new Product({ 
             productId: req.body.productId,
@@ -118,20 +130,50 @@ app.post('/api/stock/update', async (req, res) => {
     }
 });
 
-// ई) प्रॉडक्ट कायमचा डिलीट करण्यासाठी API
+// ई) प्रॉडक्ट कायमचा डिलीट करणे
 app.delete('/api/products/:id', async (req, res) => {
     try {
         const result = await Product.findOneAndDelete({ productId: req.params.id });
-        if (result) {
-            res.json({ success: true, message: "प्रॉडक्ट यशस्वीरित्या डिलीट झाला!" });
-        } else {
-            res.status(404).json({ success: false, message: "प्रॉडक्ट सापडला नाही." });
-        }
+        if (result) res.json({ success: true, message: "प्रॉडक्ट यशस्वीरित्या डिलीट झाला!" });
+        else res.status(404).json({ success: false, message: "प्रॉडक्ट सापडला नाही." });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// ६. सर्व्हर चालू करणे
+// फ) नवीन ऑर्डर डेटाबेसमध्ये सेव्ह करणे (Checkout वरून) - NEW 🟢
+app.post('/api/place-order', async (req, res) => {
+    try {
+        const newOrder = new Order({
+            orderId: req.body.orderId,
+            customer: req.body.customer,
+            phone: req.body.phone,
+            address: req.body.address,
+            items: req.body.items,
+            total: req.body.total,
+            paymentMethod: req.body.paymentMethod || "Cash on Delivery"
+        });
+
+        await newOrder.save();
+        res.json({ success: true, message: "ऑर्डर डेटाबेसमध्ये सेव्ह झाली!" });
+    } catch (err) {
+        console.error("Order Save Error:", err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// ग) युजरच्या सर्व ऑर्डर्स मिळवणे (My Orders पेजसाठी) - NEW 🟢
+app.get('/api/orders', async (req, res) => {
+    try {
+        // नवीन ऑर्डर्स आधी दिसाव्यात म्हणून तारखेनुसार (date: -1) सॉर्ट केले आहे
+        const orders = await Order.find().sort({ date: -1 });
+        res.json({ success: true, orders });
+    } catch (err) {
+        console.error("Fetch Orders Error:", err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// ७. सर्व्हर चालू करणे
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 RJ Sports Cloud Server is LIVE on port ${PORT}!`));
